@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * NeoForge 1.21.1 entrypoint for Copper Age Patch.
+ * NeoForge 1.21.1 entrypoint for Copper Age Backport Patch.
  * Addresses duplicate ResourceKey[minecraft:armor_material / minecraft:copper]
  * registration crash in Copper Age Backport on NeoForge 21.1.250+.
  */
@@ -15,6 +15,6 @@ public class CopperAgePatch {
     public static final Logger LOGGER = LoggerFactory.getLogger(CopperAgePatch.class);
 
     public CopperAgePatch() {
-        LOGGER.info("[CopperAgePatch] Initializing patch mod for Copper Age Backport.");
+        LOGGER.info("[CopperAgeBackportPatch] Initializing Copper Age Backport Patch.");
     }
 }
