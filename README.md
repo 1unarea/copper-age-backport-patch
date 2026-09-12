@@ -44,14 +44,6 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 
 Optional integrations: [Jade](https://modrinth.com/mod/jade), [Better Combat](https://modrinth.com/mod/better-combat), [Create](https://modrinth.com/mod/create).
 
-## Building from Source
-
-```bash
-git clone https://github.com/aegeada/copper-age-backport-patch.git
-cd copper-age-backport-patch
-./gradlew build
-```
-
 ## Credits and License
 
 * Original mod by Smallinger (CC0).
