@@ -16,7 +16,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify output jar contains all required files, valid toml and valid mixin config")
     void testJarContents() throws Exception {
-        File jarFile = new File("build/libs/copper_age_patch-1.0.0.jar");
+        File jarFile = new File("build/libs/copper_age_patch-0.1.0.jar");
         assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
 
         try (ZipFile zip = new ZipFile(jarFile)) {
@@ -80,7 +80,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify built jar exists and has non-zero size")
     void testBuiltJarExists() {
-        File builtJar = new File("build/libs/copper_age_patch-1.0.0.jar");
+        File builtJar = new File("build/libs/copper_age_patch-0.1.0.jar");
         assertTrue(builtJar.exists(), "Built mod jar must exist at " + builtJar.getAbsolutePath());
         assertTrue(builtJar.length() > 0, "Built mod jar size must be greater than 0");
     }

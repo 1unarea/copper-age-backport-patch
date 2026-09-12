@@ -18,8 +18,8 @@ cd "$(dirname "$0")"
 echo "Build successful! Output:"
 ls -lh build/libs/*.jar
 echo "Deployed mod jar:"
-ls -lh "/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Farlands MSMP (2)/mods/copper_age_patch-1.0.0.jar"
-if [ -f "/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Farlands MSMP/mods/copper_age_patch-1.0.0.jar" ]; then
+ls -lh "/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Farlands MSMP (2)/mods/copper_age_patch-0.1.0.jar" 2>/dev/null || true
+if [ -f "/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Farlands MSMP/mods/copper_age_patch-0.1.0.jar" ]; then
     echo "Also deployed to Farlands MSMP profile:"
-    ls -lh "/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Farlands MSMP/mods/copper_age_patch-1.0.0.jar"
+    ls -lh "/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Farlands MSMP/mods/copper_age_patch-0.1.0.jar"
 fi
