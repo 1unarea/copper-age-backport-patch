@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Ossidazione: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Non ossidato",
+  "tooltip.copper_age_patch.weathering.exposed": "Esposto",
+  "tooltip.copper_age_patch.weathering.weathered": "Corroso",
+  "tooltip.copper_age_patch.weathering.oxidized": "Ossidato",
+  "tooltip.copper_age_patch.waxed": "Cerato",
+  "tooltip.copper_age_patch.not_waxed": "Non cerato",
+  "tooltip.copper_age_patch.shelf_items": "Oggetti conservati:",
+  "tooltip.copper_age_patch.shelf_empty": "Vuoto",
+  "tooltip.copper_age_patch.statue_name": "Nome: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Golem di rame",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Statua di golem di rame",
+  "config.jade.plugin_copper_age_patch.shelf": "Mensola dell'età del rame"
+}

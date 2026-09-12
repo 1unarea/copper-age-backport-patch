@@ -1,0 +1,55 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "copper_age_patch"
+version = "1.0.0"
+displayName = "Copper Age Patch"
+authors = "lunarea, aegeada"
+description = '''Fixes duplicate ResourceKey[minecraft:armor_material / minecraft:copper] registration crash in Copper Age Backport on NeoForge 21.1.250+.'''
+
+[[dependencies."copper_age_patch"]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."copper_age_patch"]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."copper_age_patch"]]
+modId = "copperagebackport"
+type = "required"
+versionRange = "[0.1.4,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."copper_age_patch"]]
+modId = "jade"
+type = "optional"
+versionRange = "[15.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."copper_age_patch"]]
+modId = "bettercombat"
+type = "optional"
+versionRange = "[2.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."copper_age_patch"]]
+modId = "create"
+type = "optional"
+versionRange = "[0.5,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "copper_age_patch.mixins.json"

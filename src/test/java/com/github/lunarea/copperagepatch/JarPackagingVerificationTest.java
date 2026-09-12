@@ -1,0 +1,87 @@
+package com.github.lunarea.copperagepatch;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class JarPackagingVerificationTest {
+
+    @Test
+    @DisplayName("Verify output jar contains all required files, valid toml and valid mixin config")
+    void testJarContents() throws Exception {
+        File jarFile = new File("build/libs/copper_age_patch-1.0.0.jar");
+        assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
+
+        try (ZipFile zip = new ZipFile(jarFile)) {
+            // Check essential entries
+            assertNotNull(zip.getEntry("META-INF/neoforge.mods.toml"), "neoforge.mods.toml missing in jar");
+            assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in jar");
+            assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "CopperAgePatch.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"), "MemoizedSupplier.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperAgeJadePlugin.class"), "CopperAgeJadePlugin.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperGolemEntityProvider.class"), "CopperGolemEntityProvider.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperGolemStatueBlockProvider.class"), "CopperGolemStatueBlockProvider.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/ShelfBlockProvider.class"), "ShelfBlockProvider.class missing in jar");
+
+            // Check resource files
+            assertNotNull(zip.getEntry("data/copperagebackport/weapon_attributes/copper_sword.json"), "copper_sword weapon attributes missing in jar");
+            assertNotNull(zip.getEntry("data/copper_age_patch/recipe/crushing/copper_helmet.json"), "copper_helmet crushing recipe missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/armors/helmets.json"), "helmets tag missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/tools/swords.json"), "swords tag missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/armors.json"), "armors parent tag missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/tools.json"), "tools parent tag missing in jar");
+            assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in jar");
+
+            // Verify neoforge.mods.toml contents
+            ZipEntry tomlEntry = zip.getEntry("META-INF/neoforge.mods.toml");
+            try (InputStream is = zip.getInputStream(tomlEntry)) {
+                String toml = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                assertTrue(toml.contains("modId = \"copper_age_patch\""), "toml must specify modId = 'copper_age_patch'");
+                assertTrue(toml.contains("config = \"copper_age_patch.mixins.json\""), "toml must reference copper_age_patch.mixins.json");
+                assertTrue(toml.contains("modId = \"copperagebackport\""), "toml must declare dependency on copperagebackport");
+                assertTrue(toml.contains("modId = \"neoforge\""), "toml must declare dependency on neoforge");
+                assertTrue(toml.contains("modId = \"minecraft\""), "toml must declare dependency on minecraft");
+                assertTrue(toml.contains("modId = \"jade\""), "toml must declare optional dependency on jade");
+                assertTrue(toml.contains("modId = \"bettercombat\""), "toml must declare optional dependency on bettercombat");
+                assertTrue(toml.contains("modId = \"create\""), "toml must declare optional dependency on create");
+            }
+
+            // Verify copper_age_patch.mixins.json contents
+            ZipEntry mixinEntry = zip.getEntry("copper_age_patch.mixins.json");
+            try (InputStream is = zip.getInputStream(mixinEntry)) {
+                String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                assertTrue(json.contains("\"package\": \"com.github.lunarea.copperagepatch.mixin\""), "mixin json must define package");
+                assertTrue(json.contains("\"CopperArmorMaterialMixin\""), "mixin json must list CopperArmorMaterialMixin");
+                assertTrue(json.contains("\"refmap\": \"copper_age_patch.refmap.json\""), "mixin json must specify refmap");
+            }
+
+            // Ensure we do NOT bundle third-party or minecraft classes into the patch jar
+            for (var entry : java.util.Collections.list(zip.entries())) {
+                String name = entry.getName();
+                assertFalse(name.startsWith("net/minecraft/"), "Minecraft classes must not be bundled in mod jar: " + name);
+                assertFalse(name.startsWith("org/spongepowered/"), "SpongePowered classes must not be bundled in mod jar: " + name);
+                assertFalse(name.startsWith("com/github/smallinger/"), "Upstream mod classes must not be bundled in mod jar: " + name);
+                assertFalse(name.startsWith("snownee/jade/"), "Jade classes must not be bundled in mod jar: " + name);
+                assertFalse(name.startsWith("com/mojang/"), "Mojang classes must not be bundled in mod jar: " + name);
+                assertFalse(name.startsWith("com/google/gson/"), "Gson classes must not be bundled in mod jar: " + name);
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Verify built jar exists and has non-zero size")
+    void testBuiltJarExists() {
+        File builtJar = new File("build/libs/copper_age_patch-1.0.0.jar");
+        assertTrue(builtJar.exists(), "Built mod jar must exist at " + builtJar.getAbsolutePath());
+        assertTrue(builtJar.length() > 0, "Built mod jar size must be greater than 0");
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "산화도: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "산화되지 않음",
+  "tooltip.copper_age_patch.weathering.exposed": "약간 녹슴",
+  "tooltip.copper_age_patch.weathering.weathered": "녹슴",
+  "tooltip.copper_age_patch.weathering.oxidized": "산화됨",
+  "tooltip.copper_age_patch.waxed": "밀랍칠함",
+  "tooltip.copper_age_patch.not_waxed": "밀랍칠하지 않음",
+  "tooltip.copper_age_patch.shelf_items": "보관된 아이템:",
+  "tooltip.copper_age_patch.shelf_empty": "비어 있음",
+  "tooltip.copper_age_patch.statue_name": "이름: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "구리 골렘",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "구리 골렘 조각상",
+  "config.jade.plugin_copper_age_patch.shelf": "구리 시대 선반"
+}

@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Oxydation : ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Non oxydé",
+  "tooltip.copper_age_patch.weathering.exposed": "Exposé",
+  "tooltip.copper_age_patch.weathering.weathered": "Patiné",
+  "tooltip.copper_age_patch.weathering.oxidized": "Oxydé",
+  "tooltip.copper_age_patch.waxed": "Ciré",
+  "tooltip.copper_age_patch.not_waxed": "Non ciré",
+  "tooltip.copper_age_patch.shelf_items": "Objets stockés :",
+  "tooltip.copper_age_patch.shelf_empty": "Vide",
+  "tooltip.copper_age_patch.statue_name": "Nom : ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Golem de cuivre",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Statue de golem de cuivre",
+  "config.jade.plugin_copper_age_patch.shelf": "Étagère de l'âge du cuivre"
+}

@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Zvětrávání: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Nezoxidováno",
+  "tooltip.copper_age_patch.weathering.exposed": "Lehká měděnka",
+  "tooltip.copper_age_patch.weathering.weathered": "Střední měděnka",
+  "tooltip.copper_age_patch.weathering.oxidized": "Pokryto měděnkou",
+  "tooltip.copper_age_patch.waxed": "Navoskováno",
+  "tooltip.copper_age_patch.not_waxed": "Nenavoskováno",
+  "tooltip.copper_age_patch.shelf_items": "Uložené předměty:",
+  "tooltip.copper_age_patch.shelf_empty": "Prázdné",
+  "tooltip.copper_age_patch.statue_name": "Jméno: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Měděný golem",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Socha měděného golema",
+  "config.jade.plugin_copper_age_patch.shelf": "Police doby měděné"
+}

@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.github.lunarea'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Mojang'
+        url = 'https://libraries.minecraft.net/'
+    }
+}
+
+dependencies {
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.named('test') {
+    dependsOn tasks.named('deployMod')
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'     : 'copper_age_patch',
+            'Specification-Vendor'    : 'lunarea',
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : project.name,
+            'Implementation-Version'  : project.version,
+            'Implementation-Vendor'   : 'lunarea',
+            'Implementation-Timestamp': new java.util.Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+def targetModsDir = project.findProperty('modsDir') ? file(project.property('modsDir')) :
+                    (System.getenv('MODS_DIR') ? file(System.getenv('MODS_DIR')) : null)
+
+tasks.register('deployMod', Copy) {
+    dependsOn tasks.named('jar')
+    from tasks.named('jar')
+    into targetModsDir ?: layout.buildDirectory.dir('deployed')
+    onlyIf {
+        targetModsDir != null && targetModsDir.exists()
+    }
+}
+
+tasks.named('jar') {
+    finalizedBy 'deployMod'
+}
+
+tasks.named('assemble') {
+    finalizedBy 'deployMod'
+}

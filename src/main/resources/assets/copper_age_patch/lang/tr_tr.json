@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Oksitlenme: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Oksitlenmemiş",
+  "tooltip.copper_age_patch.weathering.exposed": "Hafif Paslanmış",
+  "tooltip.copper_age_patch.weathering.weathered": "Yarı Paslanmış",
+  "tooltip.copper_age_patch.weathering.oxidized": "Oksitlenmiş",
+  "tooltip.copper_age_patch.waxed": "Mumlu",
+  "tooltip.copper_age_patch.not_waxed": "Mumsuz",
+  "tooltip.copper_age_patch.shelf_items": "Depolanan Eşyalar:",
+  "tooltip.copper_age_patch.shelf_empty": "Boş",
+  "tooltip.copper_age_patch.statue_name": "İsim: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Bakır Golem",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Bakır Golem Heykeli",
+  "config.jade.plugin_copper_age_patch.shelf": "Bakır Çağı Rafı"
+}

@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "風化度: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "風化なし",
+  "tooltip.copper_age_patch.weathering.exposed": "風化",
+  "tooltip.copper_age_patch.weathering.weathered": "錆び",
+  "tooltip.copper_age_patch.weathering.oxidized": "酸化",
+  "tooltip.copper_age_patch.waxed": "錆止め済み",
+  "tooltip.copper_age_patch.not_waxed": "錆止めなし",
+  "tooltip.copper_age_patch.shelf_items": "収納アイテム:",
+  "tooltip.copper_age_patch.shelf_empty": "空",
+  "tooltip.copper_age_patch.statue_name": "名前: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "銅のゴーレム",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "銅のゴーレム像",
+  "config.jade.plugin_copper_age_patch.shelf": "銅の時代の棚"
+}

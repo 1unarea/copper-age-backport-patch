@@ -1,0 +1,26 @@
+# Gradle build directories & caches
+.gradle/
+build/
+
+# Compiled classes & execution logs
+*.class
+*.log
+
+# IDE & Editor metadata
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Agent & Prompt scratch files
+.agents/
+ORIGINAL_REQUEST.md
+
+# Compile-time binary jars (Do not track proprietary Minecraft or external mod binaries)
+libs/

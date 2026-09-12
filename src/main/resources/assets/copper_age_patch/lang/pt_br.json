@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Oxidação: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Não oxidado",
+  "tooltip.copper_age_patch.weathering.exposed": "Exposto",
+  "tooltip.copper_age_patch.weathering.weathered": "Desgastado",
+  "tooltip.copper_age_patch.weathering.oxidized": "Oxidado",
+  "tooltip.copper_age_patch.waxed": "Encerado",
+  "tooltip.copper_age_patch.not_waxed": "Não encerado",
+  "tooltip.copper_age_patch.shelf_items": "Itens armazenados:",
+  "tooltip.copper_age_patch.shelf_empty": "Vazio",
+  "tooltip.copper_age_patch.statue_name": "Nome: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Golem de Cobre",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Estátua de Golem de Cobre",
+  "config.jade.plugin_copper_age_patch.shelf": "Prateleira da Idade do Cobre"
+}

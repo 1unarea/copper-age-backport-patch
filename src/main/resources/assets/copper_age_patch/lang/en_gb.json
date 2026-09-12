@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Weathering: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Unoxidised",
+  "tooltip.copper_age_patch.weathering.exposed": "Exposed",
+  "tooltip.copper_age_patch.weathering.weathered": "Weathered",
+  "tooltip.copper_age_patch.weathering.oxidized": "Oxidised",
+  "tooltip.copper_age_patch.waxed": "Waxed",
+  "tooltip.copper_age_patch.not_waxed": "Not Waxed",
+  "tooltip.copper_age_patch.shelf_items": "Stored Items:",
+  "tooltip.copper_age_patch.shelf_empty": "Empty",
+  "tooltip.copper_age_patch.statue_name": "Name: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Copper Golem",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Copper Golem Statue",
+  "config.jade.plugin_copper_age_patch.shelf": "Copper Age Shelf"
+}

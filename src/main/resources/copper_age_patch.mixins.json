@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.lunarea.copperagepatch.mixin",
+  "refmap": "copper_age_patch.refmap.json",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CopperArmorMaterialMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

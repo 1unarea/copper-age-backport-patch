@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Oksidləşmə: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Oksidləşməmiş",
+  "tooltip.copper_age_patch.weathering.exposed": "Müdafiəsiz",
+  "tooltip.copper_age_patch.weathering.weathered": "Solmuş",
+  "tooltip.copper_age_patch.weathering.oxidized": "Oksidləşmiş",
+  "tooltip.copper_age_patch.waxed": "Mumlanmış",
+  "tooltip.copper_age_patch.not_waxed": "Mumlanmamış",
+  "tooltip.copper_age_patch.shelf_items": "Saxlanılan əşyalar:",
+  "tooltip.copper_age_patch.shelf_empty": "Boş",
+  "tooltip.copper_age_patch.statue_name": "Ad: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Mis Qolem",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Mis Qolem Heykəli",
+  "config.jade.plugin_copper_age_patch.shelf": "Mis Dövrü Rəfi"
+}

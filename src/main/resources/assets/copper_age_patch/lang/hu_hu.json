@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "Patinásodás: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "Oxidálatlan",
+  "tooltip.copper_age_patch.weathering.exposed": "Megviselt",
+  "tooltip.copper_age_patch.weathering.weathered": "Viharvert",
+  "tooltip.copper_age_patch.weathering.oxidized": "Patinás",
+  "tooltip.copper_age_patch.waxed": "Viaszolt",
+  "tooltip.copper_age_patch.not_waxed": "Nem viaszolt",
+  "tooltip.copper_age_patch.shelf_items": "Tárolt elemek:",
+  "tooltip.copper_age_patch.shelf_empty": "Üres",
+  "tooltip.copper_age_patch.statue_name": "Név: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "Rézgólem",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "Rézgólem-szobor",
+  "config.jade.plugin_copper_age_patch.shelf": "Rézkori polc"
+}

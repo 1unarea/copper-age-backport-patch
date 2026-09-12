@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "item": "minecraft:copper_shovel"
+    }
+  ],
+  "processingTime": 100,
+  "results": [
+    {
+      "item": "minecraft:copper_nugget",
+      "count": 6
+    },
+    {
+      "item": "minecraft:copper_nugget",
+      "count": 3,
+      "chance": 0.5
+    }
+  ]
+}

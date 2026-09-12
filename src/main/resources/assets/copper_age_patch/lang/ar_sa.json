@@ -1,0 +1,15 @@
+{
+  "tooltip.copper_age_patch.weathering": "التجوية: ",
+  "tooltip.copper_age_patch.weathering.unaffected": "غير مؤكسد",
+  "tooltip.copper_age_patch.weathering.exposed": "مكشوف",
+  "tooltip.copper_age_patch.weathering.weathered": "معرض للجو",
+  "tooltip.copper_age_patch.weathering.oxidized": "مؤكسد",
+  "tooltip.copper_age_patch.waxed": "مشمع",
+  "tooltip.copper_age_patch.not_waxed": "غير مشمع",
+  "tooltip.copper_age_patch.shelf_items": "العناصر المخزنة:",
+  "tooltip.copper_age_patch.shelf_empty": "فارغ",
+  "tooltip.copper_age_patch.statue_name": "الاسم: ",
+  "config.jade.plugin_copper_age_patch.copper_golem": "غولم نحاسي",
+  "config.jade.plugin_copper_age_patch.copper_golem_statue": "تمثال الغولم النحاسي",
+  "config.jade.plugin_copper_age_patch.shelf": "رف العصر النحاسي"
+}
