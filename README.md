@@ -8,11 +8,33 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 
 ## Features
 
-* **Registry Crash Fix:** Resolves the duplicate armor material registry crash on NeoForge 21.1.237 and newer, allowing the game to load without rolling back to vanilla.
-* **Jade Tooltips:** Displays held items, oxidation stages, and waxed status on Copper Golems and statues, plus visual inventories for shelves.
-* **Better Combat Integration:** Configures native attack animations, sweeps, and hitboxes for all copper tools and weapons.
+* **Registry Crash Fix:** Resolves duplicate armor material registration on NeoForge 21.1.237 and newer, preventing rollback to vanilla.
+* **Jade Tooltips:** Displays held items, oxidation stages, and waxed status on Copper Golems and statues, plus shelf storage contents.
+* **Better Combat Integration:** Adds attack animations, sweeps, and weapon hitboxes for all copper tools and weapons.
 * **Create Mod Recipes:** Adds Crushing Wheel recipes to recycle copper equipment into copper ingots and nuggets.
-* **Tags and Translations:** Populates standard NeoForge/Common item tags and provides built-in translations for over 20 languages.
+* **Tag Support:** Populates standard NeoForge and Common item tags for armors and tools.
+
+## Supported Languages
+
+* Arabic (`ar_sa`)
+* Azerbaijani (`az_az`)
+* Chinese Simplified (`zh_cn`)
+* Chinese Traditional (`zh_hk`, `zh_tw`)
+* Czech (`cs_cz`)
+* English (`en_us`, `en_gb`)
+* French (`fr_fr`, `fr_ca`)
+* German (`de_de`)
+* Hungarian (`hu_hu`)
+* Italian (`it_it`)
+* Japanese (`ja_jp`)
+* Korean (`ko_kr`)
+* Polish (`pl_pl`)
+* Portuguese (`pt_br`, `pt_pt`)
+* Russian (`ru_ru`)
+* Spanish (`es_es`, `es_mx`, `es_ar`, `es_cl`, `es_ec`, `es_uy`, `es_ve`)
+* Thai (`th_th`)
+* Turkish (`tr_tr`)
+* Vietnamese (`vi_vn`)
 
 ## Requirements
 
