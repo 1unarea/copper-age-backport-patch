@@ -39,7 +39,7 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 ## Requirements
 
 * **Minecraft:** 1.21.1
-* **Mod Loader:** NeoForge (21.1.237 or newer) or Fabric
+* **Mod Loader:** NeoForge (21.1.237 or newer) / Fabric (0.15.0 or newer)
 * **Required Mod:** [Copper Age Backport](https://github.com/Smallinger/Copper-Age-Backport)
 
 Optional integrations: [Jade](https://modrinth.com/mod/jade), [Better Combat](https://modrinth.com/mod/better-combat), [Create](https://modrinth.com/mod/create).
