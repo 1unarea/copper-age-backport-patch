@@ -123,10 +123,12 @@ public enum ShelfBlockProvider implements IBlockComponentProvider, IServerDataPr
             List<IElement> visualElements = new ArrayList<>();
             for (ItemStack stack : storedItems) {
                 if (helper != null) {
-                    IElement el = helper.item(stack);
-                    if (el != null) {
-                        visualElements.add(el);
-                    }
+                    try {
+                        IElement el = helper.item(stack);
+                        if (el != null) {
+                            visualElements.add(el);
+                        }
+                    } catch (Throwable ignored) {}
                 }
             }
             if (!visualElements.isEmpty()) {
@@ -134,14 +136,21 @@ public enum ShelfBlockProvider implements IBlockComponentProvider, IServerDataPr
             }
 
             for (ItemStack stack : storedItems) {
-                Component name;
+                Component name = null;
                 try {
                     name = stack.getHoverName();
-                } catch (Throwable ignored) {
+                } catch (Throwable ignored) {}
+                if (name == null) {
                     name = Component.literal("Unknown Item");
                 }
+                Component styledName;
+                try {
+                    styledName = name.copy().withStyle(ChatFormatting.WHITE);
+                } catch (Throwable ignored) {
+                    styledName = Component.literal(name.getString()).withStyle(ChatFormatting.WHITE);
+                }
                 MutableComponent line = Component.literal("• ").withStyle(ChatFormatting.DARK_GRAY)
-                        .append(name.copy().withStyle(ChatFormatting.WHITE));
+                        .append(styledName);
                 if (stack.getCount() > 1) {
                     line.append(Component.literal(" x" + stack.getCount()).withStyle(ChatFormatting.GRAY));
                 }

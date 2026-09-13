@@ -261,9 +261,9 @@ public class JadePluginVerificationTest {
         // Verify null golem check
         assertFalse(CopperGolemEntityProvider.isGolemWaxed(null), "Null golem must safely return false");
 
-        // Verify allocated golem check for waxed (-1L) and unwaxed (> 0)
+        // Verify allocated golem check for waxed (-2L) and unwaxed (> 0)
         CopperGolemEntity waxedGolem = createMockGolemEntity(null, true);
-        assertTrue(CopperGolemEntityProvider.isGolemWaxed(waxedGolem), "Golem with nextWeatheringTick = -1L must be detected as waxed");
+        assertTrue(CopperGolemEntityProvider.isGolemWaxed(waxedGolem), "Golem with nextWeatheringTick = -2L must be detected as waxed");
 
         CopperGolemEntity unwaxedGolem = createMockGolemEntity(null, false);
         assertFalse(CopperGolemEntityProvider.isGolemWaxed(unwaxedGolem), "Golem with nextWeatheringTick > 0 must be detected as unwaxed");
@@ -806,5 +806,155 @@ public class JadePluginVerificationTest {
                 "CopperGolemStatueBlockProvider.appendServerData must not throw when accessor.getLevel() throws RuntimeException");
         assertDoesNotThrow(() -> CopperGolemStatueBlockProvider.INSTANCE.appendTooltip(new TestTooltip(), throwingStatueAccessor, null),
                 "CopperGolemStatueBlockProvider.appendTooltip must not throw when accessor.getLevel() throws RuntimeException");
+    }
+
+    static class NullNameItem extends net.minecraft.world.item.Item {
+        public NullNameItem() {
+            super(new net.minecraft.world.item.Item.Properties());
+        }
+        @Override
+        public Component getName(net.minecraft.world.item.ItemStack stack) {
+            return null;
+        }
+    }
+
+    static class ThrowingNameItem extends net.minecraft.world.item.Item {
+        public ThrowingNameItem() {
+            super(new net.minecraft.world.item.Item.Properties());
+        }
+        @Override
+        public Component getName(net.minecraft.world.item.ItemStack stack) {
+            throw new RuntimeException("Simulated item name failure");
+        }
+    }
+
+    private static net.minecraft.world.item.ItemStack createMockItemStackWithItem(net.minecraft.world.item.Item item, int count) {
+        try {
+            sun.misc.Unsafe unsafe = getUnsafe();
+            net.minecraft.world.item.ItemStack stack = (net.minecraft.world.item.ItemStack) unsafe.allocateInstance(net.minecraft.world.item.ItemStack.class);
+            java.lang.reflect.Field countField = net.minecraft.world.item.ItemStack.class.getDeclaredField("count");
+            countField.setAccessible(true);
+            countField.setInt(stack, count);
+
+            java.lang.reflect.Field itemField = net.minecraft.world.item.ItemStack.class.getDeclaredField("item");
+            itemField.setAccessible(true);
+            itemField.set(stack, item);
+
+            net.minecraft.core.component.PatchedDataComponentMap components = new net.minecraft.core.component.PatchedDataComponentMap(net.minecraft.core.component.DataComponentMap.EMPTY);
+            java.lang.reflect.Field compField = net.minecraft.world.item.ItemStack.class.getDeclaredField("components");
+            compField.setAccessible(true);
+            compField.set(stack, components);
+
+            return stack;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @DisplayName("Verify CopperGolemEntityProvider and ShelfBlockProvider handle null or throwing getHoverName safely")
+    void testHoverNameNullAndExceptionSafety() {
+        sun.misc.Unsafe unsafe = getUnsafe();
+        NullNameItem nullItem;
+        ThrowingNameItem throwingItem;
+        try {
+            nullItem = (NullNameItem) unsafe.allocateInstance(NullNameItem.class);
+            throwingItem = (ThrowingNameItem) unsafe.allocateInstance(ThrowingNameItem.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        net.minecraft.world.item.ItemStack nullNameStack = createMockItemStackWithItem(nullItem, 1);
+        net.minecraft.world.item.ItemStack throwingNameStack = createMockItemStackWithItem(throwingItem, 2);
+
+        // 1. Golem with held item having null hover name
+        CopperGolemEntity heldNullGolem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemHandSlot(heldNullGolem, 0, nullNameStack);
+        TestTooltip heldNullTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor heldNullAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return heldNullGolem;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(heldNullTooltip, heldNullAccessor, null));
+        assertTrue(heldNullTooltip.getJoinedText().contains("Unknown Item"),
+                "Held item with null hover name must safely fallback to 'Unknown Item': " + heldNullTooltip.getJoinedText());
+
+        // 2. Golem with antenna item having null hover name
+        CopperGolemEntity antennaNullGolem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemArmorSlot(antennaNullGolem, 3, nullNameStack);
+        TestTooltip antennaNullTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor antennaNullAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return antennaNullGolem;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(antennaNullTooltip, antennaNullAccessor, null));
+        String antennaNullText = antennaNullTooltip.getJoinedText();
+        assertTrue(antennaNullText.contains("Antenna:"), "Must render Antenna prefix: " + antennaNullText);
+        assertTrue(antennaNullText.contains("Unknown Item"), "Antenna item with null hover name must safely fallback to 'Unknown Item': " + antennaNullText);
+
+        // 3. Golem with antenna item having throwing hover name
+        CopperGolemEntity antennaThrowGolem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemArmorSlot(antennaThrowGolem, 3, throwingNameStack);
+        TestTooltip antennaThrowTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor antennaThrowAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return antennaThrowGolem;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(antennaThrowTooltip, antennaThrowAccessor, null));
+        String antennaThrowText = antennaThrowTooltip.getJoinedText();
+        assertTrue(antennaThrowText.contains("Antenna:"), "Must render Antenna prefix: " + antennaThrowText);
+        assertTrue(antennaThrowText.contains("Unknown Item"), "Antenna item with throwing hover name must safely fallback to 'Unknown Item': " + antennaThrowText);
+        assertTrue(antennaThrowText.contains("x2"), "Must render x2 count: " + antennaThrowText);
+
+        // 4. Shelf with stored item having null hover name
+        com.github.smallinger.copperagebackport.block.shelf.ShelfBlockEntity shelfBE;
+        try {
+            shelfBE = (com.github.smallinger.copperagebackport.block.shelf.ShelfBlockEntity) unsafe.allocateInstance(com.github.smallinger.copperagebackport.block.shelf.ShelfBlockEntity.class);
+            java.lang.reflect.Field itemsField = com.github.smallinger.copperagebackport.block.shelf.ShelfBlockEntity.class.getDeclaredField("items");
+            itemsField.setAccessible(true);
+            net.minecraft.core.NonNullList<net.minecraft.world.item.ItemStack> shelfItems = net.minecraft.core.NonNullList.withSize(3, net.minecraft.world.item.ItemStack.EMPTY);
+            shelfItems.set(0, nullNameStack);
+            itemsField.set(shelfBE, shelfItems);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        com.github.smallinger.copperagebackport.block.shelf.ShelfBlock shelfBlock;
+        try {
+            shelfBlock = (com.github.smallinger.copperagebackport.block.shelf.ShelfBlock) unsafe.allocateInstance(com.github.smallinger.copperagebackport.block.shelf.ShelfBlock.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        net.minecraft.world.level.block.state.BlockState shelfState = createMockBlockState(shelfBlock);
+
+        TestTooltip shelfTooltip = new TestTooltip();
+        snownee.jade.api.BlockAccessor shelfAccessor = (snownee.jade.api.BlockAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.BlockAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.BlockAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getBlockState".equals(method.getName())) return shelfState;
+                    if ("getBlockEntity".equals(method.getName())) return shelfBE;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> ShelfBlockProvider.INSTANCE.appendTooltip(shelfTooltip, shelfAccessor, null));
+        String shelfText = shelfTooltip.getJoinedText();
+        assertTrue(shelfText.contains("Stored Items:"), "Must display Stored Items: " + shelfText);
+        assertTrue(shelfText.contains("Unknown Item"), "Stored item with null hover name must safely fallback to 'Unknown Item': " + shelfText);
     }
 }

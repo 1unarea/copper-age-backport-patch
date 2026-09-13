@@ -120,9 +120,15 @@ public enum CopperGolemStatueBlockProvider implements IBlockComponentProvider, I
         }
 
         if (customName != null && !customName.getString().isBlank()) {
+            Component styledName;
+            try {
+                styledName = customName.copy().withStyle(ChatFormatting.WHITE);
+            } catch (Throwable ignored) {
+                styledName = Component.literal(customName.getString()).withStyle(ChatFormatting.WHITE);
+            }
             tooltip.add(Component.translatableWithFallback("tooltip.copper_age_patch.statue_name", "Name: ")
                     .withStyle(ChatFormatting.GRAY)
-                    .append(customName.copy().withStyle(ChatFormatting.WHITE)));
+                    .append(styledName));
         }
     }
 

@@ -22,6 +22,7 @@ public class JarPackagingVerificationTest {
         try (ZipFile zip = new ZipFile(jarFile)) {
             // Check essential entries
             assertNotNull(zip.getEntry("META-INF/neoforge.mods.toml"), "neoforge.mods.toml missing in jar");
+            assertNull(zip.getEntry("fabric.mod.json"), "fabric.mod.json should not be in NeoForge jar");
             assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in jar");
             assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "CopperAgePatch.class missing in jar");
@@ -104,6 +105,7 @@ public class JarPackagingVerificationTest {
             assertNull(zip.getEntry("META-INF/neoforge.mods.toml"), "neoforge.mods.toml should not be in Fabric jar");
             assertNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "NeoForge @Mod class should not be in Fabric jar");
             assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in Fabric jar");
+            assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"), "MemoizedSupplier.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperAgeJadePlugin.class"), "CopperAgeJadePlugin.class missing in Fabric jar");

@@ -114,15 +114,25 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
 
         if (heldItem != null && !heldItem.isEmpty()) {
             IElementHelper helper = IElementHelper.get();
-            snownee.jade.api.ui.IElement itemElement = helper != null ? helper.item(heldItem) : null;
-            Component name;
+            snownee.jade.api.ui.IElement itemElement = null;
+            try {
+                itemElement = helper != null ? helper.item(heldItem) : null;
+            } catch (Throwable ignored) {}
+            Component name = null;
             try {
                 name = heldItem.getHoverName();
-            } catch (Throwable ignored) {
+            } catch (Throwable ignored) {}
+            if (name == null) {
                 name = Component.literal("Unknown Item");
             }
+            Component styledName;
+            try {
+                styledName = name.copy().withStyle(ChatFormatting.WHITE);
+            } catch (Throwable ignored) {
+                styledName = Component.literal(name.getString()).withStyle(ChatFormatting.WHITE);
+            }
             MutableComponent itemDesc = Component.empty()
-                    .append(name.copy().withStyle(ChatFormatting.WHITE))
+                    .append(styledName)
                     .append(Component.literal(" x" + heldItem.getCount()).withStyle(ChatFormatting.GRAY));
             if (itemElement != null) {
                 tooltip.add(itemElement);
@@ -146,17 +156,27 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
 
         if (antennaItem != null && !antennaItem.isEmpty()) {
             IElementHelper helper = IElementHelper.get();
-            snownee.jade.api.ui.IElement itemElement = helper != null ? helper.item(antennaItem) : null;
-            Component name;
+            snownee.jade.api.ui.IElement itemElement = null;
+            try {
+                itemElement = helper != null ? helper.item(antennaItem) : null;
+            } catch (Throwable ignored) {}
+            Component name = null;
             try {
                 name = antennaItem.getHoverName();
-            } catch (Throwable ignored) {
+            } catch (Throwable ignored) {}
+            if (name == null) {
                 name = Component.literal("Unknown Item");
+            }
+            Component styledName;
+            try {
+                styledName = name.copy().withStyle(ChatFormatting.WHITE);
+            } catch (Throwable ignored) {
+                styledName = Component.literal(name.getString()).withStyle(ChatFormatting.WHITE);
             }
             MutableComponent itemDesc = Component.empty()
                     .append(Component.translatableWithFallback("tooltip.copper_age_patch.antenna_item", "Antenna: ")
                             .withStyle(ChatFormatting.GRAY))
-                    .append(name.copy().withStyle(ChatFormatting.WHITE));
+                    .append(styledName);
             if (antennaItem.getCount() > 1) {
                 itemDesc.append(Component.literal(" x" + antennaItem.getCount()).withStyle(ChatFormatting.GRAY));
             }
