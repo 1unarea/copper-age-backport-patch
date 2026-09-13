@@ -54,8 +54,13 @@ public enum CopperGolemStatueBlockProvider implements IBlockComponentProvider, I
         if (be instanceof CopperGolemStatueBlockEntity statueBE) {
             Component customName = extractCustomName(statueBE, accessor);
             if (customName != null && !customName.getString().isBlank()) {
-                Level level = accessor.getLevel() != null ? accessor.getLevel() : be.getLevel();
-                net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
+                net.minecraft.core.HolderLookup.Provider registries = net.minecraft.core.RegistryAccess.EMPTY;
+                try {
+                    Level level = accessor.getLevel() != null ? accessor.getLevel() : be.getLevel();
+                    if (level != null && level.registryAccess() != null) {
+                        registries = level.registryAccess();
+                    }
+                } catch (Throwable ignored) {}
                 try {
                     String json = Component.Serializer.toJson(customName, registries);
                     tag.putString(NBT_CUSTOM_NAME, json);
@@ -101,8 +106,13 @@ public enum CopperGolemStatueBlockProvider implements IBlockComponentProvider, I
             customName = extractCustomName(statueBE, accessor);
         }
         if (customName == null && accessor.getServerData() != null && accessor.getServerData().contains(NBT_CUSTOM_NAME)) {
-            Level level = accessor.getLevel() != null ? accessor.getLevel() : (be != null ? be.getLevel() : null);
-            net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
+            net.minecraft.core.HolderLookup.Provider registries = net.minecraft.core.RegistryAccess.EMPTY;
+            try {
+                Level level = accessor.getLevel() != null ? accessor.getLevel() : (be != null ? be.getLevel() : null);
+                if (level != null && level.registryAccess() != null) {
+                    registries = level.registryAccess();
+                }
+            } catch (Throwable ignored) {}
             try {
                 String json = accessor.getServerData().getString(NBT_CUSTOM_NAME);
                 customName = Component.Serializer.fromJson(json, registries);

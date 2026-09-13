@@ -48,8 +48,13 @@ public enum ShelfBlockProvider implements IBlockComponentProvider, IServerDataPr
         if (be instanceof ShelfBlockEntity shelf) {
             NonNullList<ItemStack> items = shelf.getItems();
             if (items != null) {
-                Level level = accessor.getLevel() != null ? accessor.getLevel() : be.getLevel();
-                net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
+                net.minecraft.core.HolderLookup.Provider registries = net.minecraft.core.RegistryAccess.EMPTY;
+                try {
+                    Level level = accessor.getLevel() != null ? accessor.getLevel() : be.getLevel();
+                    if (level != null && level.registryAccess() != null) {
+                        registries = level.registryAccess();
+                    }
+                } catch (Throwable ignored) {}
                 try {
                     ContainerHelper.saveAllItems(tag, items, true, registries);
                 } catch (Throwable ignored) {}
@@ -80,8 +85,13 @@ public enum ShelfBlockProvider implements IBlockComponentProvider, IServerDataPr
             }
         }
         if (storedItems.isEmpty() && accessor.getServerData() != null && accessor.getServerData().contains(NBT_ITEMS)) {
-            Level level = accessor.getLevel() != null ? accessor.getLevel() : (be != null ? be.getLevel() : null);
-            net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
+            net.minecraft.core.HolderLookup.Provider registries = net.minecraft.core.RegistryAccess.EMPTY;
+            try {
+                Level level = accessor.getLevel() != null ? accessor.getLevel() : (be != null ? be.getLevel() : null);
+                if (level != null && level.registryAccess() != null) {
+                    registries = level.registryAccess();
+                }
+            } catch (Throwable ignored) {}
             try {
                 ListTag list = accessor.getServerData().getList(NBT_ITEMS, 10);
                 int size = ShelfBlockEntity.MAX_ITEMS;

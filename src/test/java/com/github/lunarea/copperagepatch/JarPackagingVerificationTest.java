@@ -112,10 +112,16 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/ShelfBlockProvider.class"), "ShelfBlockProvider.class missing in Fabric jar");
 
             // Check resource files in Fabric jar
+            assertNotNull(zip.getEntry("data/copperagebackport/weapon_attributes/copper_sword.json"), "copper_sword weapon attributes missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/copper_age_patch/recipe/crushing/copper_helmet.json"), "copper_helmet crushing recipe missing in Fabric jar");
             assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_ingot_from_nuggets.json"), "copper_ingot_from_nuggets recipe missing in Fabric jar");
             assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_nugget.json"), "copper_nugget recipe missing in Fabric jar");
             assertNotNull(zip.getEntry("data/minecraft/recipe/copper_ingot_from_nuggets.json"), "minecraft copper_ingot_from_nuggets recipe missing in Fabric jar");
             assertNotNull(zip.getEntry("data/minecraft/recipe/copper_nugget.json"), "minecraft copper_nugget recipe missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/armors/helmets.json"), "helmets tag missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/tools/swords.json"), "swords tag missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/armors.json"), "armors parent tag missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/tools.json"), "tools parent tag missing in Fabric jar");
             assertNotNull(zip.getEntry("data/c/tags/item/nuggets.json"), "nuggets parent tag missing in Fabric jar");
             assertNotNull(zip.getEntry("data/c/tags/item/nuggets/copper.json"), "copper nuggets tag missing in Fabric jar");
             assertNotNull(zip.getEntry("data/c/tags/item/copper_nuggets.json"), "copper_nuggets tag missing in Fabric jar");
@@ -128,6 +134,9 @@ public class JarPackagingVerificationTest {
                 assertTrue(json.contains("\"version\": \"0.1.1\""), "fabric.mod.json must specify version = '0.1.1'");
                 assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
                 assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
+                assertTrue(json.contains("\"waila\""), "fabric.mod.json must declare waila entrypoint");
+                assertTrue(json.contains("\"com.github.lunarea.copperagepatch.compat.jade.CopperAgeJadePlugin\""), "fabric.mod.json must reference CopperAgeJadePlugin");
+                assertTrue(json.contains("\"create\""), "fabric.mod.json must declare create suggestion");
             }
 
             // Ensure we do NOT bundle third-party or minecraft classes into the Fabric jar

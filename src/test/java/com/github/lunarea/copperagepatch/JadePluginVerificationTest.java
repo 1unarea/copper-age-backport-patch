@@ -681,4 +681,130 @@ public class JadePluginVerificationTest {
         assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(emptyTagTooltip, emptyTagAccessor, null));
         assertFalse(emptyTagTooltip.getJoinedText().contains("Antenna:"), "Empty compound NBT_ANTENNA_ITEM must not render antenna tooltip");
     }
+
+    @Test
+    @DisplayName("Verify Jade providers handle non-null Level with null registryAccess() safely")
+    void testLevelRegistryAccessNullSafety() {
+        net.minecraft.world.level.Level unsafeLevel;
+        try {
+            unsafeLevel = (net.minecraft.world.level.Level) getUnsafe().allocateInstance(net.minecraft.client.multiplayer.ClientLevel.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        assertNull(unsafeLevel.registryAccess(), "Unsafe Level must have null registryAccess");
+
+        // 1. CopperGolemEntityProvider appendServerData and appendTooltip with null registryAccess Level
+        CopperGolemEntity golem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemArmorSlot(golem, 3, createMockItemStack(1));
+        setGolemHandSlot(golem, 0, createMockItemStack(1));
+
+        net.minecraft.nbt.CompoundTag serverData = new net.minecraft.nbt.CompoundTag();
+        snownee.jade.api.EntityAccessor entityAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return golem;
+                    if ("getLevel".equals(method.getName())) return unsafeLevel;
+                    if ("getServerData".equals(method.getName())) return serverData;
+                    return null;
+                }
+        );
+
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendServerData(serverData, entityAccessor),
+                "appendServerData must not throw when level.registryAccess() is null");
+        TestTooltip golemTooltip = new TestTooltip();
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(golemTooltip, entityAccessor, null),
+                "appendTooltip must not throw when level.registryAccess() is null");
+
+        // 2. ShelfBlockProvider appendServerData and appendTooltip with null registryAccess Level
+        TestTooltip shelfTooltip = new TestTooltip();
+        net.minecraft.nbt.CompoundTag shelfData = new net.minecraft.nbt.CompoundTag();
+        snownee.jade.api.BlockAccessor shelfAccessor = (snownee.jade.api.BlockAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.BlockAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.BlockAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getLevel".equals(method.getName())) return unsafeLevel;
+                    if ("getServerData".equals(method.getName())) return shelfData;
+                    if ("getBlockState".equals(method.getName())) return null;
+                    if ("getBlockEntity".equals(method.getName())) return null;
+                    return null;
+                }
+        );
+
+        assertDoesNotThrow(() -> ShelfBlockProvider.INSTANCE.appendServerData(shelfData, shelfAccessor),
+                "ShelfBlockProvider.appendServerData must not throw when level.registryAccess() is null");
+        assertDoesNotThrow(() -> ShelfBlockProvider.INSTANCE.appendTooltip(shelfTooltip, shelfAccessor, null),
+                "ShelfBlockProvider.appendTooltip must not throw when level.registryAccess() is null");
+
+        // 3. CopperGolemStatueBlockProvider appendServerData and appendTooltip with null registryAccess Level
+        TestTooltip statueTooltip = new TestTooltip();
+        net.minecraft.nbt.CompoundTag statueData = new net.minecraft.nbt.CompoundTag();
+        CopperGolemStatueBlock statueBlock = createMockStatueBlock(WeatheringCopper.WeatherState.WEATHERED, false);
+        net.minecraft.world.level.block.state.BlockState statueState = createMockBlockState(statueBlock);
+
+        snownee.jade.api.BlockAccessor statueAccessor = (snownee.jade.api.BlockAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.BlockAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.BlockAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getLevel".equals(method.getName())) return unsafeLevel;
+                    if ("getServerData".equals(method.getName())) return statueData;
+                    if ("getBlockState".equals(method.getName())) return statueState;
+                    if ("getBlockEntity".equals(method.getName())) return null;
+                    return null;
+                }
+        );
+
+        assertDoesNotThrow(() -> CopperGolemStatueBlockProvider.INSTANCE.appendServerData(statueData, statueAccessor),
+                "CopperGolemStatueBlockProvider.appendServerData must not throw when level.registryAccess() is null");
+        assertDoesNotThrow(() -> CopperGolemStatueBlockProvider.INSTANCE.appendTooltip(statueTooltip, statueAccessor, null),
+                "CopperGolemStatueBlockProvider.appendTooltip must not throw when level.registryAccess() is null");
+
+        // 4. Exception throwing during accessor.getLevel() across all 3 providers
+        snownee.jade.api.EntityAccessor throwingEntityAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return golem;
+                    if ("getLevel".equals(method.getName())) throw new RuntimeException("Simulated level retrieval failure");
+                    if ("getServerData".equals(method.getName())) return serverData;
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendServerData(serverData, throwingEntityAccessor),
+                "appendServerData must not throw when accessor.getLevel() throws RuntimeException");
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(new TestTooltip(), throwingEntityAccessor, null),
+                "appendTooltip must not throw when accessor.getLevel() throws RuntimeException");
+
+        snownee.jade.api.BlockAccessor throwingShelfAccessor = (snownee.jade.api.BlockAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.BlockAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.BlockAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getLevel".equals(method.getName())) throw new RuntimeException("Simulated level retrieval failure");
+                    if ("getServerData".equals(method.getName())) return shelfData;
+                    if ("getBlockState".equals(method.getName())) return null;
+                    if ("getBlockEntity".equals(method.getName())) return null;
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> ShelfBlockProvider.INSTANCE.appendServerData(shelfData, throwingShelfAccessor),
+                "ShelfBlockProvider.appendServerData must not throw when accessor.getLevel() throws RuntimeException");
+        assertDoesNotThrow(() -> ShelfBlockProvider.INSTANCE.appendTooltip(new TestTooltip(), throwingShelfAccessor, null),
+                "ShelfBlockProvider.appendTooltip must not throw when accessor.getLevel() throws RuntimeException");
+
+        snownee.jade.api.BlockAccessor throwingStatueAccessor = (snownee.jade.api.BlockAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.BlockAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.BlockAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getLevel".equals(method.getName())) throw new RuntimeException("Simulated level retrieval failure");
+                    if ("getServerData".equals(method.getName())) return statueData;
+                    if ("getBlockState".equals(method.getName())) return statueState;
+                    if ("getBlockEntity".equals(method.getName())) return null;
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemStatueBlockProvider.INSTANCE.appendServerData(statueData, throwingStatueAccessor),
+                "CopperGolemStatueBlockProvider.appendServerData must not throw when accessor.getLevel() throws RuntimeException");
+        assertDoesNotThrow(() -> CopperGolemStatueBlockProvider.INSTANCE.appendTooltip(new TestTooltip(), throwingStatueAccessor, null),
+                "CopperGolemStatueBlockProvider.appendTooltip must not throw when accessor.getLevel() throws RuntimeException");
+    }
 }

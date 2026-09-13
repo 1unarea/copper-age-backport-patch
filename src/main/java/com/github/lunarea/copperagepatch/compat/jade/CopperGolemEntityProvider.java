@@ -60,11 +60,13 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
                     tag.putInt(NBT_WEATHER_STATE, golem.getWeatherState().ordinal());
                 }
             } catch (Throwable ignored) {}
-            Level level = null;
+            net.minecraft.core.HolderLookup.Provider registries = net.minecraft.core.RegistryAccess.EMPTY;
             try {
-                level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+                Level level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+                if (level != null && level.registryAccess() != null) {
+                    registries = level.registryAccess();
+                }
             } catch (Throwable ignored) {}
-            net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
             try {
                 ItemStack held = golem.getMainHandItem();
                 if (held != null && !held.isEmpty()) {
@@ -90,11 +92,13 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
             return;
         }
 
-        Level level = null;
+        net.minecraft.core.HolderLookup.Provider registries = net.minecraft.core.RegistryAccess.EMPTY;
         try {
-            level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+            Level level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+            if (level != null && level.registryAccess() != null) {
+                registries = level.registryAccess();
+            }
         } catch (Throwable ignored) {}
-        net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
 
         // 1. Held Item Display (Element icon + item name + count)
         ItemStack heldItem = null;
