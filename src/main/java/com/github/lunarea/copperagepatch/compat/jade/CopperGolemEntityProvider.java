@@ -60,7 +60,10 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
                     tag.putInt(NBT_WEATHER_STATE, golem.getWeatherState().ordinal());
                 }
             } catch (Throwable ignored) {}
-            Level level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+            Level level = null;
+            try {
+                level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+            } catch (Throwable ignored) {}
             net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
             try {
                 ItemStack held = golem.getMainHandItem();
@@ -87,7 +90,10 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
             return;
         }
 
-        Level level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+        Level level = null;
+        try {
+            level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+        } catch (Throwable ignored) {}
         net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
 
         // 1. Held Item Display (Element icon + item name + count)

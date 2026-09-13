@@ -37,6 +37,8 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("data/copper_age_patch/recipe/crushing/copper_helmet.json"), "copper_helmet crushing recipe missing in jar");
             assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_ingot_from_nuggets.json"), "copper_ingot_from_nuggets recipe missing in jar");
             assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_nugget.json"), "copper_nugget recipe missing in jar");
+            assertNotNull(zip.getEntry("data/minecraft/recipe/copper_ingot_from_nuggets.json"), "minecraft copper_ingot_from_nuggets recipe missing in jar");
+            assertNotNull(zip.getEntry("data/minecraft/recipe/copper_nugget.json"), "minecraft copper_nugget recipe missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/armors/helmets.json"), "helmets tag missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/tools/swords.json"), "swords tag missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/armors.json"), "armors parent tag missing in jar");
@@ -105,6 +107,19 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"), "MemoizedSupplier.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperAgeJadePlugin.class"), "CopperAgeJadePlugin.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperGolemEntityProvider.class"), "CopperGolemEntityProvider.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperGolemStatueBlockProvider.class"), "CopperGolemStatueBlockProvider.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/ShelfBlockProvider.class"), "ShelfBlockProvider.class missing in Fabric jar");
+
+            // Check resource files in Fabric jar
+            assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_ingot_from_nuggets.json"), "copper_ingot_from_nuggets recipe missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_nugget.json"), "copper_nugget recipe missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/minecraft/recipe/copper_ingot_from_nuggets.json"), "minecraft copper_ingot_from_nuggets recipe missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/minecraft/recipe/copper_nugget.json"), "minecraft copper_nugget recipe missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/nuggets.json"), "nuggets parent tag missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/nuggets/copper.json"), "copper nuggets tag missing in Fabric jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/copper_nuggets.json"), "copper_nuggets tag missing in Fabric jar");
+            assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in Fabric jar");
 
             ZipEntry fabricEntry = zip.getEntry("fabric.mod.json");
             try (InputStream is = zip.getInputStream(fabricEntry)) {
@@ -113,6 +128,17 @@ public class JarPackagingVerificationTest {
                 assertTrue(json.contains("\"version\": \"0.1.1\""), "fabric.mod.json must specify version = '0.1.1'");
                 assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
                 assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
+            }
+
+            // Ensure we do NOT bundle third-party or minecraft classes into the Fabric jar
+            for (var entry : java.util.Collections.list(zip.entries())) {
+                String name = entry.getName();
+                assertFalse(name.startsWith("net/minecraft/"), "Minecraft classes must not be bundled in Fabric jar: " + name);
+                assertFalse(name.startsWith("org/spongepowered/"), "SpongePowered classes must not be bundled in Fabric jar: " + name);
+                assertFalse(name.startsWith("com/github/smallinger/"), "Upstream mod classes must not be bundled in Fabric jar: " + name);
+                assertFalse(name.startsWith("snownee/jade/"), "Jade classes must not be bundled in Fabric jar: " + name);
+                assertFalse(name.startsWith("com/mojang/"), "Mojang classes must not be bundled in Fabric jar: " + name);
+                assertFalse(name.startsWith("com/google/gson/"), "Gson classes must not be bundled in Fabric jar: " + name);
             }
         }
     }

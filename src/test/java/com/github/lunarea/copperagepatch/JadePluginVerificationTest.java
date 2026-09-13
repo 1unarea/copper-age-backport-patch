@@ -552,7 +552,7 @@ public class JadePluginVerificationTest {
 
     @Test
     @DisplayName("Verify CopperGolemEntityProvider antenna item detection, null safety, and tooltip output")
-    void testGolemAntennaItemDeepVerification() {
+    void testGolemAntennaItemDeepVerification() throws Exception {
         // 1. Antenna item detection on entity (EQUIPMENT_SLOT_ANTENNA = HEAD slot)
         CopperGolemEntity golem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
         net.minecraft.world.item.ItemStack antennaStack = createMockItemStack(1);
@@ -643,5 +643,42 @@ public class JadePluginVerificationTest {
         // 7. Null safety with null level and empty server data
         assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(bothTooltip, bothAccessor, null));
         assertDoesNotThrow(() -> CopperGolemEntityProvider.getAntennaItem(null));
+
+        // 8. Non-golem entity in accessor produces no tooltips and does not throw
+        TestTooltip nonGolemTooltip = new TestTooltip();
+        net.minecraft.world.entity.animal.IronGolem ironGolem = (net.minecraft.world.entity.animal.IronGolem) getUnsafe().allocateInstance(net.minecraft.world.entity.animal.IronGolem.class);
+        snownee.jade.api.EntityAccessor nonGolemAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return ironGolem;
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(nonGolemTooltip, nonGolemAccessor, null));
+        assertTrue(nonGolemTooltip.isEmpty(), "Non-golem entity must not generate tooltips");
+
+        // 9. Null accessor or null tooltip handling
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(null, bothAccessor, null));
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(bothTooltip, null, null));
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendServerData(null, bothAccessor));
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendServerData(new net.minecraft.nbt.CompoundTag(), null));
+
+        // 10. ServerData contains NBT_ANTENNA_ITEM with empty compound tag
+        net.minecraft.nbt.CompoundTag emptyAntennaTag = new net.minecraft.nbt.CompoundTag();
+        emptyAntennaTag.put(CopperGolemEntityProvider.NBT_ANTENNA_ITEM, new net.minecraft.nbt.CompoundTag());
+        TestTooltip emptyTagTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor emptyTagAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return noAntennaGolem;
+                    if ("getLevel".equals(method.getName())) return null;
+                    if ("getServerData".equals(method.getName())) return emptyAntennaTag;
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(emptyTagTooltip, emptyTagAccessor, null));
+        assertFalse(emptyTagTooltip.getJoinedText().contains("Antenna:"), "Empty compound NBT_ANTENNA_ITEM must not render antenna tooltip");
     }
 }
