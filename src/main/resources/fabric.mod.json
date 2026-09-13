@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "copper_age_patch",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "name": "Copper Age Backport Patch",
   "description": "Fixes duplicate ResourceKey registration and adds Jade, Better Combat, Create integration for Copper Age Backport.",
   "authors": [
@@ -15,6 +15,9 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
+    "main": [
+      "com.github.lunarea.copperagepatch.fabric.CopperAgePatchFabric"
+    ],
     "waila": [
       "com.github.lunarea.copperagepatch.compat.jade.CopperAgeJadePlugin"
     ]

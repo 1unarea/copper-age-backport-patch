@@ -2,8 +2,6 @@ package com.github.lunarea.copperagepatch.mixin;
 
 import com.github.lunarea.copperagepatch.util.MemoizedSupplier;
 import com.github.smallinger.copperagebackport.item.armor.CopperArmorMaterial;
-import net.minecraft.core.Holder;
-import net.minecraft.world.item.ArmorMaterial;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,10 +30,10 @@ import java.util.function.Supplier;
 public abstract class CopperArmorMaterialMixin {
 
     @Shadow
-    public static Supplier<Holder<ArmorMaterial>> COPPER;
+    public static Supplier<?> COPPER;
 
     @Unique
-    private static volatile Holder<ArmorMaterial> copper_age_patch$cachedHolder;
+    private static volatile Object copper_age_patch$cachedHolder;
 
     /**
      * Intercepts CopperArmorMaterial.init() to wrap COPPER with a memoizing supplier.
@@ -52,7 +50,7 @@ public abstract class CopperArmorMaterialMixin {
      * immediately returns the cached Holder without executing the registration body again.
      */
     @Inject(method = "createCopper", at = @At("HEAD"), cancellable = true, remap = false)
-    private static void copper_age_patch$onPreCreateCopper(CallbackInfoReturnable<Holder<ArmorMaterial>> cir) {
+    private static void copper_age_patch$onPreCreateCopper(CallbackInfoReturnable<Object> cir) {
         if (copper_age_patch$cachedHolder != null) {
             cir.setReturnValue(copper_age_patch$cachedHolder);
         }
@@ -62,7 +60,7 @@ public abstract class CopperArmorMaterialMixin {
      * Intercepts createCopper() at RETURN to record the created Holder in the static cache.
      */
     @Inject(method = "createCopper", at = @At("RETURN"), remap = false)
-    private static void copper_age_patch$onPostCreateCopper(CallbackInfoReturnable<Holder<ArmorMaterial>> cir) {
+    private static void copper_age_patch$onPostCreateCopper(CallbackInfoReturnable<Object> cir) {
         if (copper_age_patch$cachedHolder == null && cir.getReturnValue() != null) {
             copper_age_patch$cachedHolder = cir.getReturnValue();
         }

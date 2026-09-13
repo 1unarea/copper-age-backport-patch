@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -16,7 +17,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify output NeoForge jar contains all required files, valid toml and valid mixin config")
     void testJarContents() throws Exception {
-        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.1.jar");
+        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.2.jar");
         assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
 
         try (ZipFile zip = new ZipFile(jarFile)) {
@@ -26,6 +27,10 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in jar");
             assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "CopperAgePatch.class missing in jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/durability/CopperArmorDurabilityPatcher.class"), "CopperArmorDurabilityPatcher.class missing in NeoForge jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/creative/CopperCombatTabPatcher.class"), "CopperCombatTabPatcher.class missing in NeoForge jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class"), "ModItemsMixin.class missing in NeoForge jar");
+            assertNull(zip.getEntry("com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabric.class"), "CopperAgePatchFabric.class should not be in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"), "MemoizedSupplier.class missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperAgeJadePlugin.class"), "CopperAgeJadePlugin.class missing in jar");
@@ -69,6 +74,7 @@ public class JarPackagingVerificationTest {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"package\": \"com.github.lunarea.copperagepatch.mixin\""), "mixin json must define package");
                 assertTrue(json.contains("\"CopperArmorMaterialMixin\""), "mixin json must list CopperArmorMaterialMixin");
+                assertTrue(json.contains("\"ModItemsMixin\""), "mixin json must list ModItemsMixin");
                 assertTrue(json.contains("\"refmap\": \"copper_age_patch.refmap.json\""), "mixin json must specify refmap");
             }
 
@@ -88,7 +94,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify built NeoForge jar exists and has non-zero size")
     void testBuiltJarExists() {
-        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.1.jar");
+        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.2.jar");
         assertTrue(builtJar.exists(), "Built NeoForge mod jar must exist at " + builtJar.getAbsolutePath());
         assertTrue(builtJar.length() > 0, "Built NeoForge mod jar size must be greater than 0");
     }
@@ -96,7 +102,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar exists and has valid structure and metadata")
     void testFabricJarContents() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.1.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.2.jar");
         assertTrue(fabricJar.exists(), "Built Fabric jar must exist at " + fabricJar.getAbsolutePath());
         assertTrue(fabricJar.length() > 0, "Built Fabric jar size must be greater than 0");
 
@@ -104,6 +110,10 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("fabric.mod.json"), "fabric.mod.json missing in Fabric jar");
             assertNull(zip.getEntry("META-INF/neoforge.mods.toml"), "neoforge.mods.toml should not be in Fabric jar");
             assertNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "NeoForge @Mod class should not be in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabric.class"), "CopperAgePatchFabric.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/durability/CopperArmorDurabilityPatcher.class"), "CopperArmorDurabilityPatcher.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/creative/CopperCombatTabPatcher.class"), "CopperCombatTabPatcher.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class"), "ModItemsMixin.class missing in Fabric jar");
             assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in Fabric jar");
             assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in Fabric jar");
@@ -133,11 +143,12 @@ public class JarPackagingVerificationTest {
             try (InputStream is = zip.getInputStream(fabricEntry)) {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"id\": \"copper_age_patch\""), "fabric.mod.json must specify id = 'copper_age_patch'");
-                assertTrue(json.contains("\"version\": \"0.1.1\""), "fabric.mod.json must specify version = '0.1.1'");
+                assertTrue(json.contains("\"version\": \"0.1.2\""), "fabric.mod.json must specify version = '0.1.2'");
                 assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
                 assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
                 assertTrue(json.contains("\"waila\""), "fabric.mod.json must declare waila entrypoint");
                 assertTrue(json.contains("\"com.github.lunarea.copperagepatch.compat.jade.CopperAgeJadePlugin\""), "fabric.mod.json must reference CopperAgeJadePlugin");
+                assertTrue(json.contains("\"com.github.lunarea.copperagepatch.fabric.CopperAgePatchFabric\""), "fabric.mod.json must reference CopperAgePatchFabric");
                 assertTrue(json.contains("\"create\""), "fabric.mod.json must declare create suggestion");
             }
 
@@ -157,9 +168,197 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify generic unnamed jar does not exist")
     void testGenericJarDoesNotExist() {
+        File genericJar012 = new File("build/libs/copper_age_patch-0.1.2.jar");
+        assertFalse(genericJar012.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar012.getAbsolutePath());
         File genericJar011 = new File("build/libs/copper_age_patch-0.1.1.jar");
         assertFalse(genericJar011.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar011.getAbsolutePath());
         File genericJar010 = new File("build/libs/copper_age_patch-0.1.0.jar");
         assertFalse(genericJar010.exists(), "Old 0.1.0 generic jar must not exist: " + genericJar010.getAbsolutePath());
+    }
+    @Test
+    @DisplayName("Verify core Fabric jar classes have zero net/minecraft references in bytecode descriptors")
+    void testFabricJarCoreClassesHaveZeroMinecraftBytecodeReferences() throws Exception {
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.2.jar");
+        assertTrue(fabricJar.exists());
+
+        String[] coreClasses = new String[]{
+                "com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabric.class",
+                "com/github/lunarea/copperagepatch/durability/CopperArmorDurabilityPatcher.class",
+                "com/github/lunarea/copperagepatch/creative/CopperCombatTabPatcher.class",
+                "com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class",
+                "com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class",
+                "com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"
+        };
+
+        try (ZipFile zip = new ZipFile(fabricJar)) {
+            for (String classPath : coreClasses) {
+                ZipEntry entry = zip.getEntry(classPath);
+                assertNotNull(entry, "Core class missing: " + classPath);
+                try (InputStream is = zip.getInputStream(entry)) {
+                    org.objectweb.asm.ClassReader cr = new org.objectweb.asm.ClassReader(is);
+                    org.objectweb.asm.tree.ClassNode cn = new org.objectweb.asm.tree.ClassNode();
+                    cr.accept(cn, 0);
+
+                    if (cn.superName != null) {
+                        assertFalse(cn.superName.contains("net/minecraft/"),
+                                classPath + " superclass must not reference net/minecraft: " + cn.superName);
+                    }
+                    if (cn.interfaces != null) {
+                        for (String iface : cn.interfaces) {
+                            assertFalse(iface.contains("net/minecraft/"),
+                                    classPath + " interface must not reference net/minecraft: " + iface);
+                        }
+                    }
+                    if (cn.fields != null) {
+                        for (org.objectweb.asm.tree.FieldNode fn : cn.fields) {
+                            assertFalse(fn.desc.contains("net/minecraft/"),
+                                    classPath + " field " + fn.name + " must not reference net/minecraft: " + fn.desc);
+                        }
+                    }
+                    if (cn.methods != null) {
+                        for (org.objectweb.asm.tree.MethodNode mn : cn.methods) {
+                            assertFalse(mn.desc.contains("net/minecraft/"),
+                                    classPath + " method " + mn.name + " descriptor must not reference net/minecraft: " + mn.desc);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Verify Fabric jar classes initialize in isolated classloader with zero net/minecraft classes")
+    void testFabricJarLoadsWithoutMinecraftOnClasspath() throws Exception {
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.2.jar");
+        assertTrue(fabricJar.exists());
+
+        ClassLoader systemParent = ClassLoader.getPlatformClassLoader();
+        ClassLoader filteringParent = new ClassLoader(systemParent) {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                if (name.startsWith("net.minecraft.") || name.startsWith("com.github.lunarea.copperagepatch.")) {
+                    throw new ClassNotFoundException("Blocked from parent: " + name);
+                }
+                try {
+                    return JarPackagingVerificationTest.class.getClassLoader().loadClass(name);
+                } catch (ClassNotFoundException e) {
+                    return super.loadClass(name, resolve);
+                }
+            }
+        };
+
+        try (java.net.URLClassLoader isolatedLoader = new java.net.URLClassLoader(
+                new java.net.URL[]{fabricJar.toURI().toURL()},
+                filteringParent
+        )) {
+            Class<?> patcherClass = Class.forName("com.github.lunarea.copperagepatch.durability.CopperArmorDurabilityPatcher", true, isolatedLoader);
+            assertNotNull(patcherClass);
+            assertSame(isolatedLoader, patcherClass.getClassLoader(), "Class must be loaded by isolatedLoader from fabricJar");
+
+            Class<?> creativeClass = Class.forName("com.github.lunarea.copperagepatch.creative.CopperCombatTabPatcher", true, isolatedLoader);
+            assertNotNull(creativeClass);
+            assertSame(isolatedLoader, creativeClass.getClassLoader(), "Class must be loaded by isolatedLoader from fabricJar");
+
+            Class<?> fabricEntrypoint = Class.forName("com.github.lunarea.copperagepatch.fabric.CopperAgePatchFabric", true, isolatedLoader);
+            assertNotNull(fabricEntrypoint);
+            assertSame(isolatedLoader, fabricEntrypoint.getClassLoader(), "Class must be loaded by isolatedLoader from fabricJar");
+
+            Method findComp = patcherClass.getMethod("findComponentsField");
+            assertNull(findComp.invoke(null));
+        }
+    }
+
+    @Test
+    @DisplayName("Verify Fabric jar operates seamlessly against real Minecraft 1.21.1 Intermediary jar")
+    void testFabricJarAgainstRealIntermediaryMinecraftJar() throws Exception {
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.2.jar");
+        assertTrue(fabricJar.exists());
+
+        File intermediaryJar = new File("/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/cabp fabric/.fabric/remappedJars/minecraft-1.21.1-0.19.5/client-intermediary.jar");
+        if (!intermediaryJar.exists()) {
+            return; // Skip if client-intermediary is not available in local test profile
+        }
+
+        ClassLoader systemParent = ClassLoader.getPlatformClassLoader();
+        ClassLoader filteringParent = new ClassLoader(systemParent) {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                // Block Mojang mapped Minecraft classes and mod classes from parent to guarantee purity
+                if (name.startsWith("net.minecraft.world.") || name.startsWith("net.minecraft.core.")
+                        || name.startsWith("net.minecraft.resources.") || name.startsWith("com.github.lunarea.copperagepatch.")) {
+                    throw new ClassNotFoundException("Simulating Fabric Intermediary pure runtime: " + name);
+                }
+                try {
+                    return JarPackagingVerificationTest.class.getClassLoader().loadClass(name);
+                } catch (ClassNotFoundException e) {
+                    return super.loadClass(name, resolve);
+                }
+            }
+        };
+
+        try (java.net.URLClassLoader intermediaryLoader = new java.net.URLClassLoader(
+                new java.net.URL[]{fabricJar.toURI().toURL(), intermediaryJar.toURI().toURL()},
+                filteringParent
+        )) {
+            Class<?> patcherClass = Class.forName("com.github.lunarea.copperagepatch.durability.CopperArmorDurabilityPatcher", true, intermediaryLoader);
+            Class<?> creativeClass = Class.forName("com.github.lunarea.copperagepatch.creative.CopperCombatTabPatcher", true, intermediaryLoader);
+
+            // 1. Verify Item class resolves to net.minecraft.class_1792
+            Method getItemClassMethod = patcherClass.getMethod("getItemClass");
+            Class<?> itemClass = (Class<?>) getItemClassMethod.invoke(null);
+            assertNotNull(itemClass, "Must resolve Item class in Intermediary");
+            assertEquals("net.minecraft.class_1792", itemClass.getName());
+
+            // 2. Verify findComponentsField resolves field_49263
+            Method findComponentsFieldMethod = patcherClass.getMethod("findComponentsField");
+            java.lang.reflect.Field compField = (java.lang.reflect.Field) findComponentsFieldMethod.invoke(null);
+            assertNotNull(compField, "Must resolve components field in Intermediary");
+            assertEquals("field_49263", compField.getName());
+
+            // 3. Verify createIdentifier returns a net.minecraft.class_2960 instance
+            Method createIdMethod = patcherClass.getMethod("createIdentifier", String.class, String.class);
+            Object idObj = createIdMethod.invoke(null, "minecraft", "stone_axe");
+            assertNotNull(idObj, "Must create Identifier");
+            assertEquals("net.minecraft.class_2960", idObj.getClass().getName());
+
+            // 4. Verify Stone Axe field field_8062 exists on class_1802 and is type class_1792
+            Class<?> itemsClass = Class.forName("net.minecraft.class_1802", false, intermediaryLoader);
+            java.lang.reflect.Field stoneAxeField = itemsClass.getDeclaredField("field_8062");
+            assertNotNull(stoneAxeField, "Must resolve Stone Axe field field_8062 on class_1802");
+            assertEquals("net.minecraft.class_1792", stoneAxeField.getType().getName());
+
+            // 5. Verify Combat tab key field field_40202 exists on class_7706
+            Class<?> itemGroupsClass = Class.forName("net.minecraft.class_7706", false, intermediaryLoader);
+            java.lang.reflect.Field combatField = itemGroupsClass.getDeclaredField("field_40202");
+            assertNotNull(combatField, "Must resolve Combat tab field field_40202 on class_7706");
+
+            // 6. Verify DataComponent fields on class_9334
+            Class<?> dcClass = Class.forName("net.minecraft.class_9334", false, intermediaryLoader);
+            assertNotNull(dcClass.getDeclaredField("field_50072"), "Must resolve MAX_DAMAGE (field_50072)");
+            assertNotNull(dcClass.getDeclaredField("field_49629"), "Must resolve DAMAGE (field_49629)");
+            assertNotNull(dcClass.getDeclaredField("field_50071"), "Must resolve MAX_STACK_SIZE (field_50071)");
+
+            // 7. Verify DataComponentMap and Builder methods
+            Class<?> mapClass = Class.forName("net.minecraft.class_9323", false, intermediaryLoader);
+            assertNotNull(mapClass.getMethod("method_57827"), "Must resolve DataComponentMap.builder() (method_57827)");
+            Class<?> builderClass = Class.forName("net.minecraft.class_9323$class_9324", false, intermediaryLoader);
+            assertNotNull(builderClass.getMethod("method_57838"), "Must resolve Builder.build() (method_57838)");
+            assertNotNull(builderClass.getMethod("method_57839", mapClass), "Must resolve Builder.addAll() (method_57839)");
+
+            // 8. Verify resolveCombatTabKey executes against Intermediary classes
+            Method resolveTabKeyMethod = creativeClass.getMethod("resolveCombatTabKey");
+            Object tabKey = resolveTabKeyMethod.invoke(null);
+            assertNotNull(tabKey, "Must resolve Combat tab key in Intermediary");
+            assertTrue(tabKey.toString().contains("combat"), "Tab key must contain 'combat'");
+
+            // 9. Verify Iron Axe field field_8475 exists on class_1802 and is type class_1792
+            java.lang.reflect.Field ironAxeField = itemsClass.getDeclaredField("field_8475");
+            assertNotNull(ironAxeField, "Must resolve Iron Axe field field_8475 on class_1802");
+            assertEquals("net.minecraft.class_1792", ironAxeField.getType().getName());
+
+            // 10. Verify isAir null handling mapping-agnostic behavior
+            Method isAirMethod = patcherClass.getMethod("isAir", Object.class);
+            assertTrue((Boolean) isAirMethod.invoke(null, (Object) null), "null item must be air");
+        }
     }
 }

@@ -152,7 +152,7 @@ public class CopperArmorMaterialMixinStructureTest {
     }
 
     @Test
-    @DisplayName("Verify copper_age_patch$cachedHolder field has @Unique, private, static, volatile modifiers and Holder descriptor")
+    @DisplayName("Verify copper_age_patch$cachedHolder field has @Unique, private, static, volatile modifiers and mapping-agnostic Object descriptor")
     void testCachedHolderFieldBytecode() {
         org.objectweb.asm.tree.FieldNode cachedHolderField = null;
         for (org.objectweb.asm.tree.FieldNode fn : mixinNode.fields) {
@@ -166,7 +166,7 @@ public class CopperArmorMaterialMixinStructureTest {
         assertTrue((cachedHolderField.access & org.objectweb.asm.Opcodes.ACC_PRIVATE) != 0, "cachedHolder must be private");
         assertTrue((cachedHolderField.access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0, "cachedHolder must be static");
         assertTrue((cachedHolderField.access & org.objectweb.asm.Opcodes.ACC_VOLATILE) != 0, "cachedHolder must be volatile for thread-safety");
-        assertEquals("Lnet/minecraft/core/Holder;", cachedHolderField.desc, "cachedHolder descriptor must be Lnet/minecraft/core/Holder;");
+        assertEquals("Ljava/lang/Object;", cachedHolderField.desc, "cachedHolder descriptor must be Ljava/lang/Object; for multi-loader compatibility");
 
         boolean hasUnique = false;
         if (cachedHolderField.visibleAnnotations != null) {
@@ -193,6 +193,19 @@ public class CopperArmorMaterialMixinStructureTest {
     void testNoStaticInitializerInMixin() {
         for (MethodNode mn : mixinNode.methods) {
             assertNotEquals("<clinit>", mn.name, "CopperArmorMaterialMixin must not have a <clinit> method to avoid static initializer issues in Mixin");
+        }
+    }
+
+    @Test
+    @DisplayName("Verify CopperArmorMaterialMixin has zero net/minecraft references for mapping-agnostic multi-loader safety")
+    void testNoMinecraftBytecodeReferences() {
+        for (org.objectweb.asm.tree.FieldNode fn : mixinNode.fields) {
+            assertFalse(fn.desc.contains("net/minecraft/"),
+                    "Field " + fn.name + " must not reference net/minecraft classes: " + fn.desc);
+        }
+        for (MethodNode mn : mixinNode.methods) {
+            assertFalse(mn.desc.contains("net/minecraft/"),
+                    "Method " + mn.name + " descriptor must not reference net/minecraft classes: " + mn.desc);
         }
     }
 }

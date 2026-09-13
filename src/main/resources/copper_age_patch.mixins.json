@@ -5,7 +5,8 @@
   "refmap": "copper_age_patch.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CopperArmorMaterialMixin"
+    "CopperArmorMaterialMixin",
+    "ModItemsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

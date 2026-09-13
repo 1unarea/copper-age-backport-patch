@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.github.lunarea'
-version = '0.1.1'
+version = '0.1.2'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -44,6 +44,7 @@ jar {
     archiveBaseName = 'copper_age_patch-neoforge-1.21.1'
     archiveVersion = project.version.toString()
     exclude 'fabric.mod.json'
+    exclude 'com/github/lunarea/copperagepatch/fabric/**'
     manifest {
         attributes([
             'Specification-Title'     : 'copper_age_patch',
@@ -77,12 +78,29 @@ tasks.register('fabricJar', Jar) {
     }
 }
 
+def defaultFabricProfileDir = file('/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/cabp fabric/mods')
 def targetModsDir = project.findProperty('modsDir') ? file(project.property('modsDir')) :
-                    (System.getenv('MODS_DIR') ? file(System.getenv('MODS_DIR')) : null)
+                    (System.getenv('MODS_DIR') ? file(System.getenv('MODS_DIR')) :
+                    (defaultFabricProfileDir.exists() ? defaultFabricProfileDir : null))
 
 tasks.register('deployMod', Copy) {
     dependsOn tasks.named('jar'), tasks.named('fabricJar')
-    from layout.buildDirectory.dir('libs')
+    doFirst {
+        if (targetModsDir != null && targetModsDir.exists()) {
+            def currentJarName = "copper_age_patch-fabric-1.21.1-${project.version}.jar".toString()
+            targetModsDir.listFiles()?.each { f ->
+                if (f.name.startsWith('copper_age_patch-fabric-') && f.name != currentJarName) {
+                    println "Cleaning up stale mod jar: ${f.name}"
+                    f.delete()
+                }
+            }
+        }
+    }
+    from(layout.buildDirectory.dir('libs')) {
+        if (targetModsDir != null && targetModsDir.getAbsolutePath().contains('cabp fabric')) {
+            include '*-fabric-*.jar'
+        }
+    }
     into targetModsDir ?: layout.buildDirectory.dir('deployed')
     onlyIf {
         targetModsDir != null && targetModsDir.exists()
