@@ -13,6 +13,7 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 * **Better Combat Integration:** Adds attack animations, sweeps, and weapon hitboxes for all copper tools and weapons.
 * **Create Mod Recipes & Copper Nugget Interoperability:** Adds Crushing Wheel recipes and bidirectional ingot/nugget crafting interoperability with Create and other mods.
 * **Tag Support:** Populates standard NeoForge and Common item tags for armors, tools, and copper nuggets (`c:nuggets`, `c:nuggets/copper`, `c:copper_nuggets`).
+* **Armor Durability Fix:** Adds the missing durability feature to the copper armors. (`Copper helmet - 121`, `copper chestplate - 176`, `copper leggings - 165` and `copper boots - 143`)
 
 ## Supported Languages
 
@@ -43,8 +44,6 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 * **Required Mod:** [Copper Age Backport](https://github.com/Smallinger/Copper-Age-Backport)
 
 Optional integrations: [Jade](https://modrinth.com/mod/jade), [Better Combat](https://modrinth.com/mod/better-combat), [Create](https://modrinth.com/mod/create).
-
-**Note on Durability:** To fix the armor durability issue in Copper Age Backport, installing [Copper Age Backport Durability Fix](https://modrinth.com/mod/copper-age-backport-durability-fix) is recommended. This mod does not fix that bug!
 
 ## Credits and License
 
