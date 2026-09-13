@@ -44,6 +44,8 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 
 Optional integrations: [Jade](https://modrinth.com/mod/jade), [Better Combat](https://modrinth.com/mod/better-combat), [Create](https://modrinth.com/mod/create).
 
+**Note on Durability:** To fix the armor durability issue in Copper Age Backport, installing [Copper Age Backport Durability Fix](https://modrinth.com/mod/copper-age-backport-durability-fix) is recommended. This mod does not fix that bug!
+
 ## Credits and License
 
 * Original mod by Smallinger (CC0).

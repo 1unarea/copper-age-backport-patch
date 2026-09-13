@@ -40,12 +40,35 @@ tasks.named('test') {
 }
 
 jar {
+    archiveBaseName = 'copper_age_patch-neoforge-1.21.1'
+    archiveVersion = project.version.toString()
+    exclude 'fabric.mod.json'
     manifest {
         attributes([
             'Specification-Title'     : 'copper_age_patch',
             'Specification-Vendor'    : 'lunarea',
             'Specification-Version'   : '1',
-            'Implementation-Title'    : project.name,
+            'Implementation-Title'    : 'copper_age_patch-neoforge',
+            'Implementation-Version'  : project.version,
+            'Implementation-Vendor'   : 'lunarea',
+            'Implementation-Timestamp': new java.util.Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+tasks.register('fabricJar', Jar) {
+    dependsOn tasks.named('classes')
+    archiveBaseName = 'copper_age_patch-fabric-1.21.1'
+    archiveVersion = project.version.toString()
+    from sourceSets.main.output
+    exclude 'META-INF/neoforge.mods.toml'
+    exclude 'com/github/lunarea/copperagepatch/CopperAgePatch.class'
+    manifest {
+        attributes([
+            'Specification-Title'     : 'copper_age_patch',
+            'Specification-Vendor'    : 'lunarea',
+            'Specification-Version'   : '1',
+            'Implementation-Title'    : 'copper_age_patch-fabric',
             'Implementation-Version'  : project.version,
             'Implementation-Vendor'   : 'lunarea',
             'Implementation-Timestamp': new java.util.Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -57,8 +80,8 @@ def targetModsDir = project.findProperty('modsDir') ? file(project.property('mod
                     (System.getenv('MODS_DIR') ? file(System.getenv('MODS_DIR')) : null)
 
 tasks.register('deployMod', Copy) {
-    dependsOn tasks.named('jar')
-    from tasks.named('jar')
+    dependsOn tasks.named('jar'), tasks.named('fabricJar')
+    from layout.buildDirectory.dir('libs')
     into targetModsDir ?: layout.buildDirectory.dir('deployed')
     onlyIf {
         targetModsDir != null && targetModsDir.exists()
@@ -69,6 +92,11 @@ tasks.named('jar') {
     finalizedBy 'deployMod'
 }
 
+tasks.named('fabricJar') {
+    finalizedBy 'deployMod'
+}
+
 tasks.named('assemble') {
+    dependsOn tasks.named('fabricJar')
     finalizedBy 'deployMod'
 }

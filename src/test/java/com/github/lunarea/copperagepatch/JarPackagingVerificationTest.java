@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JarPackagingVerificationTest {
 
     @Test
-    @DisplayName("Verify output jar contains all required files, valid toml and valid mixin config")
+    @DisplayName("Verify output NeoForge jar contains all required files, valid toml and valid mixin config")
     void testJarContents() throws Exception {
-        File jarFile = new File("build/libs/copper_age_patch-0.1.0.jar");
+        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.0.jar");
         assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
 
         try (ZipFile zip = new ZipFile(jarFile)) {
@@ -78,10 +78,43 @@ public class JarPackagingVerificationTest {
     }
 
     @Test
-    @DisplayName("Verify built jar exists and has non-zero size")
+    @DisplayName("Verify built NeoForge jar exists and has non-zero size")
     void testBuiltJarExists() {
-        File builtJar = new File("build/libs/copper_age_patch-0.1.0.jar");
-        assertTrue(builtJar.exists(), "Built mod jar must exist at " + builtJar.getAbsolutePath());
-        assertTrue(builtJar.length() > 0, "Built mod jar size must be greater than 0");
+        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.0.jar");
+        assertTrue(builtJar.exists(), "Built NeoForge mod jar must exist at " + builtJar.getAbsolutePath());
+        assertTrue(builtJar.length() > 0, "Built NeoForge mod jar size must be greater than 0");
+    }
+
+    @Test
+    @DisplayName("Verify Fabric jar exists and has valid structure and metadata")
+    void testFabricJarContents() throws Exception {
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.0.jar");
+        assertTrue(fabricJar.exists(), "Built Fabric jar must exist at " + fabricJar.getAbsolutePath());
+        assertTrue(fabricJar.length() > 0, "Built Fabric jar size must be greater than 0");
+
+        try (ZipFile zip = new ZipFile(fabricJar)) {
+            assertNotNull(zip.getEntry("fabric.mod.json"), "fabric.mod.json missing in Fabric jar");
+            assertNull(zip.getEntry("META-INF/neoforge.mods.toml"), "neoforge.mods.toml should not be in Fabric jar");
+            assertNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "NeoForge @Mod class should not be in Fabric jar");
+            assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"), "MemoizedSupplier.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/compat/jade/CopperAgeJadePlugin.class"), "CopperAgeJadePlugin.class missing in Fabric jar");
+
+            ZipEntry fabricEntry = zip.getEntry("fabric.mod.json");
+            try (InputStream is = zip.getInputStream(fabricEntry)) {
+                String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                assertTrue(json.contains("\"id\": \"copper_age_patch\""), "fabric.mod.json must specify id = 'copper_age_patch'");
+                assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
+                assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Verify generic unnamed jar does not exist")
+    void testGenericJarDoesNotExist() {
+        File genericJar = new File("build/libs/copper_age_patch-0.1.0.jar");
+        assertFalse(genericJar.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar.getAbsolutePath());
     }
 }

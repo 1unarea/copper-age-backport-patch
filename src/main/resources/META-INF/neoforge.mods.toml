@@ -26,7 +26,7 @@ side = "BOTH"
 [[dependencies."copper_age_patch"]]
 modId = "copperagebackport"
 type = "required"
-versionRange = "[0.1.4,)"
+versionRange = "[0.1.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
