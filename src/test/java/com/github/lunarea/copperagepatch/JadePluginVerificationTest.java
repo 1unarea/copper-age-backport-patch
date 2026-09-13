@@ -33,6 +33,9 @@ public class JadePluginVerificationTest {
 
     static {
         try {
+            net.minecraft.SharedConstants.tryDetectVersion();
+        } catch (Throwable ignored) {}
+        try {
             java.lang.reflect.Field f = net.minecraft.server.Bootstrap.class.getDeclaredField("isBootstrapped");
             f.setAccessible(true);
             f.setBoolean(null, true);
@@ -269,6 +272,8 @@ public class JadePluginVerificationTest {
         assertEquals("Waxed", CopperGolemEntityProvider.NBT_WAXED);
         assertEquals("WeatherState", CopperGolemEntityProvider.NBT_WEATHER_STATE);
         assertEquals("HeldItem", CopperGolemEntityProvider.NBT_HELD_ITEM);
+        assertEquals("AntennaItem", CopperGolemEntityProvider.NBT_ANTENNA_ITEM);
+        assertEquals(net.minecraft.world.item.ItemStack.EMPTY, CopperGolemEntityProvider.getAntennaItem(null));
     }
 
     @Test
@@ -495,5 +500,148 @@ public class JadePluginVerificationTest {
         );
 
         assertDoesNotThrow(() -> ShelfBlockProvider.INSTANCE.appendTooltip(shelfTooltip, shelfAccessor, null));
+    }
+
+    private static net.minecraft.world.item.ItemStack createMockItemStack(int count) {
+        try {
+            sun.misc.Unsafe unsafe = getUnsafe();
+            net.minecraft.world.item.ItemStack stack = (net.minecraft.world.item.ItemStack) unsafe.allocateInstance(net.minecraft.world.item.ItemStack.class);
+            java.lang.reflect.Field countField = net.minecraft.world.item.ItemStack.class.getDeclaredField("count");
+            countField.setAccessible(true);
+            countField.setInt(stack, count);
+
+            net.minecraft.world.item.Item item = (net.minecraft.world.item.Item) unsafe.allocateInstance(net.minecraft.world.item.Item.class);
+            java.lang.reflect.Field itemField = net.minecraft.world.item.ItemStack.class.getDeclaredField("item");
+            itemField.setAccessible(true);
+            itemField.set(stack, item);
+
+            net.minecraft.core.component.PatchedDataComponentMap components = new net.minecraft.core.component.PatchedDataComponentMap(net.minecraft.core.component.DataComponentMap.EMPTY);
+            java.lang.reflect.Field compField = net.minecraft.world.item.ItemStack.class.getDeclaredField("components");
+            compField.setAccessible(true);
+            compField.set(stack, components);
+
+            return stack;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void setGolemArmorSlot(CopperGolemEntity golem, int slotIndex, net.minecraft.world.item.ItemStack stack) {
+        try {
+            java.lang.reflect.Field armorsField = net.minecraft.world.entity.Mob.class.getDeclaredField("armorItems");
+            armorsField.setAccessible(true);
+            net.minecraft.core.NonNullList<net.minecraft.world.item.ItemStack> armors = net.minecraft.core.NonNullList.withSize(4, net.minecraft.world.item.ItemStack.EMPTY);
+            armors.set(slotIndex, stack);
+            armorsField.set(golem, armors);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void setGolemHandSlot(CopperGolemEntity golem, int slotIndex, net.minecraft.world.item.ItemStack stack) {
+        try {
+            java.lang.reflect.Field handsField = net.minecraft.world.entity.Mob.class.getDeclaredField("handItems");
+            handsField.setAccessible(true);
+            net.minecraft.core.NonNullList<net.minecraft.world.item.ItemStack> hands = net.minecraft.core.NonNullList.withSize(2, net.minecraft.world.item.ItemStack.EMPTY);
+            hands.set(slotIndex, stack);
+            handsField.set(golem, hands);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @DisplayName("Verify CopperGolemEntityProvider antenna item detection, null safety, and tooltip output")
+    void testGolemAntennaItemDeepVerification() {
+        // 1. Antenna item detection on entity (EQUIPMENT_SLOT_ANTENNA = HEAD slot)
+        CopperGolemEntity golem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        net.minecraft.world.item.ItemStack antennaStack = createMockItemStack(1);
+        setGolemArmorSlot(golem, 3, antennaStack); // slot 3 = HEAD / EQUIPMENT_SLOT_ANTENNA
+
+        net.minecraft.world.item.ItemStack detected = CopperGolemEntityProvider.getAntennaItem(golem);
+        assertNotNull(detected);
+        assertFalse(detected.isEmpty(), "Antenna item must be detected on golem");
+        assertEquals(antennaStack, detected);
+
+        // 2. appendServerData execution with equipped golem and null level
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        snownee.jade.api.EntityAccessor accessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return golem;
+                    if ("getLevel".equals(method.getName())) return null;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendServerData(tag, accessor));
+
+        // 3. appendTooltip renders Antenna line when antenna item is present
+        TestTooltip tooltip = new TestTooltip();
+        CopperGolemEntityProvider.INSTANCE.appendTooltip(tooltip, accessor, null);
+        String text = tooltip.getJoinedText();
+        assertTrue(text.contains("Antenna:"), "Tooltip must contain 'Antenna:': " + text);
+
+        // 4. Antenna item with count > 1 shows quantity
+        CopperGolemEntity multiGolem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemArmorSlot(multiGolem, 3, createMockItemStack(3));
+        TestTooltip multiTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor multiAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return multiGolem;
+                    if ("getLevel".equals(method.getName())) return null;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        CopperGolemEntityProvider.INSTANCE.appendTooltip(multiTooltip, multiAccessor, null);
+        String multiText = multiTooltip.getJoinedText();
+        assertTrue(multiText.contains("Antenna:"), "Tooltip must contain 'Antenna:': " + multiText);
+        assertTrue(multiText.contains("x3"), "Tooltip must contain 'x3' count: " + multiText);
+
+        // 5. Golem without antenna item does NOT show Antenna: in tooltip
+        CopperGolemEntity noAntennaGolem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemArmorSlot(noAntennaGolem, 3, net.minecraft.world.item.ItemStack.EMPTY);
+        TestTooltip noAntennaTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor noAntennaAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return noAntennaGolem;
+                    if ("getLevel".equals(method.getName())) return null;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        CopperGolemEntityProvider.INSTANCE.appendTooltip(noAntennaTooltip, noAntennaAccessor, null);
+        String noAntennaText = noAntennaTooltip.getJoinedText();
+        assertFalse(noAntennaText.contains("Antenna:"), "Empty antenna slot must not render Antenna tooltip: " + noAntennaText);
+
+        // 6. Both held item and antenna item simultaneously present
+        CopperGolemEntity bothGolem = createMockGolemEntity(WeatheringCopper.WeatherState.UNAFFECTED, false);
+        setGolemHandSlot(bothGolem, 0, createMockItemStack(2));
+        setGolemArmorSlot(bothGolem, 3, createMockItemStack(1));
+        TestTooltip bothTooltip = new TestTooltip();
+        snownee.jade.api.EntityAccessor bothAccessor = (snownee.jade.api.EntityAccessor) Proxy.newProxyInstance(
+                snownee.jade.api.EntityAccessor.class.getClassLoader(),
+                new Class<?>[]{snownee.jade.api.EntityAccessor.class},
+                (proxy, method, args) -> {
+                    if ("getEntity".equals(method.getName())) return bothGolem;
+                    if ("getLevel".equals(method.getName())) return null;
+                    if ("getServerData".equals(method.getName())) return new net.minecraft.nbt.CompoundTag();
+                    return null;
+                }
+        );
+        CopperGolemEntityProvider.INSTANCE.appendTooltip(bothTooltip, bothAccessor, null);
+        String bothText = bothTooltip.getJoinedText();
+        assertTrue(bothText.contains("x2"), "Must contain held item count: " + bothText);
+        assertTrue(bothText.contains("Antenna:"), "Must contain antenna line: " + bothText);
+
+        // 7. Null safety with null level and empty server data
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.INSTANCE.appendTooltip(bothTooltip, bothAccessor, null));
+        assertDoesNotThrow(() -> CopperGolemEntityProvider.getAntennaItem(null));
     }
 }

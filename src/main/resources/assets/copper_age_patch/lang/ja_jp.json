@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "名前: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "銅のゴーレム",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "銅のゴーレム像",
-  "config.jade.plugin_copper_age_patch.shelf": "銅の時代の棚"
+  "config.jade.plugin_copper_age_patch.shelf": "銅の時代の棚",
+  "tooltip.copper_age_patch.antenna": "アンテナ: ",
+  "tooltip.copper_age_patch.antenna_item": "アンテナ: "
 }

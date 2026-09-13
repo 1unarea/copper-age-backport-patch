@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Nome: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Golem di rame",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Statua di golem di rame",
-  "config.jade.plugin_copper_age_patch.shelf": "Mensola dell'età del rame"
+  "config.jade.plugin_copper_age_patch.shelf": "Mensola dell'età del rame",
+  "tooltip.copper_age_patch.antenna": "Antenna: ",
+  "tooltip.copper_age_patch.antenna_item": "Antenna: "
 }

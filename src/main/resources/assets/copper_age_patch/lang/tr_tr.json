@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "İsim: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Bakır Golem",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Bakır Golem Heykeli",
-  "config.jade.plugin_copper_age_patch.shelf": "Bakır Çağı Rafı"
+  "config.jade.plugin_copper_age_patch.shelf": "Bakır Çağı Rafı",
+  "tooltip.copper_age_patch.antenna": "Anten: ",
+  "tooltip.copper_age_patch.antenna_item": "Anten: "
 }

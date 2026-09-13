@@ -232,6 +232,8 @@ public class DataJsonVerificationTest {
                 "tooltip.copper_age_patch.shelf_items",
                 "tooltip.copper_age_patch.shelf_empty",
                 "tooltip.copper_age_patch.statue_name",
+                "tooltip.copper_age_patch.antenna",
+                "tooltip.copper_age_patch.antenna_item",
                 "config.jade.plugin_copper_age_patch.copper_golem",
                 "config.jade.plugin_copper_age_patch.copper_golem_statue",
                 "config.jade.plugin_copper_age_patch.shelf"
@@ -244,6 +246,114 @@ public class DataJsonVerificationTest {
                 assertTrue(lang.has(key), path + " must define key: " + key);
                 assertFalse(lang.get(key).getAsString().isBlank(), path + " key " + key + " must not be blank");
             }
+        }
+    }
+
+    @Test
+    @DisplayName("Verify Conventional copper nugget tags exist and include cross-mod entries")
+    void testCopperNuggetTagInterop() throws Exception {
+        // 1. Parent tag c:nuggets
+        JsonObject nuggetsJson = parseResourceJson("data/c/tags/item/nuggets.json");
+        assertFalse(nuggetsJson.get("replace").getAsBoolean(), "c:nuggets replace must be false");
+        JsonArray nuggetValues = nuggetsJson.getAsJsonArray("values");
+        assertTrue(nuggetValues.contains(new com.google.gson.JsonPrimitive("#c:nuggets/copper")),
+                "c:nuggets must contain #c:nuggets/copper");
+
+        // 2. c:nuggets/copper and c:copper_nuggets
+        List<String> subTagPaths = List.of(
+                "data/c/tags/item/nuggets/copper.json",
+                "data/c/tags/item/copper_nuggets.json"
+        );
+
+        List<String> expectedItems = List.of(
+                "minecraft:copper_nugget",
+                "copperagebackport:copper_nugget",
+                "create:copper_nugget"
+        );
+
+        for (String path : subTagPaths) {
+            JsonObject tagJson = parseResourceJson(path);
+            assertFalse(tagJson.get("replace").getAsBoolean(), path + " replace must be false");
+            JsonArray values = tagJson.getAsJsonArray("values");
+            assertNotNull(values, path + " must have 'values' array");
+
+            for (String expectedItem : expectedItems) {
+                boolean found = false;
+                for (JsonElement elem : values) {
+                    if (elem.isJsonObject()) {
+                        JsonObject obj = elem.getAsJsonObject();
+                        if (obj.has("id") && expectedItem.equals(obj.get("id").getAsString())) {
+                            assertTrue(obj.has("required"), path + " entry " + expectedItem + " must have 'required'");
+                            assertFalse(obj.get("required").getAsBoolean(), path + " entry " + expectedItem + " must have required: false");
+                            found = true;
+                            break;
+                        }
+                    } else if (elem.isJsonPrimitive() && expectedItem.equals(elem.getAsString())) {
+                        found = true;
+                        break;
+                    }
+                }
+                assertTrue(found, path + " must include " + expectedItem + " with required: false");
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Verify bidirectional copper nugget and ingot crafting recipes accept c:nuggets/copper")
+    void testCopperNuggetRecipes() throws Exception {
+        // 1. Shaped recipe: 9 nuggets -> 1 copper ingot
+        List<String> shapedPaths = List.of(
+                "data/copper_age_patch/recipe/copper_ingot_from_nuggets.json",
+                "data/minecraft/recipe/copper_ingot_from_nuggets.json"
+        );
+
+        for (String path : shapedPaths) {
+            JsonObject json = parseResourceJson(path);
+            assertEquals("minecraft:crafting_shaped", json.get("type").getAsString(), path + " type must be minecraft:crafting_shaped");
+
+            assertTrue(json.has("result"), path + " must have 'result'");
+            JsonObject result = json.getAsJsonObject("result");
+            assertEquals("minecraft:copper_ingot", result.get("id").getAsString(), path + " result id must be minecraft:copper_ingot");
+            assertEquals(1, result.get("count").getAsInt(), path + " result count must be 1");
+
+            assertTrue(json.has("pattern"), path + " must have 'pattern'");
+            JsonArray pattern = json.getAsJsonArray("pattern");
+            assertEquals(3, pattern.size(), path + " pattern must have 3 rows");
+
+            assertTrue(json.has("key"), path + " must have 'key'");
+            JsonObject key = json.getAsJsonObject("key");
+            assertTrue(key.has("#") || key.has("N"), path + " key must have ingredient symbol");
+            JsonElement ingredient = key.has("#") ? key.get("#") : key.get("N");
+            boolean acceptsCopperNuggetTag = false;
+            if (ingredient.isJsonObject()) {
+                JsonObject obj = ingredient.getAsJsonObject();
+                if (obj.has("tag") && "c:nuggets/copper".equals(obj.get("tag").getAsString())) {
+                    acceptsCopperNuggetTag = true;
+                }
+            }
+            assertTrue(acceptsCopperNuggetTag, path + " ingredient must accept tag c:nuggets/copper");
+        }
+
+        // 2. Shapeless recipe: 1 copper ingot -> 9 copper nuggets
+        List<String> shapelessPaths = List.of(
+                "data/copper_age_patch/recipe/copper_nugget.json",
+                "data/minecraft/recipe/copper_nugget.json"
+        );
+
+        for (String path : shapelessPaths) {
+            JsonObject json = parseResourceJson(path);
+            assertEquals("minecraft:crafting_shapeless", json.get("type").getAsString(), path + " type must be minecraft:crafting_shapeless");
+
+            assertTrue(json.has("result"), path + " must have 'result'");
+            JsonObject result = json.getAsJsonObject("result");
+            assertEquals("minecraft:copper_nugget", result.get("id").getAsString(), path + " result id must be minecraft:copper_nugget");
+            assertEquals(9, result.get("count").getAsInt(), path + " result count must be 9");
+
+            assertTrue(json.has("ingredients"), path + " must have 'ingredients'");
+            JsonArray ingredients = json.getAsJsonArray("ingredients");
+            assertFalse(ingredients.isEmpty(), path + " ingredients must not be empty");
+            JsonObject ingObj = ingredients.get(0).getAsJsonObject();
+            assertEquals("minecraft:copper_ingot", ingObj.get("item").getAsString(), path + " ingredient must be minecraft:copper_ingot");
         }
     }
 }

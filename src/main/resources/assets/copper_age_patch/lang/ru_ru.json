@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Имя: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Медный голем",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Статуя медного голема",
-  "config.jade.plugin_copper_age_patch.shelf": "Полка медного века"
+  "config.jade.plugin_copper_age_patch.shelf": "Полка медного века",
+  "tooltip.copper_age_patch.antenna": "Антенна: ",
+  "tooltip.copper_age_patch.antenna_item": "Антенна: "
 }

@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Tên: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Golem đồng",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Tượng golem đồng",
-  "config.jade.plugin_copper_age_patch.shelf": "Kệ thời đại đồ đồng"
+  "config.jade.plugin_copper_age_patch.shelf": "Kệ thời đại đồ đồng",
+  "tooltip.copper_age_patch.antenna": "Ăng-ten: ",
+  "tooltip.copper_age_patch.antenna_item": "Ăng-ten: "
 }

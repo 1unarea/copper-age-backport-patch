@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "名稱: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "銅傀儡",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "銅傀儡雕像",
-  "config.jade.plugin_copper_age_patch.shelf": "銅器時代置物架"
+  "config.jade.plugin_copper_age_patch.shelf": "銅器時代置物架",
+  "tooltip.copper_age_patch.antenna": "天線: ",
+  "tooltip.copper_age_patch.antenna_item": "天線: "
 }

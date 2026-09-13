@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "الاسم: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "غولم نحاسي",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "تمثال الغولم النحاسي",
-  "config.jade.plugin_copper_age_patch.shelf": "رف العصر النحاسي"
+  "config.jade.plugin_copper_age_patch.shelf": "رف العصر النحاسي",
+  "tooltip.copper_age_patch.antenna": "الهوائي: ",
+  "tooltip.copper_age_patch.antenna_item": "الهوائي: "
 }

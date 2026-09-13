@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Jméno: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Měděný golem",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Socha měděného golema",
-  "config.jade.plugin_copper_age_patch.shelf": "Police doby měděné"
+  "config.jade.plugin_copper_age_patch.shelf": "Police doby měděné",
+  "tooltip.copper_age_patch.antenna": "Anténa: ",
+  "tooltip.copper_age_patch.antenna_item": "Anténa: "
 }

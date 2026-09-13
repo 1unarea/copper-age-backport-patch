@@ -9,10 +9,10 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 ## Features
 
 * **Registry Crash Fix:** Resolves duplicate armor material registration on NeoForge 21.1.237 and newer (also Fabric 0.15.0 and newer), preventing rollback to vanilla.
-* **Jade Tooltips:** Displays held items, oxidation stages, and waxed status on Copper Golems and statues, plus shelf storage contents.
+* **Jade Tooltips:** Displays held items, antenna items (such as poppy flowers), oxidation stages, and waxed status on Copper Golems and statues, plus shelf storage contents.
 * **Better Combat Integration:** Adds attack animations, sweeps, and weapon hitboxes for all copper tools and weapons.
-* **Create Mod Recipes:** Adds Crushing Wheel recipes to recycle copper equipment into copper ingots and nuggets.
-* **Tag Support:** Populates standard NeoForge and Common item tags for armors and tools.
+* **Create Mod Recipes & Copper Nugget Interoperability:** Adds Crushing Wheel recipes and bidirectional ingot/nugget crafting interoperability with Create and other mods.
+* **Tag Support:** Populates standard NeoForge and Common item tags for armors, tools, and copper nuggets (`c:nuggets`, `c:nuggets/copper`, `c:copper_nuggets`).
 
 ## Supported Languages
 

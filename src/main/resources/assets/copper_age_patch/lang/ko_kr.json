@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "이름: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "구리 골렘",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "구리 골렘 조각상",
-  "config.jade.plugin_copper_age_patch.shelf": "구리 시대 선반"
+  "config.jade.plugin_copper_age_patch.shelf": "구리 시대 선반",
+  "tooltip.copper_age_patch.antenna": "안테나: ",
+  "tooltip.copper_age_patch.antenna_item": "안테나: "
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "copper_age_patch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "Copper Age Backport Patch",
   "description": "Fixes duplicate ResourceKey registration and adds Jade, Better Combat, Create integration for Copper Age Backport.",
   "authors": [

@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Name: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Kupfergolem",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Kupfergolemstatue",
-  "config.jade.plugin_copper_age_patch.shelf": "Kupferzeit-Regal"
+  "config.jade.plugin_copper_age_patch.shelf": "Kupferzeit-Regal",
+  "tooltip.copper_age_patch.antenna": "Antenne: ",
+  "tooltip.copper_age_patch.antenna_item": "Antenne: "
 }

@@ -29,6 +29,7 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
     public static final String NBT_WAXED = "Waxed";
     public static final String NBT_WEATHER_STATE = "WeatherState";
     public static final String NBT_HELD_ITEM = "HeldItem";
+    public static final String NBT_ANTENNA_ITEM = "AntennaItem";
 
     private static final Field NEXT_WEATHERING_TICK_FIELD;
     static {
@@ -67,6 +68,12 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
                     tag.put(NBT_HELD_ITEM, held.saveOptional(registries));
                 }
             } catch (Throwable ignored) {}
+            try {
+                ItemStack antenna = getAntennaItem(golem);
+                if (antenna != null && !antenna.isEmpty()) {
+                    tag.put(NBT_ANTENNA_ITEM, antenna.saveOptional(registries));
+                }
+            } catch (Throwable ignored) {}
         }
     }
 
@@ -80,14 +87,15 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
             return;
         }
 
+        Level level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
+        net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
+
         // 1. Held Item Display (Element icon + item name + count)
         ItemStack heldItem = null;
         try {
             heldItem = golem.getMainHandItem();
         } catch (Throwable ignored) {}
 
-        Level level = accessor.getLevel() != null ? accessor.getLevel() : golem.level();
-        net.minecraft.core.HolderLookup.Provider registries = level != null ? level.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
         if ((heldItem == null || heldItem.isEmpty()) && accessor.getServerData() != null && accessor.getServerData().contains(NBT_HELD_ITEM)) {
             try {
                 heldItem = ItemStack.parseOptional(registries, accessor.getServerData().getCompound(NBT_HELD_ITEM));
@@ -114,7 +122,43 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
             }
         }
 
-        // 2. Weathering / Oxidation Stage
+        // 2. Antenna Item Display (Element icon + item name + count when present)
+        ItemStack antennaItem = null;
+        try {
+            antennaItem = getAntennaItem(golem);
+        } catch (Throwable ignored) {}
+
+        if ((antennaItem == null || antennaItem.isEmpty()) && accessor.getServerData() != null && accessor.getServerData().contains(NBT_ANTENNA_ITEM)) {
+            try {
+                antennaItem = ItemStack.parseOptional(registries, accessor.getServerData().getCompound(NBT_ANTENNA_ITEM));
+            } catch (Throwable ignored) {}
+        }
+
+        if (antennaItem != null && !antennaItem.isEmpty()) {
+            IElementHelper helper = IElementHelper.get();
+            snownee.jade.api.ui.IElement itemElement = helper != null ? helper.item(antennaItem) : null;
+            Component name;
+            try {
+                name = antennaItem.getHoverName();
+            } catch (Throwable ignored) {
+                name = Component.literal("Unknown Item");
+            }
+            MutableComponent itemDesc = Component.empty()
+                    .append(Component.translatableWithFallback("tooltip.copper_age_patch.antenna_item", "Antenna: ")
+                            .withStyle(ChatFormatting.GRAY))
+                    .append(name.copy().withStyle(ChatFormatting.WHITE));
+            if (antennaItem.getCount() > 1) {
+                itemDesc.append(Component.literal(" x" + antennaItem.getCount()).withStyle(ChatFormatting.GRAY));
+            }
+            if (itemElement != null) {
+                tooltip.add(itemElement);
+                tooltip.append(itemDesc);
+            } else {
+                tooltip.add(itemDesc);
+            }
+        }
+
+        // 3. Weathering / Oxidation Stage
         WeatheringCopper.WeatherState weatherState = null;
         try {
             weatherState = golem.getWeatherState();
@@ -170,6 +214,31 @@ public enum CopperGolemEntityProvider implements IEntityComponentProvider, IServ
             }
         } catch (Throwable ignored) {}
         return false;
+    }
+
+    /**
+     * Retrieves the item placed on the Copper Golem's antenna slot (EQUIPMENT_SLOT_ANTENNA),
+     * falling back safely to EquipmentSlot.HEAD.
+     */
+    public static ItemStack getAntennaItem(CopperGolemEntity golem) {
+        if (golem == null) {
+            return ItemStack.EMPTY;
+        }
+        try {
+            if (CopperGolemEntity.EQUIPMENT_SLOT_ANTENNA != null) {
+                ItemStack item = golem.getItemBySlot(CopperGolemEntity.EQUIPMENT_SLOT_ANTENNA);
+                if (item != null) {
+                    return item;
+                }
+            }
+        } catch (Throwable ignored) {}
+        try {
+            ItemStack item = golem.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
+            if (item != null) {
+                return item;
+            }
+        } catch (Throwable ignored) {}
+        return ItemStack.EMPTY;
     }
 
     /**

@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "名称: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "铜傀儡",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "铜傀儡像",
-  "config.jade.plugin_copper_age_patch.shelf": "铜器时代置物架"
+  "config.jade.plugin_copper_age_patch.shelf": "铜器时代置物架",
+  "tooltip.copper_age_patch.antenna": "天线: ",
+  "tooltip.copper_age_patch.antenna_item": "天线: "
 }

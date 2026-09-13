@@ -16,7 +16,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify output NeoForge jar contains all required files, valid toml and valid mixin config")
     void testJarContents() throws Exception {
-        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.0.jar");
+        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.1.jar");
         assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
 
         try (ZipFile zip = new ZipFile(jarFile)) {
@@ -35,10 +35,15 @@ public class JarPackagingVerificationTest {
             // Check resource files
             assertNotNull(zip.getEntry("data/copperagebackport/weapon_attributes/copper_sword.json"), "copper_sword weapon attributes missing in jar");
             assertNotNull(zip.getEntry("data/copper_age_patch/recipe/crushing/copper_helmet.json"), "copper_helmet crushing recipe missing in jar");
+            assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_ingot_from_nuggets.json"), "copper_ingot_from_nuggets recipe missing in jar");
+            assertNotNull(zip.getEntry("data/copper_age_patch/recipe/copper_nugget.json"), "copper_nugget recipe missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/armors/helmets.json"), "helmets tag missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/tools/swords.json"), "swords tag missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/armors.json"), "armors parent tag missing in jar");
             assertNotNull(zip.getEntry("data/c/tags/item/tools.json"), "tools parent tag missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/nuggets.json"), "nuggets parent tag missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/nuggets/copper.json"), "copper nuggets tag missing in jar");
+            assertNotNull(zip.getEntry("data/c/tags/item/copper_nuggets.json"), "copper_nuggets tag missing in jar");
             assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in jar");
 
             // Verify neoforge.mods.toml contents
@@ -80,7 +85,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify built NeoForge jar exists and has non-zero size")
     void testBuiltJarExists() {
-        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.0.jar");
+        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.1.jar");
         assertTrue(builtJar.exists(), "Built NeoForge mod jar must exist at " + builtJar.getAbsolutePath());
         assertTrue(builtJar.length() > 0, "Built NeoForge mod jar size must be greater than 0");
     }
@@ -88,7 +93,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar exists and has valid structure and metadata")
     void testFabricJarContents() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.0.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.1.jar");
         assertTrue(fabricJar.exists(), "Built Fabric jar must exist at " + fabricJar.getAbsolutePath());
         assertTrue(fabricJar.length() > 0, "Built Fabric jar size must be greater than 0");
 
@@ -105,6 +110,7 @@ public class JarPackagingVerificationTest {
             try (InputStream is = zip.getInputStream(fabricEntry)) {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"id\": \"copper_age_patch\""), "fabric.mod.json must specify id = 'copper_age_patch'");
+                assertTrue(json.contains("\"version\": \"0.1.1\""), "fabric.mod.json must specify version = '0.1.1'");
                 assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
                 assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
             }
@@ -114,7 +120,9 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify generic unnamed jar does not exist")
     void testGenericJarDoesNotExist() {
-        File genericJar = new File("build/libs/copper_age_patch-0.1.0.jar");
-        assertFalse(genericJar.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar.getAbsolutePath());
+        File genericJar011 = new File("build/libs/copper_age_patch-0.1.1.jar");
+        assertFalse(genericJar011.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar011.getAbsolutePath());
+        File genericJar010 = new File("build/libs/copper_age_patch-0.1.0.jar");
+        assertFalse(genericJar010.exists(), "Old 0.1.0 generic jar must not exist: " + genericJar010.getAbsolutePath());
     }
 }

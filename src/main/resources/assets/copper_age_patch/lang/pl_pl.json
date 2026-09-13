@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Nazwa: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Miedziany golem",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Posąg miedzianego golema",
-  "config.jade.plugin_copper_age_patch.shelf": "Półka epoki miedzi"
+  "config.jade.plugin_copper_age_patch.shelf": "Półka epoki miedzi",
+  "tooltip.copper_age_patch.antenna": "Antena: ",
+  "tooltip.copper_age_patch.antenna_item": "Antena: "
 }

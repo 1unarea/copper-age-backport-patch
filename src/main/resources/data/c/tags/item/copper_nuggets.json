@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "minecraft:copper_nugget",
+      "required": false
+    },
+    {
+      "id": "copperagebackport:copper_nugget",
+      "required": false
+    },
+    {
+      "id": "create:copper_nugget",
+      "required": false
+    }
+  ]
+}

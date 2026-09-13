@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Ad: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Mis Qolem",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Mis Qolem Heykəli",
-  "config.jade.plugin_copper_age_patch.shelf": "Mis Dövrü Rəfi"
+  "config.jade.plugin_copper_age_patch.shelf": "Mis Dövrü Rəfi",
+  "tooltip.copper_age_patch.antenna": "Antena: ",
+  "tooltip.copper_age_patch.antenna_item": "Antena: "
 }

@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "Nome: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "Golem de Cobre",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "Estátua de Golem de Cobre",
-  "config.jade.plugin_copper_age_patch.shelf": "Prateleira da Idade do Cobre"
+  "config.jade.plugin_copper_age_patch.shelf": "Prateleira da Idade do Cobre",
+  "tooltip.copper_age_patch.antenna": "Antena: ",
+  "tooltip.copper_age_patch.antenna_item": "Antena: "
 }

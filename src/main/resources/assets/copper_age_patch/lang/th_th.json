@@ -11,5 +11,7 @@
   "tooltip.copper_age_patch.statue_name": "ชื่อ: ",
   "config.jade.plugin_copper_age_patch.copper_golem": "โกเลมทองแดง",
   "config.jade.plugin_copper_age_patch.copper_golem_statue": "รูปปั้นโกเลมทองแดง",
-  "config.jade.plugin_copper_age_patch.shelf": "ชั้นวางยุคทองแดง"
+  "config.jade.plugin_copper_age_patch.shelf": "ชั้นวางยุคทองแดง",
+  "tooltip.copper_age_patch.antenna": "เสาอากาศ: ",
+  "tooltip.copper_age_patch.antenna_item": "เสาอากาศ: "
 }
