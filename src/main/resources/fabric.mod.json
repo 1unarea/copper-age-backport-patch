@@ -20,6 +20,9 @@
     ],
     "waila": [
       "com.github.lunarea.copperagepatch.compat.jade.CopperAgeJadePlugin"
+    ],
+    "jei_mod_plugin": [
+      "com.github.lunarea.copperagepatch.compat.jei.CopperAgeJeiPlugin"
     ]
   },
   "mixins": [
@@ -32,6 +35,8 @@
   },
   "suggests": {
     "jade": "*",
+    "jei": "*",
+    "emi": "*",
     "bettercombat": "*",
     "create": "*"
   },

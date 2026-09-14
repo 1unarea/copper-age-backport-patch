@@ -51,5 +51,19 @@ versionRange = "[0.5,)"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies."copper_age_patch"]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."copper_age_patch"]]
+modId = "emi"
+type = "optional"
+versionRange = "[1.1,)"
+ordering = "NONE"
+side = "BOTH"
+
 [[mixins]]
 config = "copper_age_patch.mixins.json"

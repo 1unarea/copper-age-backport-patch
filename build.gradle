@@ -17,13 +17,19 @@ repositories {
         name = 'Mojang'
         url = 'https://libraries.minecraft.net/'
     }
+    maven {
+        name = 'Jared'
+        url = 'https://maven.blamejared.com/'
+    }
 }
 
 dependencies {
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'mezz.jei:jei-1.21.1-common-api:19.21.0.246'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testImplementation 'com.google.guava:failureaccess:1.0.2'
+    testImplementation 'mezz.jei:jei-1.21.1-common-api:19.21.0.246'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation fileTree(dir: 'libs', include: ['*.jar'])
 }
