@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:snow_golem_spawn_egg"
+  },
+  "base": {
+    "item": "minecraft:copper_pickaxe"
+  },
+  "addition": {
+    "item": "minecraft:copper_ingot"
+  },
+  "result": {
+    "id": "minecraft:copper_pickaxe",
+    "count": 1,
+    "components": {
+      "minecraft:trim": {
+        "pattern": "tooltrims:frost",
+        "material": "minecraft:copper"
+      },
+      "minecraft:custom_model_data": 311032
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "tool_trims"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "tool_trims"
+      ]
+    }
+  ]
+}

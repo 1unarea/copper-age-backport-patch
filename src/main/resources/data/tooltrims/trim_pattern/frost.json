@@ -1,0 +1,8 @@
+{
+  "asset_id": "tooltrims:frost",
+  "decal": false,
+  "description": {
+    "translate": "trim_pattern.tooltrims.frost"
+  },
+  "template_item": "minecraft:snow_golem_spawn_egg"
+}

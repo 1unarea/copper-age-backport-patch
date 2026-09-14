@@ -107,6 +107,16 @@ public class CopperAgePatch {
             } catch (Throwable t) {
                 LOGGER.warn("[CopperAgeBackportPatch] Could not register FMLCommonSetupEvent listener: {}", t.getMessage());
             }
+
+            // 4. AddPackFindersEvent -> Conditional modern spawn egg resource pack
+            try {
+                Class<?> packFindersClass = Class.forName("net.neoforged.neoforge.event.AddPackFindersEvent");
+                Consumer<Object> packConsumer = com.github.lunarea.copperagepatch.spawnegg.CopperSpawnEggPatcher::onNeoForgeAddPackFinders;
+                addListenerMethod.invoke(eventBus, packFindersClass, packConsumer);
+                LOGGER.info("[CopperAgeBackportPatch] Registered AddPackFindersEvent listener on NeoForge.");
+            } catch (Throwable t) {
+                LOGGER.warn("[CopperAgeBackportPatch] Could not register AddPackFindersEvent listener: {}", t.getMessage());
+            }
         } catch (Throwable t) {
             LOGGER.warn("[CopperAgeBackportPatch] Failed to register NeoForge event bus listeners: {}", t.getMessage());
         }

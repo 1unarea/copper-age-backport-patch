@@ -4,6 +4,15 @@ All notable changes to Copper Age Backport Patch are documented here.
 
 ---
 
+## 0.1.3
+
+### Added
+- **Complete Tool Trims Mod Compatibility for Copper Tools** — Full smithing trimming support for all 5 copper tools (Copper Sword, Axe, Pickaxe, Shovel, Hoe) across all 4 Tool Trims patterns (Linear, Tracks, Charge, Frost) and 10 materials (Amethyst, Copper, Diamond, Emerald, Gold, Iron, Lapis, Netherite, Quartz, Redstone). Provides 200 data-driven smithing recipes, item model overrides, clean trim models, and `#tooltrims:trimmable_tools` tag integration.
+- **Copper Armor Item Trim Visual Overrides** — Restored vanilla-consistent GUI/inventory item trim overlays for all copper armor pieces (Helmet, Chestplate, Leggings, Boots) across all 10 materials (trim_type 0.1 to 1.0). Includes high-contrast `copper_darker` palette permutation in `assets/minecraft/atlases/blocks.json` for copper trim on copper armor while preserving in-world player armor entity trim rendering.
+- **Conditional Modern Copper Golem Spawn Egg Texture** — Dynamically switches the Copper Golem spawn egg texture to the detailed modern design when `vanillabackport` is installed (or when client config is set to `MODERN`), while retaining the classic two-tone dotted vanilla template egg when absent (or `CLASSIC`). Managed via `copper_age_patch.json` client configuration with `AUTO`, `MODERN`, and `CLASSIC` modes, implemented cleanly via built-in resource pack registration across NeoForge and Fabric without bytecode modification.
+
+---
+
 ## 0.1.2
 
 ### Fixed

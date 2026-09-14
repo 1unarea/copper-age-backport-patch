@@ -24,3 +24,7 @@ ORIGINAL_REQUEST.md
 
 # Compile-time binary jars (Do not track proprietary Minecraft or external mod binaries)
 libs/
+
+# Local Minecraft runtime directories
+/config/
+/run/
