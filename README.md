@@ -77,8 +77,26 @@ Copper Age Backport Patch is a clean-room companion mod that resolves these issu
 * Configures native attack animations, weapon attributes, range, and sweeping hitboxes for copper weapons with [Better Combat](https://modrinth.com/mod/better-combat).
 
 ### 9. Multilingual Localization
-Full in-game translations for over 20 languages:
-Arabic, Azerbaijani, Chinese (Simplified & Traditional), Czech, English (US & UK), French, German, Hungarian, Italian, Japanese, Korean, Polish, Portuguese (Brazil & Portugal), Russian, Spanish, Thai, Turkish, and Vietnamese.
+Full in-game translations for all supported language variants:
+* Arabic (`ar_sa`)
+* Azerbaijani (`az_az`)
+* Chinese Simplified (`zh_cn`)
+* Chinese Traditional (`zh_hk`, `zh_tw`)
+* Czech (`cs_cz`)
+* English (`en_us`, `en_gb`)
+* French (`fr_fr`, `fr_ca`)
+* German (`de_de`)
+* Hungarian (`hu_hu`)
+* Italian (`it_it`)
+* Japanese (`ja_jp`)
+* Korean (`ko_kr`)
+* Polish (`pl_pl`)
+* Portuguese (`pt_br`, `pt_pt`)
+* Russian (`ru_ru`)
+* Spanish (`es_es`, `es_mx`, `es_ar`, `es_cl`, `es_ec`, `es_uy`, `es_ve`)
+* Thai (`th_th`)
+* Turkish (`tr_tr`)
+* Vietnamese (`vi_vn`)
 
 ---
 
