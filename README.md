@@ -5,6 +5,7 @@
 [![NeoForge](https://img.shields.io/badge/NeoForge-21.1.x-orange.svg)](https://neoforged.net/)
 [![Fabric](https://img.shields.io/badge/Fabric-0.15.x-blue.svg)](https://fabricmc.net/)
 [![Modrinth](https://img.shields.io/badge/Modrinth-4Gz003Sy-00AF5C.svg)](https://modrinth.com/mod/copper-age-backport-patch)
+[![CurseForge](https://img.shields.io/badge/CurseForge-1696121-F16436.svg)](https://www.curseforge.com/minecraft/mc-mods/copper-age-backport-patch)
 
 An unofficial patch, bugfix, and compatibility addon for [Copper Age Backport](https://github.com/Smallinger/Copper-Age-Backport) (by Smallinger) on Minecraft 1.21.1 for NeoForge and Fabric mod loaders.
 
@@ -12,43 +13,51 @@ An unofficial patch, bugfix, and compatibility addon for [Copper Age Backport](h
 
 ## Overview
 
-Copper Age Backport brings official modern copper equipment and the Copper Golem to Minecraft 1.21.1. While the mod runs standalone without issues on Fabric, modern NeoForge versions suffer from a registry crash on startup. In addition, across both loaders, the upstream mod lacks canonical armor durability properties, creative combat tab positioning, smithing trims, and integrations with modern 1.21.1 ecosystem mods.
+Copper Age Backport brings official modern copper equipment and the Copper Golem to Minecraft 1.21.1.
 
-Copper Age Backport Patch is a clean-room companion mod that resolves these issues from a single unified codebase supporting both NeoForge and Fabric.
+Important loader distinction:
+* On **Fabric**, Copper Age Backport runs completely fine standalone and suffers from no startup or registry crashes. On Fabric, this patch serves purely as a gameplay, balance, and mod compatibility enhancement.
+* On **NeoForge** (versions 21.1.237 and newer), Copper Age Backport has a critical registry collision bug that crashes the game on startup or aborts world loading with a safe mode warning. This patch intercepts and fixes that crash on NeoForge.
+
+Across both loaders, this patch restores canonical armor durability, adds the Copper Axe to the Combat creative tab, implements proper vanilla armor trim rendering, adds optional compatibility for the Tool Trims mod, enhances the Copper Golem spawn egg texture, and integrates with popular mods such as Jade, Better Combat, and Create.
 
 ---
 
 ## Feature Breakdown
 
 ### 1. NeoForge Registry Duplicate Key Crash Fix
-* **The Problem:** NeoForge 21.1.237 and newer enforces strict registry validation during bootstrap. Upstream registers `ResourceKey[minecraft:armor_material / minecraft:copper]` multiple times across separate item initializations. This triggers an `IllegalStateException: Duplicate key` on NeoForge that crashes the game or causes world load to fail with a safe mode prompt. (Note: Fabric does not enforce this restriction and runs standalone).
-* **The Fix:** A thread-safe `MemoizedSupplier` interceptor implemented via Mixin guarantees that the armor material registration executes exactly once during startup, preventing collisions on NeoForge.
+* The Problem: NeoForge 21.1.237 and newer enforces strict registry validation during bootstrap. Upstream Copper Age Backport registers `ResourceKey[minecraft:armor_material / minecraft:copper]` multiple times across separate item initializations. On NeoForge, this triggers an `IllegalStateException: Duplicate key` error, causing the game to crash or forcing world loading into Safe Mode.
+* Important Note: Fabric does not enforce this restriction and runs Copper Age Backport standalone without issues. This crash fix is active only on NeoForge.
+* The Fix: A thread-safe `MemoizedSupplier` interceptor implemented via Mixin ensures the armor material registration executes exactly once during startup on NeoForge, completely eliminating the crash.
 
 ### 2. Canonical Copper Armor Durability Fix
-* **The Problem:** In upstream Copper Age Backport, copper armor items omit the canonical `MAX_DAMAGE` data component, causing armor pieces to have infinite durability and never take damage.
-* **The Fix:** Restores balanced durability values following standard vanilla tier progression using the canonical tier multiplier of 11:
+* The Problem: In upstream Copper Age Backport, copper armor items omit the canonical `MAX_DAMAGE` data component introduced in modern Minecraft (1.20.5+ / 1.21). As a result, copper armor pieces are completely indestructible and never lose durability when taking damage.
+* The Fix: Restores balanced durability values following standard vanilla tier progression using the canonical tier multiplier of 11:
   * Copper Helmet: 121 max durability
   * Copper Chestplate: 176 max durability
   * Copper Leggings: 165 max durability
   * Copper Boots: 143 max durability
-* *Note: The third-party copperagebackport_durability_fix mod is obsolete and no longer needed.*
+* Note: Separate third-party durability fix mods are obsolete and no longer needed.
 
 ### 3. Creative Combat Tab Placement
-* In vanilla Minecraft, axes appear in both the Tools & Utilities tab and the Combat tab. Upstream omitted the Copper Axe from the Combat tab.
+* In vanilla Minecraft, all axes appear in both the Tools & Utilities tab and the Combat tab. Upstream omitted the Copper Axe from the Combat tab.
 * Copper Axe is placed in the Creative Combat tab directly after Stone Axe and before Iron Axe, maintaining tier progression (Wooden -> Stone -> Copper -> Iron).
 
-### 4. Complete Smithing Trim Integration
-#### 4.1 Copper Armor Trims (Inventory 2D + Player 3D)
-* Adds model override definitions across all 4 armor pieces for all 10 standard trim materials (trim_type predicates from 0.1 to 1.0).
-* Provides 44 discrete item models with layered rendering (layer0 for base armor, layer1 for colored trim overlay).
-* Introduces a custom `copper_darker` palette permutation in `assets/minecraft/atlases/blocks.json` so copper trims applied to copper armor maintain high visual contrast, matching vanilla gold-on-gold and iron-on-iron conventions.
+### 4. Smithing Trim Integration: Armor vs. Tools
+It is important to distinguish between how armor trims and tool trims work in this mod:
+
+#### 4.1 Copper Armor Trims (Native Vanilla Feature - No Other Mods Required)
+* Copper armor pieces (Helmet, Chestplate, Leggings, Boots) can be trimmed at a Smithing Table out of the box using standard vanilla armor trim smithing templates.
+* Adds model override definitions across all 4 armor pieces for all 10 standard trim materials (trim_type predicates from 0.1 to 1.0), with 44 discrete item models.
+* Includes a custom `copper_darker` palette permutation in `assets/minecraft/atlases/blocks.json` so copper trims applied to copper armor maintain high visual contrast, matching vanilla gold-on-gold and iron-on-iron conventions.
 * Preserves in-world player 3D entity armor trim rendering.
 
-#### 4.2 Tool Trims Mod Compatibility
-* Enables Smithing Table trimming for all 5 copper tools: Copper Sword, Copper Axe, Copper Pickaxe, Copper Shovel, and Copper Hoe with [Tool Trims](https://modrinth.com/mod/tool-trims).
+#### 4.2 Tool Trims Compatibility (Optional Mod Integration - Requires Tool Trims)
+* Note: This mod does NOT add standalone tool trimming on its own. It is specifically an integration layer for the [Tool Trims](https://modrinth.com/mod/tool-trims) mod.
+* If Tool Trims is installed, all 5 copper tools (Copper Sword, Copper Axe, Copper Pickaxe, Copper Shovel, and Copper Hoe) become trimmable at a Smithing Table.
 * Supports all 4 Tool Trims patterns (Linear, Tracks, Charge, Frost) and all 10 trim materials (Amethyst, Copper, Diamond, Emerald, Gold, Iron, Lapis, Netherite, Quartz, Redstone), providing 200 data-driven smithing recipes.
 * Reuses Tool Trims colorized palettes based on iron tool silhouettes, avoiding redundant texture assets.
-* **Z-Fighting Elimination:** Trim models utilize Tool Trims layer architecture (layer0 mapped to `tooltrims:item/trim_bases/iron_<tool>_<pattern>` overlay) to eliminate coplanar z-fighting artifacts in hand or world rendering.
+* Z-Fighting Elimination: Trim models utilize Tool Trims layer architecture (layer0 mapped to `tooltrims:item/trim_bases/iron_<tool>_<pattern>` overlay) to eliminate coplanar z-fighting artifacts in first-person and world rendering.
 * Copper tools are dynamically enrolled into `#tooltrims:trimmable_tools` as well as standard vanilla tool tags (`#minecraft:swords`, `#minecraft:axes`, etc.).
 
 #### 4.3 High-Priority Built-In Resource Pack
@@ -63,10 +72,10 @@ Copper Age Backport Patch is a clean-room companion mod that resolves these issu
   * `"CLASSIC"`: Forces the classic vanilla dotted texture.
 
 ### 6. Jade HUD Integration
-* **Antenna Items:** Detects and displays items placed on the Copper Golem antenna (such as the poppy flower gifted by an Iron Golem).
-* **Weathering & Waxing:** Displays the current oxidation stage (Unaffected, Exposed, Weathered, Oxidized) and whether the golem or statue is waxed.
-* **Held Items:** Displays the item currently held by the Copper Golem.
-* **Shelf Inventories:** Provides full visual inventory previews when looking at Copper Shelves via [Jade](https://modrinth.com/mod/jade).
+* Antenna Items: Detects and displays items placed on the Copper Golem antenna (such as the poppy flower gifted by an Iron Golem).
+* Weathering & Waxing: Displays the current oxidation stage (Unaffected, Exposed, Weathered, Oxidized) and whether the golem or statue is waxed.
+* Held Items: Displays the item currently held by the Copper Golem.
+* Shelf Inventories: Provides full visual inventory previews when looking at Copper Shelves via [Jade](https://modrinth.com/mod/jade).
 
 ### 7. Create Mod & Tag Interoperability
 * Enrolls copper nuggets from all sources into common tags: `#c:nuggets`, `#c:nuggets/copper`, and `#c:copper_nuggets`.
@@ -124,7 +133,7 @@ A client-side configuration file is located at `config/copper_age_patch.json`:
 | :--- | :--- | :--- | :--- |
 | [Copper Age Backport](https://modrinth.com/mod/backport-copper-age) | NeoForge & Fabric | Required | The base mod being patched |
 | [Fabric API](https://modrinth.com/mod/fabric-api) | Fabric | Required | Core framework on Fabric |
-| [Tool Trims](https://modrinth.com/mod/tool-trims) | NeoForge & Fabric | Optional | Enables smithing trims on copper tools |
+| [Tool Trims](https://modrinth.com/mod/tool-trims) | NeoForge & Fabric | Optional | Enables smithing trims on copper tools (optional integration) |
 | [Vanilla Backport](https://modrinth.com/mod/vanilla-backport) | NeoForge & Fabric | Optional | Modern spawn egg texture trigger |
 | [Jade](https://modrinth.com/mod/jade) | NeoForge & Fabric | Optional | HUD tooltips for golems, statues, and shelves |
 | [Better Combat](https://modrinth.com/mod/better-combat) | NeoForge & Fabric | Optional | Custom combat animations and weapon stats |
