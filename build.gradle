@@ -150,8 +150,31 @@ modrinth {
     }
 }
 
-tasks.register('publishModrinth') {
+tasks.register('publishGithub', Exec) {
+    group = 'publishing'
+    description = 'Publishes release to GitHub Releases'
+    dependsOn tasks.named('assemble')
+    commandLine 'python3', 'scripts/publish.py', '--github'
+}
+
+tasks.register('publishModrinth', Exec) {
     group = 'publishing'
     description = 'Publishes both NeoForge and Fabric jars to Modrinth'
-    dependsOn tasks.named('modrinth')
+    dependsOn tasks.named('assemble')
+    commandLine 'python3', 'scripts/publish.py', '--modrinth'
 }
+
+tasks.register('publishCurseforge', Exec) {
+    group = 'publishing'
+    description = 'Publishes both NeoForge and Fabric jars to CurseForge'
+    dependsOn tasks.named('assemble')
+    commandLine 'python3', 'scripts/publish.py', '--curseforge'
+}
+
+tasks.register('publishAll', Exec) {
+    group = 'publishing'
+    description = 'Publishes release to GitHub, Modrinth, and CurseForge'
+    dependsOn tasks.named('assemble')
+    commandLine 'python3', 'scripts/publish.py', '--all'
+}
+
