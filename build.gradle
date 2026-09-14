@@ -138,14 +138,15 @@ modrinth {
     projectId = "4Gz003Sy"
     versionNumber = project.version.toString()
     versionName = "v${project.version}"
-    versionType = "release"
+    versionType = "beta"
     uploadFile = tasks.jar
     additionalFiles = [tasks.fabricJar]
     gameVersions = ["1.21.1"]
     loaders = ["neoforge", "fabric"]
     changelog = resolveChangelog()
     dependencies {
-        required.project "a1llHwl4" // Copper Age Backport
+        required.project "a1llHwl4"  // Copper Age Backport
+        optional.project "uXeEiQk1"  // Tool Trims
     }
 }
 
