@@ -227,7 +227,7 @@ public class ToolTrimsAndArmorTrimsVerificationTest {
                     assertEquals("minecraft:item/" + tool, json.get("parent").getAsString(), path + " parent");
                     JsonObject textures = json.getAsJsonObject("textures");
                     assertEquals("minecraft:item/" + tool, textures.get("layer0").getAsString(), path + " layer0");
-                    assertEquals("tooltrims:trims/items/copper_" + toolType + "_" + pat + "_" + mat,
+                    assertEquals("tooltrims:trims/items/iron_" + toolType + "_" + pat + "_" + mat,
                             textures.get("layer1").getAsString(), path + " layer1");
 
                     count++;

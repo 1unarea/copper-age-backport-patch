@@ -2,6 +2,6 @@
   "parent": "minecraft:item/copper_shovel",
   "textures": {
     "layer0": "minecraft:item/copper_shovel",
-    "layer1": "tooltrims:trims/items/copper_shovel_charge_diamond"
+    "layer1": "tooltrims:trims/items/iron_shovel_charge_diamond"
   }
 }
