@@ -34,5 +34,10 @@
     "jade": "*",
     "bettercombat": "*",
     "create": "*"
+  },
+  "custom": {
+    "fabric:resource_load_order": {
+      "after": ["copperagebackport"]
+    }
   }
 }

@@ -117,6 +117,16 @@ public class CopperAgePatch {
             } catch (Throwable t) {
                 LOGGER.warn("[CopperAgeBackportPatch] Could not register AddPackFindersEvent listener: {}", t.getMessage());
             }
+
+            // 5. AddPackFindersEvent -> Always-enabled copper equipment trim models resource pack
+            try {
+                Class<?> packFindersClass = Class.forName("net.neoforged.neoforge.event.AddPackFindersEvent");
+                Consumer<Object> trimPackConsumer = com.github.lunarea.copperagepatch.trims.CopperTrimsPatcher::onNeoForgeAddPackFinders;
+                addListenerMethod.invoke(eventBus, packFindersClass, trimPackConsumer);
+                LOGGER.info("[CopperAgeBackportPatch] Registered AddPackFindersEvent listener for copper_trims pack on NeoForge.");
+            } catch (Throwable t) {
+                LOGGER.warn("[CopperAgeBackportPatch] Could not register AddPackFindersEvent listener for copper_trims pack: {}", t.getMessage());
+            }
         } catch (Throwable t) {
             LOGGER.warn("[CopperAgeBackportPatch] Failed to register NeoForge event bus listeners: {}", t.getMessage());
         }

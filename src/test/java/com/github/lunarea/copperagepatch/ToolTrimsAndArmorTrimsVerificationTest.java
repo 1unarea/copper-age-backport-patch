@@ -226,7 +226,11 @@ public class ToolTrimsAndArmorTrimsVerificationTest {
 
                     assertEquals("minecraft:item/" + tool, json.get("parent").getAsString(), path + " parent");
                     JsonObject textures = json.getAsJsonObject("textures");
-                    assertEquals("minecraft:item/" + tool, textures.get("layer0").getAsString(), path + " layer0");
+                    // layer0 = trim_bases overlay (tiny partial texture) — overrides parent's copper
+                    // texture with only the trim shape, eliminating z-fighting with layer1.
+                    // This mirrors Tool Trims' exact approach for vanilla iron tools.
+                    assertEquals("tooltrims:item/trim_bases/iron_" + toolType + "_" + pat,
+                            textures.get("layer0").getAsString(), path + " layer0 must be iron trim_base overlay");
                     assertEquals("tooltrims:trims/items/iron_" + toolType + "_" + pat + "_" + mat,
                             textures.get("layer1").getAsString(), path + " layer1");
 
@@ -236,6 +240,7 @@ public class ToolTrimsAndArmorTrimsVerificationTest {
         }
         assertEquals(200, count, "Must verify exactly 200 trim models");
     }
+
 
     @Test
     @DisplayName("Verify copper armor models have all 10 trim_type overrides (0.1 to 1.0) and copper_darker mapping")
