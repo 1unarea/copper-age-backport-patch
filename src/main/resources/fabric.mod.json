@@ -3,7 +3,7 @@
   "id": "copper_age_patch",
   "version": "0.1.3",
   "name": "Copper Age Backport Patch",
-  "description": "Fixes duplicate ResourceKey registration and adds Jade, Better Combat, Create integration for Copper Age Backport.",
+  "description": "Adds durability fix, armor and tool trims, Jade tooltips, Better Combat, and Create integration for Copper Age Backport.",
   "authors": [
     "lunarea",
     "aegeada"
