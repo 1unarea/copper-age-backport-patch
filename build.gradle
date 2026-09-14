@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.modrinth.minotaur' version '2.9.0'
 }
 
 group = 'com.github.lunarea'
@@ -118,4 +119,38 @@ tasks.named('fabricJar') {
 tasks.named('assemble') {
     dependsOn tasks.named('fabricJar')
     finalizedBy 'deployMod'
+}
+
+def resolveChangelog = {
+    def changelogFile = file('CHANGELOG.md')
+    if (changelogFile.exists()) {
+        def text = changelogFile.text
+        def match = text =~ /(?ms)^##\s+\[?${project.version}\]?[^\n]*\n(.*?)(?=^##\s|\Z)/
+        if (match.find()) {
+            return match.group(1).trim()
+        }
+    }
+    return "v${project.version}"
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN") ?: (project.findProperty("modrinthToken") ?: "")
+    projectId = "4Gz003Sy"
+    versionNumber = project.version.toString()
+    versionName = "v${project.version}"
+    versionType = "release"
+    uploadFile = tasks.jar
+    additionalFiles = [tasks.fabricJar]
+    gameVersions = ["1.21.1"]
+    loaders = ["neoforge", "fabric"]
+    changelog = resolveChangelog()
+    dependencies {
+        required.project "a1llHwl4" // Copper Age Backport
+    }
+}
+
+tasks.register('publishModrinth') {
+    group = 'publishing'
+    description = 'Publishes both NeoForge and Fabric jars to Modrinth'
+    dependsOn tasks.named('modrinth')
 }
