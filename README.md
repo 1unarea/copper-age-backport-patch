@@ -14,6 +14,7 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://gi
 * **Create Mod Recipes & Copper Nugget Interoperability:** Adds Crushing Wheel recipes and bidirectional ingot/nugget crafting interoperability with Create and other mods.
 * **Tag Support:** Populates standard NeoForge and Common item tags for armors, tools, and copper nuggets (`c:nuggets`, `c:nuggets/copper`, `c:copper_nuggets`).
 * **Armor Durability Fix:** Adds the missing durability feature to the copper armors. (`Copper helmet - 121`, `copper chestplate - 176`, `copper leggings - 165` and `copper boots - 143`)
+* **And Other Minor Changes**
 
 ## Supported Languages
 
