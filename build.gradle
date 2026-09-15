@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.lunarea'
-version = '0.1.4'
+version = '1.0.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -40,7 +40,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.named('test') {
-    dependsOn tasks.named('deployMod')
+    dependsOn tasks.named('assemble')
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
@@ -91,6 +91,10 @@ def defaultNeoForgeProfileDir = file('/home/lunarea/.var/app/com.modrinth.Modrin
 tasks.register('deployMod') {
     dependsOn tasks.named('jar'), tasks.named('fabricJar')
     doLast {
+        if (!project.hasProperty('deployToProfiles')) {
+            println "Skipping deployMod: -PdeployToProfiles was not set. Jars will NOT be copied to launcher profiles."
+            return
+        }
         def libsDir = layout.buildDirectory.dir('libs').get().asFile
         def fabricJar = new File(libsDir, "copper_age_patch-fabric-1.21.1-${project.version}.jar")
         def neoforgeJar = new File(libsDir, "copper_age_patch-neoforge-1.21.1-${project.version}.jar")
@@ -125,17 +129,8 @@ tasks.register('deployMod') {
     }
 }
 
-tasks.named('jar') {
-    finalizedBy 'deployMod'
-}
-
-tasks.named('fabricJar') {
-    finalizedBy 'deployMod'
-}
-
 tasks.named('assemble') {
     dependsOn tasks.named('fabricJar')
-    finalizedBy 'deployMod'
 }
 
 def resolveChangelog = {
@@ -155,7 +150,7 @@ modrinth {
     projectId = "4Gz003Sy"
     versionNumber = project.version.toString()
     versionName = "v${project.version}"
-    versionType = "beta"
+    versionType = "release"
     uploadFile = tasks.jar
     additionalFiles = [tasks.fabricJar]
     gameVersions = ["1.21.1"]

@@ -17,7 +17,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify output NeoForge jar contains all required files, valid toml and valid mixin config")
     void testJarContents() throws Exception {
-        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.4.jar");
+        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-1.0.0.jar");
         assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
 
         try (ZipFile zip = new ZipFile(jarFile)) {
@@ -72,7 +72,7 @@ public class JarPackagingVerificationTest {
             try (InputStream is = zip.getInputStream(tomlEntry)) {
                 String toml = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(toml.contains("modId = \"copper_age_patch\""), "toml must specify modId = 'copper_age_patch'");
-                assertTrue(toml.contains("version = \"0.1.4\""), "toml must specify version = '0.1.4'");
+                assertTrue(toml.contains("version = \"1.0.0\""), "toml must specify version = '1.0.0'");
                 assertTrue(toml.contains("config = \"copper_age_patch.mixins.json\""), "toml must reference copper_age_patch.mixins.json");
                 assertTrue(toml.contains("modId = \"copperagebackport\""), "toml must declare dependency on copperagebackport");
                 assertTrue(toml.contains("modId = \"neoforge\""), "toml must declare dependency on neoforge");
@@ -114,7 +114,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify built NeoForge jar file exists on filesystem and has valid size")
     void testBuiltJarExists() {
-        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-0.1.4.jar");
+        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-1.0.0.jar");
         assertTrue(builtJar.exists(), "Built NeoForge mod jar must exist at " + builtJar.getAbsolutePath());
         assertTrue(builtJar.length() > 0, "Built NeoForge mod jar size must be greater than 0");
     }
@@ -122,7 +122,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar exists and has valid structure and metadata")
     void testFabricJarContents() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.4.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.0.0.jar");
         assertTrue(fabricJar.exists(), "Built Fabric jar must exist at " + fabricJar.getAbsolutePath());
         assertTrue(fabricJar.length() > 0, "Built Fabric jar size must be greater than 0");
 
@@ -177,7 +177,7 @@ public class JarPackagingVerificationTest {
             try (InputStream is = zip.getInputStream(fabricEntry)) {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"id\": \"copper_age_patch\""), "fabric.mod.json must specify id = 'copper_age_patch'");
-                assertTrue(json.contains("\"version\": \"0.1.4\""), "fabric.mod.json must specify version = '0.1.4'");
+                assertTrue(json.contains("\"version\": \"1.0.0\""), "fabric.mod.json must specify version = '1.0.0'");
                 assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
                 assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
                 assertTrue(json.contains("\"waila\""), "fabric.mod.json must declare waila entrypoint");
@@ -203,6 +203,8 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify generic unnamed jar does not exist")
     void testGenericJarDoesNotExist() {
+        File genericJar100 = new File("build/libs/copper_age_patch-1.0.0.jar");
+        assertFalse(genericJar100.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar100.getAbsolutePath());
         File genericJar014 = new File("build/libs/copper_age_patch-0.1.4.jar");
         assertFalse(genericJar014.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar014.getAbsolutePath());
         File genericJar013 = new File("build/libs/copper_age_patch-0.1.3.jar");
@@ -214,10 +216,11 @@ public class JarPackagingVerificationTest {
         File genericJar010 = new File("build/libs/copper_age_patch-0.1.0.jar");
         assertFalse(genericJar010.exists(), "Old 0.1.0 generic jar must not exist: " + genericJar010.getAbsolutePath());
     }
+
     @Test
     @DisplayName("Verify core Fabric jar classes have zero net/minecraft references in bytecode descriptors")
     void testFabricJarCoreClassesHaveZeroMinecraftBytecodeReferences() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.4.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.0.0.jar");
         assertTrue(fabricJar.exists());
 
         String[] coreClasses = new String[]{
@@ -272,7 +275,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar classes initialize in isolated classloader with zero net/minecraft classes")
     void testFabricJarLoadsWithoutMinecraftOnClasspath() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.4.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.0.0.jar");
         assertTrue(fabricJar.exists());
 
         ClassLoader systemParent = ClassLoader.getPlatformClassLoader();
@@ -314,7 +317,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar operates seamlessly against real Minecraft 1.21.1 Intermediary jar")
     void testFabricJarAgainstRealIntermediaryMinecraftJar() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-0.1.4.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.0.0.jar");
         assertTrue(fabricJar.exists());
 
         File intermediaryJar = new File("/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/cabp fabric/.fabric/remappedJars/minecraft-1.21.1-0.19.5/client-intermediary.jar");

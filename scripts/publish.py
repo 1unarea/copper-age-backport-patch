@@ -41,7 +41,7 @@ def get_mod_version():
     m = re.search(r"version\s*=\s*['\"]([^'\"]+)['\"]", content)
     if m:
         return m.group(1)
-    return "0.1.4"
+    return "1.0.0"
 
 def get_changelog(version):
     changelog_file = os.path.join(ROOT_DIR, "CHANGELOG.md")
@@ -56,17 +56,17 @@ def get_changelog(version):
 
 def publish_github(version, changelog):
     print("\n--- Publishing to GitHub ---")
-    fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
     neoforge_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-neoforge-1.21.1-{version}.jar")
+    fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
 
-    if not os.path.exists(fabric_jar) or not os.path.exists(neoforge_jar):
+    if not os.path.exists(neoforge_jar) or not os.path.exists(fabric_jar):
         print("Error: Build jars not found. Run './gradlew assemble' first.")
         return False
 
     tag_name = f"v{version}"
     cmd = [
         "gh", "release", "create", tag_name,
-        fabric_jar, neoforge_jar,
+        neoforge_jar, fabric_jar,
         "--title", tag_name,
         "--notes", changelog,
         "--latest"
@@ -91,18 +91,18 @@ def publish_modrinth(version, changelog):
         "User-Agent": f"1unarea/copper-age-backport-patch/{version}"
     }
 
-    fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
     neoforge_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-neoforge-1.21.1-{version}.jar")
+    fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
 
+    # NeoForge uploaded first, then Fabric
     targets = [
         {
-            "name": f"v{version} (Fabric)",
-            "version_number": f"{version}-fabric",
-            "loaders": ["fabric"],
-            "jar": fabric_jar,
+            "name": f"v{version} (NeoForge)",
+            "version_number": f"{version}-neoforge",
+            "loaders": ["neoforge"],
+            "jar": neoforge_jar,
             "deps": [
                 {"project_id": "a1llHwl4", "dependency_type": "required"},  # Copper Age Backport
-                {"project_id": "P7dR8mSH", "dependency_type": "required"},  # Fabric API
                 {"project_id": "uXeEiQk1", "dependency_type": "optional"},  # Tool Trims
                 {"project_id": "6xwxDTgf", "dependency_type": "optional"},  # Vanilla Backport
                 {"project_id": "nvQzSEkH", "dependency_type": "optional"},  # Jade
@@ -111,12 +111,13 @@ def publish_modrinth(version, changelog):
             ]
         },
         {
-            "name": f"v{version} (NeoForge)",
-            "version_number": f"{version}-neoforge",
-            "loaders": ["neoforge"],
-            "jar": neoforge_jar,
+            "name": f"v{version} (Fabric)",
+            "version_number": f"{version}-fabric",
+            "loaders": ["fabric"],
+            "jar": fabric_jar,
             "deps": [
                 {"project_id": "a1llHwl4", "dependency_type": "required"},  # Copper Age Backport
+                {"project_id": "P7dR8mSH", "dependency_type": "required"},  # Fabric API
                 {"project_id": "uXeEiQk1", "dependency_type": "optional"},  # Tool Trims
                 {"project_id": "6xwxDTgf", "dependency_type": "optional"},  # Vanilla Backport
                 {"project_id": "nvQzSEkH", "dependency_type": "optional"},  # Jade
@@ -135,7 +136,7 @@ def publish_modrinth(version, changelog):
             "changelog": changelog,
             "dependencies": t["deps"],
             "game_versions": ["1.21.1"],
-            "version_type": "beta",
+            "version_type": "release",
             "loaders": t["loaders"],
             "featured": True,
             "status": "listed",
@@ -179,19 +180,20 @@ def publish_curseforge(version, changelog):
     # 9639: Server
     common_versions = [11779, 11135, 9638, 9639]
 
-    fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
     neoforge_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-neoforge-1.21.1-{version}.jar")
+    fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
 
+    # NeoForge uploaded first, then Fabric
     targets = [
-        {
-            "name": f"v{version} (Fabric)",
-            "versions": common_versions + [7499],
-            "jar": fabric_jar
-        },
         {
             "name": f"v{version} (NeoForge)",
             "versions": common_versions + [10150],
             "jar": neoforge_jar
+        },
+        {
+            "name": f"v{version} (Fabric)",
+            "versions": common_versions + [7499],
+            "jar": fabric_jar
         }
     ]
 
@@ -203,7 +205,7 @@ def publish_curseforge(version, changelog):
             "changelogType": "markdown",
             "displayName": t["name"],
             "gameVersions": t["versions"],
-            "releaseType": "beta"
+            "releaseType": "release"
         }
         filename = os.path.basename(t["jar"])
         with open(t["jar"], "rb") as f:
