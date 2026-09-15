@@ -239,19 +239,9 @@ public final class CopperSpawnEggTabPatcher {
             Object codStack = codEgg != null ? getDefaultInstance(codEgg) : null;
 
             if (codStack != null) {
-                Method insertAfterMethod = findMethod(event.getClass(), "insertAfter", 3);
-                if (insertAfterMethod != null) {
-                    try {
-                        insertAfterMethod.setAccessible(true);
-                        insertAfterMethod.invoke(event, codStack, copperStack, parentAndSearch);
-                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Cod spawn egg in NeoForge Spawn Eggs tab.");
-                        return true;
-                    } catch (Throwable t) {
-                        Throwable cause = (t instanceof java.lang.reflect.InvocationTargetException ite && ite.getCause() != null) ? ite.getCause() : t;
-                        if (cause instanceof IllegalArgumentException && cause.getMessage() != null && cause.getMessage().contains("already exists")) {
-                            return true;
-                        }
-                    }
+                if (tryNeoForgeInsert(event, "insertAfter", codStack, copperStack, parentAndSearch)) {
+                    LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Cod spawn egg in NeoForge Spawn Eggs tab.");
+                    return true;
                 }
             }
 
@@ -259,44 +249,87 @@ public final class CopperSpawnEggTabPatcher {
             Object cowEgg = getCowSpawnEgg();
             Object cowStack = cowEgg != null ? getDefaultInstance(cowEgg) : null;
             if (cowStack != null) {
-                Method insertBeforeMethod = findMethod(event.getClass(), "insertBefore", 3);
-                if (insertBeforeMethod != null) {
-                    try {
-                        insertBeforeMethod.setAccessible(true);
-                        insertBeforeMethod.invoke(event, cowStack, copperStack, parentAndSearch);
-                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Cow spawn egg in NeoForge Spawn Eggs tab (fallback).");
-                        return true;
-                    } catch (Throwable ignored) {}
+                if (tryNeoForgeInsert(event, "insertBefore", cowStack, copperStack, parentAndSearch)) {
+                    LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Cow spawn egg in NeoForge Spawn Eggs tab (fallback).");
+                    return true;
                 }
             }
 
             // Fallback 2: accept / append
-            Method acceptMethod = null;
             for (Method m : event.getClass().getMethods()) {
                 if ("accept".equals(m.getName())) {
-                    if (m.getParameterCount() == 2 && parentAndSearch != null
-                            && m.getParameterTypes()[1].isAssignableFrom(parentAndSearch.getClass())) {
-                        acceptMethod = m;
-                        break;
-                    } else if (m.getParameterCount() == 1 && acceptMethod == null) {
-                        acceptMethod = m;
-                    }
+                    try {
+                        if (m.getParameterCount() == 2 && parentAndSearch != null
+                                && m.getParameterTypes()[1].isAssignableFrom(parentAndSearch.getClass())) {
+                            m.invoke(event, copperStack, parentAndSearch);
+                            LOGGER.info("[CopperAgeBackportPatch] Appended Copper Golem spawn egg to NeoForge Spawn Eggs tab (fallback, visibility).");
+                            return true;
+                        } else if (m.getParameterCount() == 1) {
+                            m.invoke(event, copperStack);
+                            LOGGER.info("[CopperAgeBackportPatch] Appended Copper Golem spawn egg to NeoForge Spawn Eggs tab (fallback, no-visibility).");
+                            return true;
+                        }
+                    } catch (Throwable ignored) {}
                 }
-            }
-            if (acceptMethod != null) {
-                if (acceptMethod.getParameterCount() == 2 && parentAndSearch != null) {
-                    acceptMethod.invoke(event, copperStack, parentAndSearch);
-                } else {
-                    acceptMethod.invoke(event, copperStack);
-                }
-                LOGGER.info("[CopperAgeBackportPatch] Appended Copper Golem spawn egg to NeoForge Spawn Eggs tab (fallback).");
-                return true;
             }
         } catch (Throwable t) {
             LOGGER.error("[CopperAgeBackportPatch] Failed to process NeoForge Spawn Eggs tab placement", t);
         }
         return false;
     }
+
+    /**
+     * Attempts a 3-param (anchor, stack, visibility) insert method, falling back through all
+     * enum constants if parentAndSearch is null, and finally trying a 2-param variant.
+     */
+    private static boolean tryNeoForgeInsert(Object event, String methodName, Object anchorStack, Object copperStack, Object parentAndSearch) {
+        Method method = findMethod(event.getClass(), methodName, 3);
+        if (method == null) return false;
+        method.setAccessible(true);
+
+        // 1. Try with resolved parentAndSearch (may be null)
+        if (parentAndSearch != null) {
+            try {
+                method.invoke(event, anchorStack, copperStack, parentAndSearch);
+                return true;
+            } catch (Throwable t) {
+                Throwable cause = (t instanceof java.lang.reflect.InvocationTargetException ite && ite.getCause() != null) ? ite.getCause() : t;
+                if (cause instanceof IllegalArgumentException && cause.getMessage() != null && cause.getMessage().contains("already exists")) {
+                    return true;
+                }
+            }
+        }
+
+        // 2. Enumerate all TabVisibility enum constants and try each
+        Class<?> visibilityParamType = method.getParameterTypes()[2];
+        if (visibilityParamType.isEnum()) {
+            for (Object constant : visibilityParamType.getEnumConstants()) {
+                try {
+                    method.invoke(event, anchorStack, copperStack, constant);
+                    return true;
+                } catch (Throwable t) {
+                    Throwable cause = (t instanceof java.lang.reflect.InvocationTargetException ite && ite.getCause() != null) ? ite.getCause() : t;
+                    if (cause instanceof IllegalArgumentException && cause.getMessage() != null && cause.getMessage().contains("already exists")) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // 3. Try 2-param variant
+        Method method2 = findMethod(event.getClass(), methodName, 2);
+        if (method2 != null) {
+            method2.setAccessible(true);
+            try {
+                method2.invoke(event, anchorStack, copperStack);
+                return true;
+            } catch (Throwable ignored) {}
+        }
+
+        return false;
+    }
+
+
 
 
     /**

@@ -289,9 +289,71 @@ public final class CopperSpawnEggPatcher {
     }
 
     /**
-     * Fabric client hook: registers untinted ItemColor with ColorProviderRegistry.ITEM.
+     * Fabric client hook: defers untinted ItemColor registration until after all mods have
+     * finished their client init. Uses ClientLifecycleEvents.CLIENT_STARTED so our provider
+     * always runs after the CAB mod's DeferredSpawnEggItem color registration.
      */
     public static void initFabricClient() {
+        // Try to register a CLIENT_STARTED listener that will run after full client init.
+        // This ensures we override any color handler the CAB mod registered during its own init.
+        boolean deferred = false;
+        try {
+            Class<?> lifecycleClass = Class.forName("net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents");
+            Field startedField = lifecycleClass.getField("CLIENT_STARTED");
+            Object startedEvent = startedField.get(null);
+
+            // Build a Consumer<MinecraftClient> proxy
+            Class<?> callbackInterface = null;
+            for (Class<?> inner : lifecycleClass.getDeclaredClasses()) {
+                if (inner.getSimpleName().equals("ClientStarted")) {
+                    callbackInterface = inner;
+                    break;
+                }
+            }
+            if (callbackInterface == null) {
+                // Try as a direct interface
+                callbackInterface = Class.forName("net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents$ClientStarted");
+            }
+
+            Object callback = Proxy.newProxyInstance(
+                    CopperSpawnEggPatcher.class.getClassLoader(),
+                    new Class<?>[]{callbackInterface},
+                    (proxy, method, args) -> {
+                        if (!"equals".equals(method.getName()) && !"hashCode".equals(method.getName()) && !"toString".equals(method.getName())) {
+                            registerColorNow();
+                        }
+                        return null;
+                    }
+            );
+
+            Method registerMethod = null;
+            for (Method m : startedEvent.getClass().getMethods()) {
+                if ("register".equals(m.getName()) && m.getParameterCount() == 1) {
+                    registerMethod = m;
+                    break;
+                }
+            }
+            if (registerMethod != null) {
+                registerMethod.setAccessible(true);
+                registerMethod.invoke(startedEvent, callback);
+                LOGGER.info("[CopperAgeBackportPatch] Registered CLIENT_STARTED listener for Fabric spawn egg color override.");
+                deferred = true;
+            }
+        } catch (Throwable t) {
+            LOGGER.debug("[CopperAgeBackportPatch] Could not register CLIENT_STARTED listener: {}", t.getMessage());
+        }
+
+        if (!deferred) {
+            // Fallback: register immediately via ColorProviderRegistry (may or may not win over CAB mod)
+            registerColorNow();
+        }
+    }
+
+    /**
+     * Performs the actual ItemColor registration. Called either immediately or from CLIENT_STARTED.
+     * Tries ColorProviderRegistry first, then direct ItemColors injection.
+     */
+    private static void registerColorNow() {
         try {
             Object copperEgg = com.github.lunarea.copperagepatch.creative.CopperSpawnEggTabPatcher.getCopperGolemSpawnEgg();
             if (copperEgg == null) {
@@ -299,8 +361,7 @@ public final class CopperSpawnEggPatcher {
                 return;
             }
 
-            // Try v1: net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry
-            // Try v0: net.fabricmc.fabric.api.client.render.ColorProviderRegistry
+            // Try ColorProviderRegistry.ITEM.register(provider, items...)
             Class<?> regClass = null;
             for (String className : new String[]{
                     "net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry",
@@ -336,8 +397,7 @@ public final class CopperSpawnEggPatcher {
                         } else {
                             registerMethod.invoke(itemRegistry, colorProxy, copperEgg);
                         }
-                        LOGGER.info("[CopperAgeBackportPatch] Successfully registered ItemColor provider for Copper Golem spawn egg on Fabric via ColorProviderRegistry.");
-                        return;
+                        LOGGER.info("[CopperAgeBackportPatch] Registered ItemColor provider for Copper Golem spawn egg on Fabric via ColorProviderRegistry.");
                     }
                 }
             }
@@ -345,11 +405,13 @@ public final class CopperSpawnEggPatcher {
             LOGGER.warn("[CopperAgeBackportPatch] Could not register ItemColor via Fabric ColorProviderRegistry: {}", t.getMessage());
         }
 
-        // Fallback: direct ItemColors registration if MinecraftClient already exists
+        // Always also try direct ItemColors injection — this wins even if ColorProviderRegistry
+        // kept the earlier CAB mod registration, because we overwrite the backing map entry.
         try {
             registerDirectItemColorFallback();
         } catch (Throwable ignored) {}
     }
+
 
     private static void registerDirectItemColorFallback() {
         try {
