@@ -28,3 +28,7 @@ libs/
 # Local Minecraft runtime directories
 /config/
 /run/
+
+# Python bytecode
+__pycache__/
+*.pyc
