@@ -68,6 +68,7 @@ public class CopperAgePatch {
                 Consumer<Object> tabConsumer = event -> {
                     CopperArmorDurabilityPatcher.applyPatch();
                     CopperCombatTabPatcher.applyNeoForgeCombatTabPlacement(event);
+                    com.github.lunarea.copperagepatch.creative.CopperSpawnEggTabPatcher.applyNeoForgeSpawnEggTabPlacement(event);
                 };
                 addListenerMethod.invoke(eventBus, tabEventClass, tabConsumer);
                 LOGGER.info("[CopperAgeBackportPatch] Registered BuildCreativeModeTabContentsEvent listener on NeoForge.");
@@ -126,6 +127,16 @@ public class CopperAgePatch {
                 LOGGER.info("[CopperAgeBackportPatch] Registered AddPackFindersEvent listener for copper_trims pack on NeoForge.");
             } catch (Throwable t) {
                 LOGGER.warn("[CopperAgeBackportPatch] Could not register AddPackFindersEvent listener for copper_trims pack: {}", t.getMessage());
+            }
+
+            // 6. RegisterColorHandlersEvent.Item -> Untinted modern spawn egg ItemColor
+            try {
+                Class<?> colorEventClass = Class.forName("net.neoforged.neoforge.client.event.RegisterColorHandlersEvent$Item");
+                Consumer<Object> colorConsumer = com.github.lunarea.copperagepatch.spawnegg.CopperSpawnEggPatcher::onNeoForgeRegisterColorHandlers;
+                addListenerMethod.invoke(eventBus, colorEventClass, colorConsumer);
+                LOGGER.info("[CopperAgeBackportPatch] Registered RegisterColorHandlersEvent$Item listener on NeoForge.");
+            } catch (Throwable t) {
+                LOGGER.warn("[CopperAgeBackportPatch] Could not register RegisterColorHandlersEvent$Item listener: {}", t.getMessage());
             }
         } catch (Throwable t) {
             LOGGER.warn("[CopperAgeBackportPatch] Failed to register NeoForge event bus listeners: {}", t.getMessage());

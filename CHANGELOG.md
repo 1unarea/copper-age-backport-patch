@@ -4,6 +4,17 @@ All notable changes to Copper Age Backport Patch are documented here.
 
 ---
 
+## 0.1.4
+
+### Added
+- **Creative Mode Spawn Eggs Tab Placement** — Copper Golem spawn egg is now registered into the Creative Mode Spawn Eggs tab on both NeoForge and Fabric loaders. It is ordered immediately before the Iron Golem spawn egg (and directly after Sulfur Cube spawn egg when Vanilla Backport is present, or after Sniffer spawn egg when absent), matching canonical mob category progression.
+
+### Fixed
+- **Spawn Egg Texture Tint Filter Removal** — Removed the dark copper color multiplication filter applied to the modern Copper Golem spawn egg by vanilla Minecraft's `SpawnEggItem` color handler. Modern custom icon textures now render with 100% true pixel fidelity, while retaining classic two-tone template coloration when classic mode is selected.
+- **Modern Spawn Egg Icon Fidelity** — Updated modern spawn egg icon to match official 16x16 RGBA asset specification.
+
+---
+
 ## 0.1.3
 
 ### Added

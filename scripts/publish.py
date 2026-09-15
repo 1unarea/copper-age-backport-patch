@@ -41,7 +41,7 @@ def get_mod_version():
     m = re.search(r"version\s*=\s*['\"]([^'\"]+)['\"]", content)
     if m:
         return m.group(1)
-    return "0.1.3"
+    return "0.1.4"
 
 def get_changelog(version):
     changelog_file = os.path.join(ROOT_DIR, "CHANGELOG.md")

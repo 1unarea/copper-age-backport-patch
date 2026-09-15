@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "copper_age_patch",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "name": "Copper Age Backport Patch",
   "description": "Adds durability fix, armor and tool trims, Jade tooltips, Better Combat, and Create integration for Copper Age Backport.",
   "authors": [
@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "com.github.lunarea.copperagepatch.fabric.CopperAgePatchFabric"
+    ],
+    "client": [
+      "com.github.lunarea.copperagepatch.fabric.CopperAgePatchFabricClient"
     ],
     "waila": [
       "com.github.lunarea.copperagepatch.compat.jade.CopperAgeJadePlugin"
