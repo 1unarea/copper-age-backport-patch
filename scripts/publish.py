@@ -51,7 +51,10 @@ def get_changelog(version):
         pattern = rf"##\s+\[?{re.escape(version)}\]?[^\n]*\n(.*?)(?=^##\s|\Z)"
         m = re.search(pattern, text, re.DOTALL | re.MULTILINE)
         if m:
-            return m.group(1).strip()
+            cl = m.group(1).strip()
+            if cl.endswith("---"):
+                cl = cl[:-3].strip()
+            return cl
     return f"Release v{version}"
 
 def publish_github(version, changelog):
