@@ -351,6 +351,26 @@ public final class CopperSpawnEggPatcher {
 
     /**
      * Performs the actual ItemColor registration. Called either immediately or from CLIENT_STARTED.
+    /**
+     * Resolves the ItemColor interface across Mojang/Yarn and Fabric Intermediary mappings.
+     */
+    public static Class<?> resolveItemColorInterface() {
+        for (String className : new String[]{
+                "net.minecraft.client.color.item.ItemColor",
+                "net.minecraft.class_326"
+        }) {
+            try {
+                Class<?> cls = Class.forName(className);
+                if (cls.isInterface()) {
+                    return cls;
+                }
+            } catch (Throwable ignored) {}
+        }
+        return null;
+    }
+
+    /**
+     * Performs the actual ItemColor registration. Called either immediately or from CLIENT_STARTED.
      * Tries ColorProviderRegistry first, then direct ItemColors injection.
      */
     private static void registerColorNow() {
@@ -358,6 +378,17 @@ public final class CopperSpawnEggPatcher {
             Object copperEgg = com.github.lunarea.copperagepatch.creative.CopperSpawnEggTabPatcher.getCopperGolemSpawnEgg();
             if (copperEgg == null) {
                 LOGGER.warn("[CopperAgeBackportPatch] Copper Golem spawn egg not found for Fabric client color registration.");
+                return;
+            }
+
+            Class<?> itemColorInterface = resolveItemColorInterface();
+            if (itemColorInterface == null) {
+                LOGGER.warn("[CopperAgeBackportPatch] ItemColor interface could not be resolved on Fabric.");
+                return;
+            }
+            Object colorProxy = createItemColorProxy(itemColorInterface);
+            if (colorProxy == null) {
+                LOGGER.warn("[CopperAgeBackportPatch] Could not create ItemColor proxy.");
                 return;
             }
 
@@ -385,10 +416,7 @@ public final class CopperSpawnEggPatcher {
                         }
                     }
                     if (registerMethod != null) {
-                        Class<?> providerInterface = registerMethod.getParameterTypes()[0];
                         Class<?> targetParam = registerMethod.getParameterTypes()[1];
-                        Object colorProxy = createItemColorProxy(providerInterface);
-
                         if (targetParam.isArray()) {
                             Class<?> compType = targetParam.getComponentType();
                             Object itemArray = Array.newInstance(compType, 1);
@@ -402,7 +430,7 @@ public final class CopperSpawnEggPatcher {
                 }
             }
         } catch (Throwable t) {
-            LOGGER.warn("[CopperAgeBackportPatch] Could not register ItemColor via Fabric ColorProviderRegistry: {}", t.getMessage());
+            LOGGER.warn("[CopperAgeBackportPatch] Could not register ItemColor via Fabric ColorProviderRegistry: {}", t.getMessage(), t);
         }
 
         // Always also try direct ItemColors injection — this wins even if ColorProviderRegistry
@@ -411,7 +439,6 @@ public final class CopperSpawnEggPatcher {
             registerDirectItemColorFallback();
         } catch (Throwable ignored) {}
     }
-
 
     private static void registerDirectItemColorFallback() {
         try {
@@ -442,13 +469,27 @@ public final class CopperSpawnEggPatcher {
                     if (itemColors != null) break;
                 } catch (Throwable ignored) {}
             }
+            if (itemColors == null) {
+                for (Field f : mcInstance.getClass().getDeclaredFields()) {
+                    if (f.getType().getName().contains("ItemColors") || f.getType().getName().endsWith(".class_919")) {
+                        try {
+                            f.setAccessible(true);
+                            itemColors = f.get(mcInstance);
+                            if (itemColors != null) break;
+                        } catch (Throwable ignored) {}
+                    }
+                }
+            }
             if (itemColors == null) return;
+
+            Class<?> itemColorInterface = resolveItemColorInterface();
+            if (itemColorInterface == null) return;
+            Object colorProxy = createItemColorProxy(itemColorInterface);
+            if (colorProxy == null) return;
 
             for (Method m : itemColors.getClass().getMethods()) {
                 if (("register".equals(m.getName()) || "method_1708".equals(m.getName())) && m.getParameterCount() == 2) {
-                    Class<?> providerType = m.getParameterTypes()[0];
                     Class<?> itemParam = m.getParameterTypes()[1];
-                    Object colorProxy = createItemColorProxy(providerType);
                     if (itemParam.isArray()) {
                         Object itemArr = Array.newInstance(itemParam.getComponentType(), 1);
                         Array.set(itemArr, 0, copperEgg);
@@ -468,6 +509,12 @@ public final class CopperSpawnEggPatcher {
      * when modern egg is enabled to cancel Minecraft's spawn egg tint filter.
      */
     public static Object createItemColorProxy(Class<?> interfaceClass) {
+        if (interfaceClass == null || !interfaceClass.isInterface()) {
+            interfaceClass = resolveItemColorInterface();
+        }
+        if (interfaceClass == null) {
+            return null;
+        }
         return Proxy.newProxyInstance(
                 CopperSpawnEggPatcher.class.getClassLoader(),
                 new Class<?>[]{interfaceClass},

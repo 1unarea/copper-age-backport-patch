@@ -209,24 +209,6 @@ public final class CopperSpawnEggTabPatcher {
                 return false;
             }
 
-            // Avoid duplicate insertion
-            try {
-                for (String methodName : new String[]{"getParentEntries", "getSearchEntries"}) {
-                    try {
-                        Method entriesMethod = event.getClass().getMethod(methodName);
-                        Object entriesSet = entriesMethod.invoke(event);
-                        if (entriesSet instanceof java.util.Collection<?> col) {
-                            for (Object itemObj : col) {
-                                if (isSameItem(itemObj, copperEgg)) {
-                                    LOGGER.debug("[CopperAgeBackportPatch] Copper Golem spawn egg already present in NeoForge Spawn Eggs tab via {}.", methodName);
-                                    return true;
-                                }
-                            }
-                        }
-                    } catch (Throwable ignored) {}
-                }
-            } catch (Throwable ignored) {}
-
             Object copperStack = getDefaultInstance(copperEgg);
             if (copperStack == null) {
                 return false;
@@ -234,9 +216,16 @@ public final class CopperSpawnEggTabPatcher {
 
             Object parentAndSearch = resolveTabVisibility("PARENT_AND_SEARCH_TABS");
 
+            // Remove any existing entry first so insertAfter/insertBefore won't throw "already exists"
+            // or leave the egg at the end of the tab if CAB previously called accept().
+            removeEggFromNeoForgeEntries(event, copperEgg, copperStack, parentAndSearch);
+
             // Primary strategy: insertAfter Cod spawn egg
             Object codEgg = getCodSpawnEgg();
-            Object codStack = codEgg != null ? getDefaultInstance(codEgg) : null;
+            Object codStack = findStackInNeoForgeEntries(event, codEgg);
+            if (codStack == null && codEgg != null) {
+                codStack = getDefaultInstance(codEgg);
+            }
 
             if (codStack != null) {
                 if (tryNeoForgeInsert(event, "insertAfter", codStack, copperStack, parentAndSearch)) {
@@ -247,7 +236,10 @@ public final class CopperSpawnEggTabPatcher {
 
             // Fallback 1: insertBefore Cow spawn egg
             Object cowEgg = getCowSpawnEgg();
-            Object cowStack = cowEgg != null ? getDefaultInstance(cowEgg) : null;
+            Object cowStack = findStackInNeoForgeEntries(event, cowEgg);
+            if (cowStack == null && cowEgg != null) {
+                cowStack = getDefaultInstance(cowEgg);
+            }
             if (cowStack != null) {
                 if (tryNeoForgeInsert(event, "insertBefore", cowStack, copperStack, parentAndSearch)) {
                     LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Cow spawn egg in NeoForge Spawn Eggs tab (fallback).");
@@ -277,6 +269,77 @@ public final class CopperSpawnEggTabPatcher {
         }
         return false;
     }
+
+    /**
+     * Finds an existing ItemStack inside the NeoForge creative tab event entries matching targetItem.
+     * Using the exact instance already present in parentEntries guarantees contains() check passes.
+     */
+    private static Object findStackInNeoForgeEntries(Object event, Object targetItem) {
+        if (event == null || targetItem == null) return null;
+        try {
+            for (String methodName : new String[]{"getParentEntries", "getSearchEntries"}) {
+                try {
+                    Method entriesMethod = event.getClass().getMethod(methodName);
+                    Object entriesSet = entriesMethod.invoke(event);
+                    if (entriesSet instanceof java.util.Collection<?> col) {
+                        for (Object stack : col) {
+                            if (isSameItem(stack, targetItem)) {
+                                return stack;
+                            }
+                        }
+                    }
+                } catch (Throwable ignored) {}
+            }
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    /**
+     * Removes the copper golem spawn egg from the NeoForge creative tab event entries
+     * using both collection removeIf and BuildCreativeModeTabContentsEvent.remove(ItemStack, TabVisibility).
+     */
+    private static void removeEggFromNeoForgeEntries(Object event, Object eggItem, Object copperStack, Object parentAndSearch) {
+        if (event == null || eggItem == null) return;
+        try {
+            for (String methodName : new String[]{"getParentEntries", "getSearchEntries"}) {
+                try {
+                    Method entriesMethod = event.getClass().getMethod(methodName);
+                    Object entriesSet = entriesMethod.invoke(event);
+                    if (entriesSet instanceof java.util.Collection<?> col) {
+                        col.removeIf(itemObj -> isSameItem(itemObj, eggItem));
+                    }
+                } catch (Throwable ignored) {}
+            }
+        } catch (Throwable ignored) {}
+
+        if (copperStack != null) {
+            removeFromNeoForgeTab(event, copperStack, parentAndSearch);
+        }
+    }
+
+    /**
+     * Removes the copper golem spawn egg from the NeoForge creative tab event entries
+     * using BuildCreativeModeTabContentsEvent.remove(ItemStack, TabVisibility).
+     * Silently ignores failure (egg might not be in tab yet).
+     */
+    private static void removeFromNeoForgeTab(Object event, Object copperStack, Object parentAndSearch) {
+        Method removeMethod = findMethod(event.getClass(), "remove", 2);
+        if (removeMethod == null) return;
+        removeMethod.setAccessible(true);
+
+        // Try with PARENT_AND_SEARCH_TABS first, then all other visibility constants
+        if (parentAndSearch != null) {
+            try { removeMethod.invoke(event, copperStack, parentAndSearch); return; } catch (Throwable ignored) {}
+        }
+        Class<?> visType = removeMethod.getParameterTypes()[1];
+        if (visType.isEnum()) {
+            for (Object vis : visType.getEnumConstants()) {
+                try { removeMethod.invoke(event, copperStack, vis); return; } catch (Throwable ignored) {}
+            }
+        }
+    }
+
+
 
     /**
      * Attempts a 3-param (anchor, stack, visibility) insert method, falling back through all
@@ -630,6 +693,15 @@ public final class CopperSpawnEggTabPatcher {
     private static boolean isSpawnEggsTab(Object tabKey) {
         if (tabKey == null) return false;
         if (SPAWN_EGGS_TAB_KEY != null && SPAWN_EGGS_TAB_KEY.equals(tabKey)) return true;
+        try {
+            Method locationMethod = tabKey.getClass().getMethod("location");
+            Object loc = locationMethod.invoke(tabKey);
+            if (loc != null) {
+                Method getPath = loc.getClass().getMethod("getPath");
+                Object path = getPath.invoke(loc);
+                if ("spawn_eggs".equals(path)) return true;
+            }
+        } catch (Throwable ignored) {}
         String s = tabKey.toString().toLowerCase();
         return s.contains("spawn_eggs");
     }

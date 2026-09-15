@@ -86,31 +86,42 @@ tasks.register('fabricJar', Jar) {
 }
 
 def defaultFabricProfileDir = file('/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/cabp fabric/mods')
-def targetModsDir = project.findProperty('modsDir') ? file(project.property('modsDir')) :
-                    (System.getenv('MODS_DIR') ? file(System.getenv('MODS_DIR')) :
-                    (defaultFabricProfileDir.exists() ? defaultFabricProfileDir : null))
+def defaultNeoForgeProfileDir = file('/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/cabp neoforge/mods')
 
-tasks.register('deployMod', Copy) {
+tasks.register('deployMod') {
     dependsOn tasks.named('jar'), tasks.named('fabricJar')
-    doFirst {
-        if (targetModsDir != null && targetModsDir.exists()) {
-            def currentJarName = "copper_age_patch-fabric-1.21.1-${project.version}.jar".toString()
-            targetModsDir.listFiles()?.each { f ->
-                if (f.name.startsWith('copper_age_patch-fabric-') && f.name != currentJarName) {
-                    println "Cleaning up stale mod jar: ${f.name}"
+    doLast {
+        def libsDir = layout.buildDirectory.dir('libs').get().asFile
+        def fabricJar = new File(libsDir, "copper_age_patch-fabric-1.21.1-${project.version}.jar")
+        def neoforgeJar = new File(libsDir, "copper_age_patch-neoforge-1.21.1-${project.version}.jar")
+
+        if (defaultFabricProfileDir.exists() && fabricJar.exists()) {
+            defaultFabricProfileDir.listFiles()?.each { f ->
+                if (f.name.startsWith('copper_age_patch-fabric-') && f.name != fabricJar.name) {
+                    println "Cleaning up stale fabric mod jar: ${f.name}"
                     f.delete()
                 }
             }
+            try {
+                new File(defaultFabricProfileDir, fabricJar.name).delete()
+            } catch (Throwable ignored) {}
+            ant.copy(file: fabricJar, todir: defaultFabricProfileDir, overwrite: true)
+            println "Deployed ${fabricJar.name} to ${defaultFabricProfileDir}"
         }
-    }
-    from(layout.buildDirectory.dir('libs')) {
-        if (targetModsDir != null && targetModsDir.getAbsolutePath().contains('cabp fabric')) {
-            include '*-fabric-*.jar'
+
+        if (defaultNeoForgeProfileDir.exists() && neoforgeJar.exists()) {
+            defaultNeoForgeProfileDir.listFiles()?.each { f ->
+                if (f.name.startsWith('copper_age_patch-neoforge-') && f.name != neoforgeJar.name) {
+                    println "Cleaning up stale neoforge mod jar: ${f.name}"
+                    f.delete()
+                }
+            }
+            try {
+                new File(defaultNeoForgeProfileDir, neoforgeJar.name).delete()
+            } catch (Throwable ignored) {}
+            ant.copy(file: neoforgeJar, todir: defaultNeoForgeProfileDir, overwrite: true)
+            println "Deployed ${neoforgeJar.name} to ${defaultNeoForgeProfileDir}"
         }
-    }
-    into targetModsDir ?: layout.buildDirectory.dir('deployed')
-    onlyIf {
-        targetModsDir != null && targetModsDir.exists()
     }
 }
 

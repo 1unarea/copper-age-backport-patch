@@ -157,7 +157,7 @@ public class CopperSpawnEggTabPlacementTest {
     }
 
     @Test
-    @DisplayName("Verify NeoForge tab placement prevents duplicate insertions")
+    @DisplayName("Verify NeoForge tab placement repositions already-present egg after Cod without duplicates")
     void testNeoForgeSpawnEggTabPlacementPreventsDuplicates() {
         Object tabKey = CopperSpawnEggTabPatcher.resolveSpawnEggsTabKey();
         Object copperEgg = CopperSpawnEggTabPatcher.getCopperGolemSpawnEgg();
@@ -168,8 +168,8 @@ public class CopperSpawnEggTabPlacementTest {
 
         MockNeoForgeEvent event = new MockNeoForgeEvent(tabKey, parentEntries, new HashSet<>());
         boolean result = CopperSpawnEggTabPatcher.applyNeoForgeSpawnEggTabPlacement(event);
-        assertTrue(result, "Should report already present without failing");
-        assertFalse(event.insertAfterCalled.get(), "insertAfter should NOT be called if already in tab");
+        assertTrue(result, "Should successfully reposition egg");
+        assertTrue(event.insertAfterCalled.get(), "insertAfter should be called to reposition after Cod");
     }
 
     @Test
