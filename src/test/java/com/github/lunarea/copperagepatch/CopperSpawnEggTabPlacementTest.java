@@ -55,13 +55,13 @@ public class CopperSpawnEggTabPlacementTest {
     }
 
     @Test
-    @DisplayName("Verify Iron Golem and Sniffer spawn egg items resolve from Minecraft jar")
+    @DisplayName("Verify Cod and Cow spawn egg items resolve from Minecraft jar")
     void testVanillaSpawnEggItemsResolution() {
-        Object ironEgg = CopperSpawnEggTabPatcher.getIronGolemSpawnEgg();
-        assertNotNull(ironEgg, "Iron Golem spawn egg must resolve from classpath");
+        Object codEgg = CopperSpawnEggTabPatcher.getCodSpawnEgg();
+        assertNotNull(codEgg, "Cod spawn egg must resolve from classpath");
 
-        Object snifferEgg = CopperSpawnEggTabPatcher.getSnifferSpawnEgg();
-        assertNotNull(snifferEgg, "Sniffer spawn egg must resolve from classpath");
+        Object cowEgg = CopperSpawnEggTabPatcher.getCowSpawnEgg();
+        assertNotNull(cowEgg, "Cow spawn egg must resolve from classpath");
     }
 
     public static class MockNeoForgeEvent {
@@ -104,6 +104,8 @@ public class CopperSpawnEggTabPlacementTest {
 
         public void insertAfter(ItemStack after, ItemStack stack, Object visibility) {
             insertAfterCalled.set(true);
+            beforeStackRef.set(after);
+            insertedStackRef.set(stack);
         }
 
         public void accept(ItemStack stack, Object visibility) {
@@ -113,6 +115,7 @@ public class CopperSpawnEggTabPlacementTest {
 
     public static class MockFabricEntries {
         public final AtomicBoolean addBeforeCalled = new AtomicBoolean(false);
+        public final AtomicBoolean addAfterCalled = new AtomicBoolean(false);
         public final AtomicReference<Object> targetRef = new AtomicReference<>();
         public final AtomicReference<Object[]> itemsRef = new AtomicReference<>();
         public final List<ItemStack> displayStacks = new ArrayList<>();
@@ -126,25 +129,31 @@ public class CopperSpawnEggTabPlacementTest {
             targetRef.set(target);
             itemsRef.set(items);
         }
+
+        public void addAfter(ItemLike target, ItemLike... items) {
+            addAfterCalled.set(true);
+            targetRef.set(target);
+            itemsRef.set(items);
+        }
     }
 
     @Test
-    @DisplayName("Verify NeoForge spawn egg tab placement inserts before Iron Golem")
-    void testNeoForgeSpawnEggTabPlacementBeforeIronGolem() {
+    @DisplayName("Verify NeoForge spawn egg tab placement inserts after Cod spawn egg")
+    void testNeoForgeSpawnEggTabPlacementAfterCod() {
         Object tabKey = CopperSpawnEggTabPatcher.resolveSpawnEggsTabKey();
         assertNotNull(tabKey);
 
         MockNeoForgeEvent event = new MockNeoForgeEvent(tabKey);
         boolean placed = CopperSpawnEggTabPatcher.applyNeoForgeSpawnEggTabPlacement(event);
         assertTrue(placed, "Placement should succeed");
-        assertTrue(event.insertBeforeCalled.get(), "Should call insertBefore");
-        assertNotNull(event.beforeStackRef.get(), "Target before stack must not be null");
+        assertTrue(event.insertAfterCalled.get(), "Should call insertAfter");
+        assertNotNull(event.beforeStackRef.get(), "Target after stack must not be null");
         assertNotNull(event.insertedStackRef.get(), "Inserted stack must not be null");
 
-        Object ironEgg = CopperSpawnEggTabPatcher.getIronGolemSpawnEgg();
-        assertNotNull(ironEgg);
-        assertTrue(CopperSpawnEggTabPatcher.isSameItem(event.beforeStackRef.get(), ironEgg),
-                "Target must be the Iron Golem spawn egg");
+        Object codEgg = CopperSpawnEggTabPatcher.getCodSpawnEgg();
+        assertNotNull(codEgg);
+        assertTrue(CopperSpawnEggTabPatcher.isSameItem(event.beforeStackRef.get(), codEgg),
+                "Target must be the Cod spawn egg");
     }
 
     @Test
@@ -160,24 +169,24 @@ public class CopperSpawnEggTabPlacementTest {
         MockNeoForgeEvent event = new MockNeoForgeEvent(tabKey, parentEntries, new HashSet<>());
         boolean result = CopperSpawnEggTabPatcher.applyNeoForgeSpawnEggTabPlacement(event);
         assertTrue(result, "Should report already present without failing");
-        assertFalse(event.insertBeforeCalled.get(), "insertBefore should NOT be called if already in tab");
+        assertFalse(event.insertAfterCalled.get(), "insertAfter should NOT be called if already in tab");
     }
 
     @Test
-    @DisplayName("Verify Fabric spawn egg tab placement inserts before Iron Golem")
-    void testFabricSpawnEggTabPlacementBeforeIronGolem() {
-        Object ironEgg = CopperSpawnEggTabPatcher.getIronGolemSpawnEgg();
+    @DisplayName("Verify Fabric spawn egg tab placement inserts after Cod spawn egg")
+    void testFabricSpawnEggTabPlacementAfterCod() {
+        Object codEgg = CopperSpawnEggTabPatcher.getCodSpawnEgg();
         Object copperEgg = CopperSpawnEggTabPatcher.getCopperGolemSpawnEgg();
-        assertNotNull(ironEgg);
+        assertNotNull(codEgg);
         assertNotNull(copperEgg);
 
         MockFabricEntries entries = new MockFabricEntries();
         boolean result = CopperSpawnEggTabPatcher.applyFabricSpawnEggTabPlacement(entries);
         assertTrue(result, "Fabric placement should succeed");
-        assertTrue(entries.addBeforeCalled.get(), "addBefore must be called");
+        assertTrue(entries.addAfterCalled.get(), "addAfter must be called");
         assertNotNull(entries.targetRef.get(), "Target must be set");
-        assertTrue(CopperSpawnEggTabPatcher.isSameItem(entries.targetRef.get(), ironEgg),
-                "Target must be Iron Golem spawn egg");
+        assertTrue(CopperSpawnEggTabPatcher.isSameItem(entries.targetRef.get(), codEgg),
+                "Target must be Cod spawn egg");
     }
 
     @Test
@@ -191,8 +200,9 @@ public class CopperSpawnEggTabPlacementTest {
 
         boolean result = CopperSpawnEggTabPatcher.applyFabricSpawnEggTabPlacement(entries);
         assertTrue(result, "Should report success when already present");
-        assertFalse(entries.addBeforeCalled.get(), "addBefore should NOT be called if already in displayStacks");
+        assertFalse(entries.addAfterCalled.get(), "addAfter should NOT be called if already in displayStacks");
     }
+
 
     @Test
     @DisplayName("Verify ItemColor provider returns -1 (no tint) when modern egg is enabled, and classic colors when disabled")

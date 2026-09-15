@@ -15,15 +15,15 @@ import java.util.function.Supplier;
 
 /**
  * Clean-room patcher placing the Copper Golem Spawn Egg into the Creative Mode
- * Spawn Eggs tab immediately before the Iron Golem Spawn Egg on both NeoForge and Fabric loaders.
+ * Spawn Eggs tab after the Cod Spawn Egg and before the Cow Spawn Egg, matching
+ * the 1.21.9 canonical ordering on both NeoForge and Fabric loaders.
  *
- * When Vanilla Backport is installed:
- *   Mooshroom -> Sniffer -> Sulfur Cube -> [Copper Golem] -> Iron Golem -> Snow Golem
- * When Vanilla Backport is not installed:
- *   Mooshroom -> Sniffer -> [Copper Golem] -> Iron Golem -> Snow Golem
+ * Canonical ordering (alphabetical):
+ *   ... -> Cod -> [Copper Golem] -> Cow -> ...
  *
- * Fallback: if Iron Golem spawn egg is absent, falls back to after Sulfur Cube (if present)
- * or after Sniffer, and finally accepts into the tab.
+ * Primary strategy:  insertAfter(cod_spawn_egg)  /  addAfter(cod_spawn_egg)
+ * Secondary fallback: insertBefore(cow_spawn_egg) / addBefore(cow_spawn_egg)
+ * Final fallback: accept / append
  *
  * Mapping-agnostic via reflection and dynamic proxies with ZERO net/minecraft/ class
  * references in method signatures or bytecode descriptors.
@@ -117,59 +117,49 @@ public final class CopperSpawnEggTabPatcher {
     }
 
     /**
-     * Resolves Iron Golem Spawn Egg item instance across loaders.
+     * Resolves Cod Spawn Egg item instance across loaders (primary anchor: insert after this).
+     * Intermediary: net.minecraft.class_1802.field_17350
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getIronGolemSpawnEgg() {
+    public static <T> T getCodSpawnEgg() {
         try {
             Class<?> itemsClass = Class.forName("net.minecraft.world.item.Items");
-            Object egg = itemsClass.getField("IRON_GOLEM_SPAWN_EGG").get(null);
+            Object egg = itemsClass.getField("COD_SPAWN_EGG").get(null);
             if (egg != null && !isAir(egg)) return (T) egg;
         } catch (Throwable ignored) {}
 
         try {
             Class<?> itemsClass = Class.forName("net.minecraft.class_1802");
-            Field f = itemsClass.getDeclaredField("field_8254");
+            Field f = itemsClass.getDeclaredField("field_17350");
             f.setAccessible(true);
             Object egg = f.get(null);
             if (egg != null && !isAir(egg)) return (T) egg;
         } catch (Throwable ignored) {}
 
-        return (T) getItemFromRegistry("minecraft", "iron_golem_spawn_egg");
+        return (T) getItemFromRegistry("minecraft", "cod_spawn_egg");
     }
 
     /**
-     * Resolves Sulfur Cube Spawn Egg item instance (if Vanilla Backport is present).
+     * Resolves Cow Spawn Egg item instance across loaders (secondary anchor: insert before this).
+     * Intermediary: net.minecraft.class_1802.field_8250
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getSulfurCubeSpawnEgg() {
-        Object egg = getItemFromRegistry("minecraft", "sulfur_cube_spawn_egg");
-        if (egg != null && !isAir(egg)) return (T) egg;
-        egg = getItemFromRegistry("vanillabackport", "sulfur_cube_spawn_egg");
-        if (egg != null && !isAir(egg)) return (T) egg;
-        return null;
-    }
-
-    /**
-     * Resolves Sniffer Spawn Egg item instance across loaders.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getSnifferSpawnEgg() {
+    public static <T> T getCowSpawnEgg() {
         try {
             Class<?> itemsClass = Class.forName("net.minecraft.world.item.Items");
-            Object egg = itemsClass.getField("SNIFFER_SPAWN_EGG").get(null);
+            Object egg = itemsClass.getField("COW_SPAWN_EGG").get(null);
             if (egg != null && !isAir(egg)) return (T) egg;
         } catch (Throwable ignored) {}
 
         try {
             Class<?> itemsClass = Class.forName("net.minecraft.class_1802");
-            Field f = itemsClass.getDeclaredField("field_42710");
+            Field f = itemsClass.getDeclaredField("field_8250");
             f.setAccessible(true);
             Object egg = f.get(null);
             if (egg != null && !isAir(egg)) return (T) egg;
         } catch (Throwable ignored) {}
 
-        return (T) getItemFromRegistry("minecraft", "sniffer_spawn_egg");
+        return (T) getItemFromRegistry("minecraft", "cow_spawn_egg");
     }
 
     /**
@@ -244,17 +234,17 @@ public final class CopperSpawnEggTabPatcher {
 
             Object parentAndSearch = resolveTabVisibility("PARENT_AND_SEARCH_TABS");
 
-            // Primary strategy: insertBefore Iron Golem spawn egg
-            Object ironEgg = getIronGolemSpawnEgg();
-            Object ironStack = ironEgg != null ? getDefaultInstance(ironEgg) : null;
+            // Primary strategy: insertAfter Cod spawn egg
+            Object codEgg = getCodSpawnEgg();
+            Object codStack = codEgg != null ? getDefaultInstance(codEgg) : null;
 
-            if (ironStack != null) {
-                Method insertBeforeMethod = findMethod(event.getClass(), "insertBefore", 3);
-                if (insertBeforeMethod != null) {
+            if (codStack != null) {
+                Method insertAfterMethod = findMethod(event.getClass(), "insertAfter", 3);
+                if (insertAfterMethod != null) {
                     try {
-                        insertBeforeMethod.setAccessible(true);
-                        insertBeforeMethod.invoke(event, ironStack, copperStack, parentAndSearch);
-                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Iron Golem spawn egg in NeoForge Spawn Eggs tab.");
+                        insertAfterMethod.setAccessible(true);
+                        insertAfterMethod.invoke(event, codStack, copperStack, parentAndSearch);
+                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Cod spawn egg in NeoForge Spawn Eggs tab.");
                         return true;
                     } catch (Throwable t) {
                         Throwable cause = (t instanceof java.lang.reflect.InvocationTargetException ite && ite.getCause() != null) ? ite.getCause() : t;
@@ -265,37 +255,22 @@ public final class CopperSpawnEggTabPatcher {
                 }
             }
 
-            // Fallback 1: insertAfter Sulfur Cube spawn egg (Vanilla Backport)
-            Object sulfurEgg = getSulfurCubeSpawnEgg();
-            Object sulfurStack = sulfurEgg != null ? getDefaultInstance(sulfurEgg) : null;
-            if (sulfurStack != null) {
-                Method insertAfterMethod = findMethod(event.getClass(), "insertAfter", 3);
-                if (insertAfterMethod != null) {
+            // Fallback 1: insertBefore Cow spawn egg
+            Object cowEgg = getCowSpawnEgg();
+            Object cowStack = cowEgg != null ? getDefaultInstance(cowEgg) : null;
+            if (cowStack != null) {
+                Method insertBeforeMethod = findMethod(event.getClass(), "insertBefore", 3);
+                if (insertBeforeMethod != null) {
                     try {
-                        insertAfterMethod.setAccessible(true);
-                        insertAfterMethod.invoke(event, sulfurStack, copperStack, parentAndSearch);
-                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Sulfur Cube spawn egg in NeoForge Spawn Eggs tab (fallback).");
+                        insertBeforeMethod.setAccessible(true);
+                        insertBeforeMethod.invoke(event, cowStack, copperStack, parentAndSearch);
+                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Cow spawn egg in NeoForge Spawn Eggs tab (fallback).");
                         return true;
                     } catch (Throwable ignored) {}
                 }
             }
 
-            // Fallback 2: insertAfter Sniffer spawn egg
-            Object snifferEgg = getSnifferSpawnEgg();
-            Object snifferStack = snifferEgg != null ? getDefaultInstance(snifferEgg) : null;
-            if (snifferStack != null) {
-                Method insertAfterMethod = findMethod(event.getClass(), "insertAfter", 3);
-                if (insertAfterMethod != null) {
-                    try {
-                        insertAfterMethod.setAccessible(true);
-                        insertAfterMethod.invoke(event, snifferStack, copperStack, parentAndSearch);
-                        LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Sniffer spawn egg in NeoForge Spawn Eggs tab (fallback).");
-                        return true;
-                    } catch (Throwable ignored) {}
-                }
-            }
-
-            // Fallback 3: accept / append
+            // Fallback 2: accept / append
             Method acceptMethod = null;
             for (Method m : event.getClass().getMethods()) {
                 if ("accept".equals(m.getName())) {
@@ -322,6 +297,7 @@ public final class CopperSpawnEggTabPatcher {
         }
         return false;
     }
+
 
     /**
      * Fabric hook: registers with Fabric API ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).
@@ -415,28 +391,21 @@ public final class CopperSpawnEggTabPatcher {
             }
         } catch (Throwable ignored) {}
 
-        // Primary strategy: addBefore Iron Golem spawn egg
-        Object ironEgg = getIronGolemSpawnEgg();
-        if (ironEgg != null && tryFabricAddBefore(entries, ironEgg, copperEgg, copperStack)) {
-            LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Iron Golem spawn egg in FabricItemGroupEntries.");
+        // Primary strategy: addAfter Cod spawn egg
+        Object codEgg = getCodSpawnEgg();
+        if (codEgg != null && tryFabricAddAfter(entries, codEgg, copperEgg, copperStack)) {
+            LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Cod spawn egg in FabricItemGroupEntries.");
             return true;
         }
 
-        // Fallback 1: addAfter Sulfur Cube spawn egg
-        Object sulfurEgg = getSulfurCubeSpawnEgg();
-        if (sulfurEgg != null && tryFabricAddAfter(entries, sulfurEgg, copperEgg, copperStack)) {
-            LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Sulfur Cube spawn egg in FabricItemGroupEntries (fallback).");
+        // Fallback 1: addBefore Cow spawn egg
+        Object cowEgg = getCowSpawnEgg();
+        if (cowEgg != null && tryFabricAddBefore(entries, cowEgg, copperEgg, copperStack)) {
+            LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg before Cow spawn egg in FabricItemGroupEntries (fallback).");
             return true;
         }
 
-        // Fallback 2: addAfter Sniffer spawn egg
-        Object snifferEgg = getSnifferSpawnEgg();
-        if (snifferEgg != null && tryFabricAddAfter(entries, snifferEgg, copperEgg, copperStack)) {
-            LOGGER.info("[CopperAgeBackportPatch] Inserted Copper Golem spawn egg after Sniffer spawn egg in FabricItemGroupEntries (fallback).");
-            return true;
-        }
-
-        // Fallback 3: prepend
+        // Fallback 2: prepend
         try {
             for (Method m : entries.getClass().getMethods()) {
                 if ("prepend".equals(m.getName()) && m.getParameterCount() == 1) {
@@ -454,7 +423,7 @@ public final class CopperSpawnEggTabPatcher {
             }
         } catch (Throwable ignored) {}
 
-        // Fallback 4: displayStacks.add
+        // Fallback 3: displayStacks.add
         try {
             Method getDisplayStacksMethod = entries.getClass().getMethod("getDisplayStacks");
             Object list = getDisplayStacksMethod.invoke(entries);
@@ -467,6 +436,7 @@ public final class CopperSpawnEggTabPatcher {
 
         return false;
     }
+
 
     private static boolean tryFabricAddBefore(Object entries, Object targetItem, Object copperEgg, Object copperStack) {
         Object targetStack = getDefaultInstance(targetItem);
