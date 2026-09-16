@@ -11,6 +11,8 @@ All notable changes to Copper Age Backport Patch are documented here.
 - **Recipe Viewer Item Display**: Configured the Pale Oak Shelf recipe to use direct item references with mod-loading conditions, ensuring recipe viewers (such as EMI, JEI, and REI) display clean item icons without hashtag (#) tag badges.
 
 ### Fixed
+- **Vanilla Copper Block Translation Restoration**: Restored official vanilla Minecraft translations across all 30 non-English languages for 42 copper blocks and subtitles (Copper Doors, Copper Trapdoors, Copper Bulbs, Copper Grates, and Chiseled Copper variants) that were unintentionally overridden with English by Copper Age Backport.
+- **Turkish Localization Corrections**: Fixed typos and unidiomatic translations in CAB's Turkish language file (`item.minecraft.copper_pickaxe` -> "Bakır Kazma", `item.minecraft.copper_horse_armor` -> "Bakır At Zırhı", `block.minecraft.copper_bars` -> "Bakır Parmaklık", `subtitles.block.copper_chest.*` -> "Bakır Sandık açıldı / kapandı", and aligned oxidized lightning rods with vanilla oxidation terminology).
 - **Recipe Ingredient Restrictions**: Removed stripped pale oak wood from shelf recipe inputs, strictly enforcing that shelves can only be crafted from stripped logs, consistent with all other wooden shelves in the mod.
 - **Creative Tab Stability**: Preserved established canonical placements (Copper Axe after Stone Axe in Combat tab, and Copper Golem Spawn Egg after Cod Spawn Egg in Spawn Eggs tab) while avoiding intrusive creative inventory reordering.
 

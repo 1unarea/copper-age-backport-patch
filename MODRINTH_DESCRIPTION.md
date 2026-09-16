@@ -13,6 +13,10 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://mo
 
 ## Features
 
+* **Vanilla Copper Translation Restoration & Localization Fixes**
+  * Restores official vanilla translations across all 30 non-English languages for 42 copper blocks and subtitles (Copper Doors, Copper Trapdoors, Copper Bulbs, Copper Grates, and Chiseled Copper variants) that were unintentionally overwritten with English by upstream Copper Age Backport.
+  * Corrects typos and unidiomatic terminology in Turkish (`item.minecraft.copper_pickaxe` -> "Bakır Kazma", `item.minecraft.copper_horse_armor` -> "Bakır At Zırhı", `block.minecraft.copper_bars` -> "Bakır Parmaklık", and chest subtitles).
+
 * **Pale Oak Shelf Crafting Recipe**
   * Adds the missing shaped crafting recipe for the Pale Oak Shelf (`minecraft:pale_oak_shelf`) using Stripped Pale Oak Logs (`minecraft:stripped_pale_oak_log`), restoring recipe parity with all other wooden shelf types in Copper Age Backport.
 

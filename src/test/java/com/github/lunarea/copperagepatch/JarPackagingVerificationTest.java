@@ -69,6 +69,8 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("resourcepacks/modern_copper_golem_spawn_egg/assets/minecraft/textures/item/copper_golem_spawn_egg.png"), "modern spawn egg texture missing in jar");
             assertNotNull(zip.getEntry("assets/minecraft/textures/trims/color_palettes/copper_darker.png"), "copper_darker palette missing in jar");
             assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in jar");
+            assertNotNull(zip.getEntry("assets/minecraft/lang/tr_tr.json"), "tr_tr.json missing in jar");
+            assertNotNull(zip.getEntry("assets/minecraft/lang/de_de.json"), "de_de.json missing in jar");
 
             // Verify neoforge.mods.toml contents
             ZipEntry tomlEntry = zip.getEntry("META-INF/neoforge.mods.toml");
@@ -178,6 +180,8 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("resourcepacks/modern_copper_golem_spawn_egg/assets/minecraft/textures/item/copper_golem_spawn_egg.png"), "modern spawn egg texture missing in Fabric jar");
             assertNotNull(zip.getEntry("assets/minecraft/textures/trims/color_palettes/copper_darker.png"), "copper_darker palette missing in Fabric jar");
             assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in Fabric jar");
+            assertNotNull(zip.getEntry("assets/minecraft/lang/tr_tr.json"), "tr_tr.json missing in Fabric jar");
+            assertNotNull(zip.getEntry("assets/minecraft/lang/de_de.json"), "de_de.json missing in Fabric jar");
 
             ZipEntry fabricEntry = zip.getEntry("fabric.mod.json");
             try (InputStream is = zip.getInputStream(fabricEntry)) {

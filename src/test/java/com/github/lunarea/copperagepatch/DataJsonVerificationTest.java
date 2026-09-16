@@ -411,4 +411,89 @@ public class DataJsonVerificationTest {
             }
         }
     }
+
+    @Test
+    @DisplayName("Verify Vanilla Copper Block translation restoration and Turkish typo fixes")
+    void testVanillaCopperTranslationRestoration() throws Exception {
+        List<String> langCodes = List.of(
+                "af_za", "ar_sa", "ca_es", "cs_cz", "da_dk", "de_de", "el_gr",
+                "es_es", "es_mx", "fi_fi", "fr_fr", "he_il", "hu_hu", "it_it",
+                "ja_jp", "ko_kr", "nl_nl", "no_no", "pl_pl", "pt_br", "pt_pt",
+                "ro_ro", "ru_ru", "sr_SP", "sr_sp", "sv_se", "tr_tr", "uk_ua",
+                "vi_vn", "zh_cn", "zh_tw"
+        );
+
+        List<String> vanillaCopperKeys = List.of(
+                "block.minecraft.copper_door",
+                "block.minecraft.exposed_copper_door",
+                "block.minecraft.weathered_copper_door",
+                "block.minecraft.oxidized_copper_door",
+                "block.minecraft.waxed_copper_door",
+                "block.minecraft.waxed_exposed_copper_door",
+                "block.minecraft.waxed_weathered_copper_door",
+                "block.minecraft.waxed_oxidized_copper_door",
+                "block.minecraft.copper_trapdoor",
+                "block.minecraft.exposed_copper_trapdoor",
+                "block.minecraft.weathered_copper_trapdoor",
+                "block.minecraft.oxidized_copper_trapdoor",
+                "block.minecraft.waxed_copper_trapdoor",
+                "block.minecraft.waxed_exposed_copper_trapdoor",
+                "block.minecraft.waxed_weathered_copper_trapdoor",
+                "block.minecraft.waxed_oxidized_copper_trapdoor",
+                "block.minecraft.copper_bulb",
+                "block.minecraft.exposed_copper_bulb",
+                "block.minecraft.weathered_copper_bulb",
+                "block.minecraft.oxidized_copper_bulb",
+                "block.minecraft.waxed_copper_bulb",
+                "block.minecraft.waxed_exposed_copper_bulb",
+                "block.minecraft.waxed_weathered_copper_bulb",
+                "block.minecraft.waxed_oxidized_copper_bulb",
+                "block.minecraft.copper_grate",
+                "block.minecraft.exposed_copper_grate",
+                "block.minecraft.weathered_copper_grate",
+                "block.minecraft.oxidized_copper_grate",
+                "block.minecraft.waxed_copper_grate",
+                "block.minecraft.waxed_exposed_copper_grate",
+                "block.minecraft.waxed_weathered_copper_grate",
+                "block.minecraft.waxed_oxidized_copper_grate",
+                "block.minecraft.chiseled_copper",
+                "block.minecraft.exposed_chiseled_copper",
+                "block.minecraft.weathered_chiseled_copper",
+                "block.minecraft.oxidized_chiseled_copper",
+                "block.minecraft.waxed_chiseled_copper",
+                "block.minecraft.waxed_exposed_chiseled_copper",
+                "block.minecraft.waxed_weathered_chiseled_copper",
+                "block.minecraft.waxed_oxidized_chiseled_copper",
+                "subtitles.block.copper_bulb.turn_on",
+                "subtitles.block.copper_bulb.turn_off"
+        );
+
+        for (String lang : langCodes) {
+            String path = "assets/minecraft/lang/" + lang + ".json";
+            JsonObject json = parseResourceJson(path);
+
+            for (String key : vanillaCopperKeys) {
+                assertTrue(json.has(key), path + " must define restored key: " + key);
+                assertFalse(json.get(key).getAsString().isBlank(), path + " key must not be blank: " + key);
+            }
+        }
+
+        // Detailed Turkish verification
+        JsonObject trJson = parseResourceJson("assets/minecraft/lang/tr_tr.json");
+        assertEquals("Bakır Kapı", trJson.get("block.minecraft.copper_door").getAsString());
+        assertEquals("Bakır Tuzak Kapısı", trJson.get("block.minecraft.copper_trapdoor").getAsString());
+        assertEquals("Bakır Ampul", trJson.get("block.minecraft.copper_bulb").getAsString());
+        assertEquals("Bakır Izgara", trJson.get("block.minecraft.copper_grate").getAsString());
+        assertEquals("Yontulmuş Bakır", trJson.get("block.minecraft.chiseled_copper").getAsString());
+
+        // Corrected CAB Turkish typos
+        assertEquals("Bakır Kazma", trJson.get("item.minecraft.copper_pickaxe").getAsString(),
+                "Typo fix: 'Bakır Kazm' -> 'Bakır Kazma'");
+        assertEquals("Bakır At Zırhı", trJson.get("item.minecraft.copper_horse_armor").getAsString(),
+                "Typo fix: 'Bakır At Zırh' -> 'Bakır At Zırhı'");
+        assertEquals("Bakır Parmaklık", trJson.get("block.minecraft.copper_bars").getAsString(),
+                "Terminology fix: 'Bakır Barlar' -> 'Bakır Parmaklık'");
+        assertEquals("Bakır Sandık kapandı", trJson.get("subtitles.block.copper_chest.close").getAsString());
+        assertEquals("Bakır Sandık açıldı", trJson.get("subtitles.block.copper_chest.open").getAsString());
+    }
 }
