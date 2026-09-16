@@ -382,8 +382,8 @@ public class DataJsonVerificationTest {
         JsonObject key = recipe.getAsJsonObject("key");
         assertTrue(key.has("#"), "Key must have '#' definition");
         JsonObject keyDef = key.getAsJsonObject("#");
-        assertEquals("vanillabackport:stripped_pale_oak_log", keyDef.get("item").getAsString(),
-                "Key must point to item vanillabackport:stripped_pale_oak_log");
+        assertEquals("minecraft:stripped_pale_oak_log", keyDef.get("item").getAsString(),
+                "Key must point to item minecraft:stripped_pale_oak_log");
 
         // 2. Verify tags
         List<String> tagPaths = List.of(

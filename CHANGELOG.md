@@ -7,7 +7,7 @@ All notable changes to Copper Age Backport Patch are documented here.
 ## 1.1.0
 
 ### Added
-- **Pale Oak Shelf Crafting Recipe**: Added missing 3x3 shaped crafting recipe for the Pale Oak Shelf (`minecraft:pale_oak_shelf`) using Stripped Pale Oak Logs (`vanillabackport:stripped_pale_oak_log`), restoring recipe parity with all other wooden shelf types in Copper Age Backport.
+- **Pale Oak Shelf Crafting Recipe**: Added missing 3x3 shaped crafting recipe for the Pale Oak Shelf (`minecraft:pale_oak_shelf`) using Stripped Pale Oak Logs (`minecraft:stripped_pale_oak_log`), restoring recipe parity with all other wooden shelf types in Copper Age Backport.
 - **Recipe Viewer Item Display**: Configured the Pale Oak Shelf recipe to use direct item references with mod-loading conditions, ensuring recipe viewers (such as EMI, JEI, and REI) display clean item icons without hashtag (#) tag badges.
 
 ### Fixed

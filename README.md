@@ -51,7 +51,7 @@ Across both loaders, this patch restores canonical armor durability, enables cop
 
 ### 5. Pale Oak Shelf Crafting Recipe
 * In upstream Copper Age Backport, all wood type shelves have shaped crafting recipes except the Pale Oak Shelf (`minecraft:pale_oak_shelf`).
-* This patch restores the missing 3x3 shaped crafting recipe: 3 stripped pale oak logs across the top row, empty middle row, and 3 stripped pale oak logs across the bottom row produce 6 Pale Oak Shelves using `vanillabackport:stripped_pale_oak_log`.
+* This patch restores the missing 3x3 shaped crafting recipe: 3 stripped pale oak logs across the top row, empty middle row, and 3 stripped pale oak logs across the bottom row produce 6 Pale Oak Shelves using `minecraft:stripped_pale_oak_log`.
 * Strictly accepts stripped logs only (no wood blocks), consistent with all other wooden shelves in the mod.
 
 ### 6. Smithing Trim Integration: Armor vs. Tools

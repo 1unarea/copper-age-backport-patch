@@ -14,7 +14,7 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://mo
 ## Features
 
 * **Pale Oak Shelf Crafting Recipe**
-  * Adds the missing shaped crafting recipe for the Pale Oak Shelf (`minecraft:pale_oak_shelf`) using Stripped Pale Oak Logs (`vanillabackport:stripped_pale_oak_log`), restoring recipe parity with all other wooden shelf types in Copper Age Backport.
+  * Adds the missing shaped crafting recipe for the Pale Oak Shelf (`minecraft:pale_oak_shelf`) using Stripped Pale Oak Logs (`minecraft:stripped_pale_oak_log`), restoring recipe parity with all other wooden shelf types in Copper Age Backport.
 
 * **Armor Trims (Vanilla Smithing Table)**
   * Copper armor pieces (Helmet, Chestplate, Leggings, Boots) can be trimmed with vanilla armor trim templates without needing any other mod.
