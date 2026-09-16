@@ -57,6 +57,7 @@ Across both loaders, this patch restores canonical armor durability, enables cop
 ### 6. Vanilla Copper Translation Restoration & Localization Fixes
 * **Restored Vanilla Translations**: Upstream Copper Age Backport inadvertently bundled raw English names for 42 copper blocks and subtitles that were already part of vanilla Minecraft 1.21 (Copper Doors, Copper Trapdoors, Copper Bulbs, Copper Grates, and Chiseled Copper blocks across all weathered and waxed stages). This caused vanilla translations to be overwritten with English whenever non-English languages were selected.
 * This patch restores authentic, official vanilla translations across all 30 non-English languages supported by CAB (`assets/minecraft/lang/`).
+* **High-Priority Pack Overrides**: To guarantee that restored translations win over upstream CAB regardless of alphabetical mod-ID load ordering (`copper_age_patch` vs `copperagebackport`) on both Fabric and NeoForge, localization files are embedded in both the root mod assets and the always-enabled built-in resource pack placed at `Pack.Position.TOP`.
 * **Turkish Localization Corrections**: Resolves upstream typos and unidiomatic terminology in Turkish (`tr_tr.json`):
   * `item.minecraft.copper_pickaxe`: "Bakır Kazm" -> "Bakır Kazma"
   * `item.minecraft.copper_horse_armor`: "Bakır At Zırh" -> "Bakır At Zırhı"

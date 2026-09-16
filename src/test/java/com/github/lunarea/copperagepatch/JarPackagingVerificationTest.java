@@ -67,6 +67,9 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("assets/tooltrims/models/trims/copper_sword_linear_amethyst.json"), "copper_sword_linear_amethyst trim model missing in jar");
             assertNotNull(zip.getEntry("resourcepacks/modern_copper_golem_spawn_egg/pack.mcmeta"), "modern spawn egg pack.mcmeta missing in jar");
             assertNotNull(zip.getEntry("resourcepacks/modern_copper_golem_spawn_egg/assets/minecraft/textures/item/copper_golem_spawn_egg.png"), "modern spawn egg texture missing in jar");
+            assertNotNull(zip.getEntry("resourcepacks/copper_trims/pack.mcmeta"), "copper_trims pack.mcmeta missing in jar");
+            assertNotNull(zip.getEntry("resourcepacks/copper_trims/assets/minecraft/lang/tr_tr.json"), "copper_trims tr_tr.json missing in jar");
+            assertNotNull(zip.getEntry("resourcepacks/copper_trims/assets/minecraft/lang/de_de.json"), "copper_trims de_de.json missing in jar");
             assertNotNull(zip.getEntry("assets/minecraft/textures/trims/color_palettes/copper_darker.png"), "copper_darker palette missing in jar");
             assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in jar");
             assertNotNull(zip.getEntry("assets/minecraft/lang/tr_tr.json"), "tr_tr.json missing in jar");
@@ -178,6 +181,9 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("assets/tooltrims/models/trims/copper_sword_linear_amethyst.json"), "copper_sword_linear_amethyst trim model missing in Fabric jar");
             assertNotNull(zip.getEntry("resourcepacks/modern_copper_golem_spawn_egg/pack.mcmeta"), "modern spawn egg pack.mcmeta missing in Fabric jar");
             assertNotNull(zip.getEntry("resourcepacks/modern_copper_golem_spawn_egg/assets/minecraft/textures/item/copper_golem_spawn_egg.png"), "modern spawn egg texture missing in Fabric jar");
+            assertNotNull(zip.getEntry("resourcepacks/copper_trims/pack.mcmeta"), "copper_trims pack.mcmeta missing in Fabric jar");
+            assertNotNull(zip.getEntry("resourcepacks/copper_trims/assets/minecraft/lang/tr_tr.json"), "copper_trims tr_tr.json missing in Fabric jar");
+            assertNotNull(zip.getEntry("resourcepacks/copper_trims/assets/minecraft/lang/de_de.json"), "copper_trims de_de.json missing in Fabric jar");
             assertNotNull(zip.getEntry("assets/minecraft/textures/trims/color_palettes/copper_darker.png"), "copper_darker palette missing in Fabric jar");
             assertNotNull(zip.getEntry("assets/copper_age_patch/lang/en_us.json"), "en_us.json missing in Fabric jar");
             assertNotNull(zip.getEntry("assets/minecraft/lang/tr_tr.json"), "tr_tr.json missing in Fabric jar");

@@ -15,8 +15,8 @@ import java.util.Optional;
  * (e.g. {@code copperagebackport}).
  *
  * <p>The pack is unconditionally {@code ALWAYS_ENABLED} and placed at {@code Pack.Position.TOP}
- * so that all copper armor and tool models with trim predicate overrides are respected regardless
- * of alphabetical mod-ID ordering in the resource manager.</p>
+ * so that all copper armor and tool models with trim predicate overrides and restored vanilla
+ * localization files are respected regardless of alphabetical mod-ID ordering in the resource manager.</p>
  *
  * <p>Implemented mapping-agnostically via reflection — zero {@code net/minecraft/} class references
  * in method signatures or bytecode descriptors.</p>
@@ -26,7 +26,7 @@ public final class CopperTrimsPatcher {
 
     public static final String PACK_ID      = "copper_trims";
     public static final String PACK_SUBPATH = "resourcepacks/copper_trims";
-    public static final String PACK_DISPLAY = "Copper Equipment Trim Models";
+    public static final String PACK_DISPLAY = "Copper Equipment Trim Models & Overrides";
 
     private static volatile boolean fabricInitialized = false;
 
