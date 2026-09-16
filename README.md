@@ -46,19 +46,24 @@ Across both loaders, this patch restores canonical armor durability, enables cop
 * Restores natural gear maintenance without requiring creative workarounds or item replacement.
 
 ### 4. Creative Inventory Tab Ordering
-* **Copper Axe in Combat Tab**: In vanilla Minecraft, all axes appear in both the Tools & Utilities tab and the Combat tab. Upstream omitted the Copper Axe from the Combat tab. It is now positioned in the Creative Combat tab directly after Stone Axe and before Iron Axe (Wooden -> Stone -> Copper -> Iron).
+* **Copper Axe in Combat Tab**: In vanilla Minecraft, all axes appear in both the Tools & Utilities tab and the Combat tab. Upstream omitted the Copper Axe from the Combat tab. It is now positioned in the Creative Combat tab directly after Stone Axe and before Iron Axe (`Wooden -> Stone -> Copper -> Iron`).
 * **Copper Golem Spawn Egg Placement**: Upstream placed the spawn egg at the very end of the creative tab. It is now repositioned in the Creative Spawn Eggs tab directly after the Cod Spawn Egg and before the Cow Spawn Egg, exactly matching vanilla Minecraft 1.21.9 release order.
 
-### 5. Smithing Trim Integration: Armor vs. Tools
+### 5. Pale Oak Shelf Crafting Recipe
+* In upstream Copper Age Backport, all wood type shelves have shaped crafting recipes except the Pale Oak Shelf (`minecraft:pale_oak_shelf`).
+* This patch restores the missing 3x3 shaped crafting recipe: 3 stripped pale oak logs across the top row, empty middle row, and 3 stripped pale oak logs across the bottom row produce 6 Pale Oak Shelves using `vanillabackport:stripped_pale_oak_log`.
+* Strictly accepts stripped logs only (no wood blocks), consistent with all other wooden shelves in the mod.
+
+### 6. Smithing Trim Integration: Armor vs. Tools
 It is important to distinguish between how armor trims and tool trims work in this mod:
 
-#### 5.1 Copper Armor Trims (Native Vanilla Feature - No Other Mods Required)
+#### 6.1 Copper Armor Trims (Native Vanilla Feature - No Other Mods Required)
 * Copper armor pieces (Helmet, Chestplate, Leggings, Boots) can be trimmed at a Smithing Table out of the box using standard vanilla armor trim smithing templates.
 * Adds model override definitions across all 4 armor pieces for all 10 standard trim materials (`trim_type` predicates from 0.1 to 1.0), with 44 discrete item models.
 * Includes a custom `copper_darker` palette permutation in `assets/minecraft/atlases/blocks.json` so copper trims applied to copper armor maintain high visual contrast, matching vanilla gold-on-gold and iron-on-iron conventions.
 * Preserves in-world player 3D entity armor trim rendering.
 
-#### 5.2 Tool Trims Compatibility (Optional Mod Integration - Requires Tool Trims)
+#### 6.2 Tool Trims Compatibility (Optional Mod Integration - Requires Tool Trims)
 * Note: This mod does NOT add standalone tool trimming on its own. It is specifically an integration layer for the [Tool Trims](https://modrinth.com/mod/tool-trims) mod.
 * If Tool Trims is installed, all 5 copper tools (Copper Sword, Copper Axe, Copper Pickaxe, Copper Shovel, and Copper Hoe) become trimmable at a Smithing Table.
 * Supports all 4 Tool Trims patterns (Linear, Tracks, Charge, Frost) and all 10 trim materials (Amethyst, Copper, Diamond, Emerald, Gold, Iron, Lapis, Netherite, Quartz, Redstone), providing 200 data-driven smithing recipes.
@@ -66,11 +71,11 @@ It is important to distinguish between how armor trims and tool trims work in th
 * Z-Fighting Elimination: Trim models utilize Tool Trims layer architecture (layer0 mapped to `tooltrims:item/trim_bases/iron_<tool>_<pattern>` overlay) to eliminate coplanar z-fighting artifacts in first-person and world rendering.
 * Copper tools are dynamically enrolled into `#tooltrims:trimmable_tools` as well as standard vanilla tool tags (`#minecraft:swords`, `#minecraft:axes`, etc.).
 
-#### 5.3 High-Priority Built-In Resource Pack
+#### 6.3 High-Priority Built-In Resource Pack
 * To ensure copper equipment models with trim overrides are not masked by upstream plain models due to pack load order, models are packaged into an always-enabled built-in resource pack (`copper_trims`).
 * Registered via `ResourceManagerHelper.registerBuiltinResourcePack` (ALWAYS_ENABLED) on Fabric and `AddPackFindersEvent` (Pack.Position.TOP) on NeoForge.
 
-### 6. Conditional Modern Copper Golem Spawn Egg & Tint Handling
+### 7. Conditional Modern Copper Golem Spawn Egg & Tint Handling
 * Conditionally replaces the classic dotted spawn egg icon with the modern detailed Copper Golem spawn egg texture when [Vanilla Backport](https://modrinth.com/mod/vanilla-backport) is installed.
 * Provides clean, native texture rendering across both NeoForge and Fabric loaders without color filter distortions or tint registry bugs.
 * Configurable via `config/copper_age_patch.json`:
@@ -78,30 +83,30 @@ It is important to distinguish between how armor trims and tool trims work in th
   * `"MODERN"`: Forces the modern detailed texture.
   * `"CLASSIC"`: Forces the classic vanilla dotted texture.
 
-### 7. In-Game Guide Pages (JEI / EMI / REI)
+### 8. In-Game Guide Pages (JEI / EMI / REI)
 * Built-in recipe and information pages for Just Enough Items (JEI), EMI, and Roughly Enough Items (REI) covering:
   * Copper Golem creation and antenna items (holding flowers or decorative blocks).
   * Oxidation stages (Unaffected, Exposed, Weathered, Oxidized) and waxing with Honeycomb.
   * De-oxidation mechanics using an axe or lightning strikes via lightning rods.
-  * Copper Shelf interactions and storage mechanics.
+  * Shelf interactions and storage mechanics.
   * Anvil repair recipes with Copper Ingots.
   * Tool Trims smithing template guides.
 
-### 8. Jade HUD Integration
+### 9. Jade HUD Integration
 * Antenna Items: Detects and displays items placed on the Copper Golem antenna (such as the poppy flower gifted by an Iron Golem).
 * Weathering & Waxing: Displays the current oxidation stage (Unaffected, Exposed, Weathered, Oxidized) and whether the golem or statue is waxed.
 * Held Items: Displays the item currently held by the Copper Golem.
-* Shelf Inventories: Provides full visual inventory previews when looking at Copper Shelves via [Jade](https://modrinth.com/mod/jade).
+* Shelf Inventories: Provides full visual inventory previews when looking at Shelves via [Jade](https://modrinth.com/mod/jade).
 
-### 9. Create Mod & Tag Interoperability
+### 10. Create Mod & Tag Interoperability
 * Enrolls copper nuggets from all sources into common tags: `#c:nuggets`, `#c:nuggets/copper`, and `#c:copper_nuggets`.
 * Bidirectional crafting recipes: 9 copper nuggets craft 1 copper ingot, and 1 copper ingot crafts 9 copper nuggets.
 * Adds Crushing Wheel recipes to recycle copper equipment into copper ingots and nuggets with [Create](https://modrinth.com/mod/create).
 
-### 10. Better Combat Integration
+### 11. Better Combat Integration
 * Configures native attack animations, weapon attributes, range, and sweeping hitboxes for copper weapons with [Better Combat](https://modrinth.com/mod/better-combat).
 
-### 11. Multilingual Localization
+### 12. Multilingual Localization
 Full in-game translations for all supported language variants:
 * Arabic (`ar_sa`)
 * Azerbaijani (`az_az`)
@@ -174,8 +179,8 @@ cd copper-age-backport-patch
 ./gradlew assemble
 
 # Generated artifacts:
-# - build/libs/copper_age_patch-neoforge-1.21.1-1.0.0.jar
-# - build/libs/copper_age_patch-fabric-1.21.1-1.0.0.jar
+# - build/libs/copper_age_patch-neoforge-1.21.1-1.1.0.jar
+# - build/libs/copper_age_patch-fabric-1.21.1-1.1.0.jar
 ```
 
 ---

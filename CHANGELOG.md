@@ -4,6 +4,18 @@ All notable changes to Copper Age Backport Patch are documented here.
 
 ---
 
+## 1.1.0
+
+### Added
+- **Pale Oak Shelf Crafting Recipe**: Added missing 3x3 shaped crafting recipe for the Pale Oak Shelf (`minecraft:pale_oak_shelf`) using Stripped Pale Oak Logs (`vanillabackport:stripped_pale_oak_log`), restoring recipe parity with all other wooden shelf types in Copper Age Backport.
+- **Recipe Viewer Item Display**: Configured the Pale Oak Shelf recipe to use direct item references with mod-loading conditions, ensuring recipe viewers (such as EMI, JEI, and REI) display clean item icons without hashtag (#) tag badges.
+
+### Fixed
+- **Recipe Ingredient Restrictions**: Removed stripped pale oak wood from shelf recipe inputs, strictly enforcing that shelves can only be crafted from stripped logs, consistent with all other wooden shelves in the mod.
+- **Creative Tab Stability**: Preserved established canonical placements (Copper Axe after Stone Axe in Combat tab, and Copper Golem Spawn Egg after Cod Spawn Egg in Spawn Eggs tab) while avoiding intrusive creative inventory reordering.
+
+---
+
 ## 1.0.0
 
 ### Highlights
@@ -17,7 +29,7 @@ All notable changes to Copper Age Backport Patch are documented here.
 - **Full Tool Trims Compatibility**: Seamless smithing trimming support for all 5 copper tools (Sword, Axe, Pickaxe, Shovel, Hoe) across 4 patterns and 10 materials when the Tool Trims mod is installed.
 - **Native Copper Armor Trims**: Complete model overrides for all 4 copper armor pieces with 10 standard trim materials and high-contrast copper-on-copper rendering via the `copper_darker` palette.
 - **Conditional Modern Spawn Egg Icon**: Automatic detection of Vanilla Backport with client configuration override (`AUTO`, `MODERN`, `CLASSIC`).
-- **Jade HUD Integrations**: Real-time display of Copper Golem oxidation levels, waxing status, held items, antenna items (such as poppies gifted by Iron Golems), and visual Copper Shelf inventory previews.
+- **Jade HUD Integrations**: Real-time display of Copper Golem oxidation levels, waxing status, held items, antenna items (such as poppies gifted by Iron Golems), and visual Shelf inventory previews.
 - **Create & Better Combat Integration**: Bidirectional nugget/ingot crafting recipes, Crushing Wheel recycling, and weapon attributes with attack sweeping hitboxes.
 
 ### Fixed

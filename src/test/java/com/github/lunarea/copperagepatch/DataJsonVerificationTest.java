@@ -356,4 +356,59 @@ public class DataJsonVerificationTest {
             assertEquals("minecraft:copper_ingot", ingObj.get("item").getAsString(), path + " ingredient must be minecraft:copper_ingot");
         }
     }
+
+    @Test
+    @DisplayName("Verify Pale Oak Shelf crafting recipe and stripped pale oak log tags")
+    void testPaleOakShelfRecipeAndTags() throws Exception {
+        // 1. Verify recipe
+        String recipePath = "data/minecraft/recipe/pale_oak_shelf.json";
+        JsonObject recipe = parseResourceJson(recipePath);
+        assertEquals("minecraft:crafting_shaped", recipe.get("type").getAsString(), "Recipe type must be shaped");
+        assertEquals("building", recipe.get("category").getAsString(), "Category must be building");
+
+        assertTrue(recipe.has("result"), "Recipe must have result");
+        JsonObject result = recipe.getAsJsonObject("result");
+        assertEquals("minecraft:pale_oak_shelf", result.get("id").getAsString(), "Result ID must be minecraft:pale_oak_shelf");
+        assertEquals(6, result.get("count").getAsInt(), "Result count must be 6");
+
+        assertTrue(recipe.has("pattern"), "Recipe must have pattern");
+        JsonArray pattern = recipe.getAsJsonArray("pattern");
+        assertEquals(3, pattern.size(), "Pattern must have 3 rows");
+        assertEquals("###", pattern.get(0).getAsString(), "Top row must be 3 logs");
+        assertEquals("   ", pattern.get(1).getAsString(), "Middle row must be empty");
+        assertEquals("###", pattern.get(2).getAsString(), "Bottom row must be 3 logs");
+
+        assertTrue(recipe.has("key"), "Recipe must have key");
+        JsonObject key = recipe.getAsJsonObject("key");
+        assertTrue(key.has("#"), "Key must have '#' definition");
+        JsonObject keyDef = key.getAsJsonObject("#");
+        assertEquals("vanillabackport:stripped_pale_oak_log", keyDef.get("item").getAsString(),
+                "Key must point to item vanillabackport:stripped_pale_oak_log");
+
+        // 2. Verify tags
+        List<String> tagPaths = List.of(
+                "data/minecraft/tags/item/stripped_pale_oak_log.json",
+                "data/copperagebackport/tags/item/stripped_pale_oak_log.json"
+        );
+
+        for (String tagPath : tagPaths) {
+            JsonObject tagJson = parseResourceJson(tagPath);
+            assertFalse(tagJson.get("replace").getAsBoolean(), tagPath + " replace must be false");
+            assertTrue(tagJson.has("values"), tagPath + " must have values");
+            JsonArray values = tagJson.getAsJsonArray("values");
+            assertEquals(2, values.size(), tagPath + " must have 2 entries (logs only, no wood)");
+
+            List<String> expectedIds = List.of(
+                    "minecraft:stripped_pale_oak_log",
+                    "vanillabackport:stripped_pale_oak_log"
+            );
+
+            for (JsonElement elem : values) {
+                assertTrue(elem.isJsonObject(), "Tag value must be object with id and required");
+                JsonObject valObj = elem.getAsJsonObject();
+                assertTrue(expectedIds.contains(valObj.get("id").getAsString()), "Unexpected tag item: " + valObj.get("id").getAsString());
+                assertFalse(valObj.get("required").getAsBoolean(), "All tag entries must be optional (required=false)");
+            }
+        }
+    }
 }
