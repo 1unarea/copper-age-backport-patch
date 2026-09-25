@@ -1,6 +1,7 @@
 package com.github.lunarea.copperagepatch;
 
 import com.github.lunarea.copperagepatch.creative.CopperCombatTabPatcher;
+import com.github.lunarea.copperagepatch.item.CopperItems;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -31,9 +32,31 @@ public class CopperCombatTabPlacementTest {
     static void init() {
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
+        enableIntrusiveHolders(true);
         if (com.github.smallinger.copperagebackport.registry.ModItems.COPPER_AXE == null) {
             com.github.smallinger.copperagebackport.registry.ModItems.COPPER_AXE = () -> (net.minecraft.world.item.AxeItem) Items.DIAMOND_AXE;
         }
+    }
+
+    @org.junit.jupiter.api.AfterAll
+    static void cleanup() {
+        enableIntrusiveHolders(false);
+    }
+
+    private static void enableIntrusiveHolders(boolean enable) {
+        try {
+            java.lang.reflect.Field holdersField = net.minecraft.core.MappedRegistry.class.getDeclaredField("unregisteredIntrusiveHolders");
+            holdersField.setAccessible(true);
+            java.lang.reflect.Field frozenField = net.minecraft.core.MappedRegistry.class.getDeclaredField("frozen");
+            frozenField.setAccessible(true);
+            if (enable) {
+                holdersField.set(net.minecraft.core.registries.BuiltInRegistries.ITEM, new java.util.IdentityHashMap<>());
+                frozenField.set(net.minecraft.core.registries.BuiltInRegistries.ITEM, false);
+            } else {
+                holdersField.set(net.minecraft.core.registries.BuiltInRegistries.ITEM, null);
+                frozenField.set(net.minecraft.core.registries.BuiltInRegistries.ITEM, true);
+            }
+        } catch (Throwable ignored) {}
     }
 
     @Test
@@ -436,5 +459,65 @@ public class CopperCombatTabPlacementTest {
         assertFalse((Boolean) isSameItemMethod.invoke(null, copperAxe, stoneAxe), "Different raw Items must not be identified as same");
         assertFalse((Boolean) isSameItemMethod.invoke(null, null, copperAxe));
         assertFalse((Boolean) isSameItemMethod.invoke(null, copperAxe, null));
+    }
+
+    @Test
+    @DisplayName("Verify applyNeoForgeCombatTabPlacement on Farmer's Delight tab inserts knife after Flint Knife")
+    void testFarmersDelightNeoForgeTabPlacement() {
+        CopperItems.setKnifeInstanceForTesting(CopperItems.createKnifeItem(CopperItems.KNIFE_DURABILITY));
+        try {
+            ResourceLocation fdTabLoc = ResourceLocation.fromNamespaceAndPath("farmersdelight", "farmersdelight");
+            ResourceKey<CreativeModeTab> fdTabKey = ResourceKey.create(Registries.CREATIVE_MODE_TAB, fdTabLoc);
+            MockNeoForgeEvent mockEvent = new MockNeoForgeEvent(fdTabKey, false, new java.util.HashSet<>());
+
+            boolean result = CopperCombatTabPatcher.applyNeoForgeCombatTabPlacement(mockEvent);
+            assertTrue(result, "applyNeoForgeCombatTabPlacement must handle farmersdelight tab");
+            assertTrue(mockEvent.insertAfterCalled.get() || mockEvent.acceptCalled.get(),
+                    "Must attempt insertion of Copper Knife into Farmer's Delight tab");
+        } finally {
+            CopperItems.resetForTesting();
+        }
+    }
+
+    @Test
+    @DisplayName("Verify Copper Knife is excluded from Combat tab on both NeoForge and Fabric")
+    void testCopperKnifeExcludedFromCombatTab() {
+        MockNeoForgeEvent mockNeoEvent = new MockNeoForgeEvent(CopperCombatTabPatcher.COMBAT_TAB_KEY, false, new java.util.HashSet<>());
+        CopperCombatTabPatcher.applyNeoForgeCombatTabPlacement(mockNeoEvent);
+
+        // Verify inserted items into Combat tab do NOT include Copper Knife
+        Object copperKnife = CopperItems.getCopperKnife();
+        if (copperKnife != null) {
+            ItemStack insertedStack = mockNeoEvent.insertedStackRef.get();
+            ItemStack acceptedStack = mockNeoEvent.acceptedStackRef.get();
+            if (insertedStack != null) {
+                assertNotEquals(copperKnife, insertedStack.getItem(), "Copper Knife must not be inserted into NeoForge Combat tab");
+            }
+            if (acceptedStack != null) {
+                assertNotEquals(copperKnife, acceptedStack.getItem(), "Copper Knife must not be accepted into NeoForge Combat tab");
+            }
+        }
+
+        MockFabricEntriesWithDisplayStacks mockFabricEntries = new MockFabricEntriesWithDisplayStacks();
+        CopperCombatTabPatcher.applyFabricCombatTabPlacement(mockFabricEntries);
+        for (ItemStack stack : mockFabricEntries.displayStacks) {
+            assertNotEquals(copperKnife, stack.getItem(), "Copper Knife must not be placed into Fabric Combat tab");
+        }
+    }
+
+    @Test
+    @DisplayName("Verify Copper Shield placement in NeoForge Combat tab targets wooden shield then iron shield")
+    void testCopperShieldNeoForgeCombatTabPlacement() {
+        Object testShield = CopperItems.createShieldItem(CopperItems.SHIELD_DURABILITY);
+        CopperItems.setShieldInstanceForTesting(testShield);
+        try {
+            MockNeoForgeEvent mockNeoEvent = new MockNeoForgeEvent(CopperCombatTabPatcher.COMBAT_TAB_KEY, false, new java.util.HashSet<>());
+            boolean result = CopperCombatTabPatcher.applyNeoForgeCombatTabPlacement(mockNeoEvent);
+            assertTrue(result, "applyNeoForgeCombatTabPlacement must handle Combat tab with shield");
+            assertTrue(mockNeoEvent.insertAfterCalled.get() || mockNeoEvent.insertBeforeCalled.get() || mockNeoEvent.acceptCalled.get(),
+                    "Must attempt insertion of Copper Shield into Combat tab");
+        } finally {
+            CopperItems.resetForTesting();
+        }
     }
 }

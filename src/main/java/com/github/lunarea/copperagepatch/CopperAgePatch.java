@@ -24,6 +24,7 @@ public class CopperAgePatch {
 
     public CopperAgePatch() {
         LOGGER.info("[CopperAgeBackportPatch] Initializing Copper Age Backport Patch on NeoForge.");
+        com.github.lunarea.copperagepatch.item.CopperItems.init();
         CopperArmorDurabilityPatcher.applyPatch();
         registerNeoForgeEvents();
     }
@@ -62,7 +63,7 @@ public class CopperAgePatch {
                 addListenerMethod = eventBus.getClass().getMethod("addListener", Class.class, Consumer.class);
             }
 
-            // 1. BuildCreativeModeTabContentsEvent -> CopperCombatTabPatcher & Durability
+            // 1. BuildCreativeModeTabContentsEvent -> CopperCombatTabPatcher & Durability (LOW priority to run after Shield Expansion / vanilla additions)
             try {
                 Class<?> tabEventClass = Class.forName("net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent");
                 Consumer<Object> tabConsumer = event -> {
@@ -70,8 +71,31 @@ public class CopperAgePatch {
                     CopperCombatTabPatcher.applyNeoForgeCombatTabPlacement(event);
                     com.github.lunarea.copperagepatch.creative.CopperSpawnEggTabPatcher.applyNeoForgeSpawnEggTabPlacement(event);
                 };
-                addListenerMethod.invoke(eventBus, tabEventClass, tabConsumer);
-                LOGGER.info("[CopperAgeBackportPatch] Registered BuildCreativeModeTabContentsEvent listener on NeoForge.");
+                boolean registeredWithPriority = false;
+                try {
+                    Class<?> priorityClass = Class.forName("net.neoforged.bus.api.EventPriority");
+                    Object lowPriority = Enum.valueOf((Class<Enum>) priorityClass, "LOW");
+                    for (Method m : eventBus.getClass().getMethods()) {
+                        if ("addListener".equals(m.getName()) && m.getParameterCount() == 3) {
+                            Class<?>[] pTypes = m.getParameterTypes();
+                            if (pTypes[0].isAssignableFrom(priorityClass)
+                                    && pTypes[1].isAssignableFrom(Class.class)
+                                    && pTypes[2].isAssignableFrom(Consumer.class)) {
+                                m.invoke(eventBus, lowPriority, tabEventClass, tabConsumer);
+                                registeredWithPriority = true;
+                                LOGGER.info("[CopperAgeBackportPatch] Registered BuildCreativeModeTabContentsEvent listener on NeoForge with LOW priority.");
+                                break;
+                            }
+                        }
+                    }
+                } catch (Throwable t) {
+                    LOGGER.debug("[CopperAgeBackportPatch] Could not register with priority: {}", t.getMessage());
+                }
+
+                if (!registeredWithPriority) {
+                    addListenerMethod.invoke(eventBus, tabEventClass, tabConsumer);
+                    LOGGER.info("[CopperAgeBackportPatch] Registered BuildCreativeModeTabContentsEvent listener on NeoForge.");
+                }
             } catch (Throwable t) {
                 LOGGER.warn("[CopperAgeBackportPatch] Could not register BuildCreativeModeTabContentsEvent listener: {}", t.getMessage());
             }
@@ -84,6 +108,7 @@ public class CopperAgePatch {
                         Method getRegistryKeyMethod = event.getClass().getMethod("getRegistryKey");
                         Object key = getRegistryKeyMethod.invoke(event);
                         if (Registries.ITEM.equals(key)) {
+                            com.github.lunarea.copperagepatch.item.CopperItems.init();
                             CopperArmorDurabilityPatcher.applyPatch();
                         }
                     } catch (Throwable ignored) {}
@@ -132,7 +157,10 @@ public class CopperAgePatch {
             // 6. RegisterColorHandlersEvent.Item -> Untinted modern spawn egg ItemColor
             try {
                 Class<?> colorEventClass = Class.forName("net.neoforged.neoforge.client.event.RegisterColorHandlersEvent$Item");
-                Consumer<Object> colorConsumer = com.github.lunarea.copperagepatch.spawnegg.CopperSpawnEggPatcher::onNeoForgeRegisterColorHandlers;
+                Consumer<Object> colorConsumer = event -> {
+                    com.github.lunarea.copperagepatch.spawnegg.CopperSpawnEggPatcher.onNeoForgeRegisterColorHandlers(event);
+                    com.github.lunarea.copperagepatch.item.CopperItemClient.initClient();
+                };
                 addListenerMethod.invoke(eventBus, colorEventClass, colorConsumer);
                 LOGGER.info("[CopperAgeBackportPatch] Registered RegisterColorHandlersEvent$Item listener on NeoForge.");
             } catch (Throwable t) {

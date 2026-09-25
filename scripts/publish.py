@@ -94,6 +94,21 @@ def publish_modrinth(version, changelog):
         "User-Agent": f"1unarea/copper-age-backport-patch/{version}"
     }
 
+    # Update Modrinth project body description if MODRINTH.md exists
+    modrinth_file = os.path.join(ROOT_DIR, "MODRINTH.md")
+    if os.path.isfile(modrinth_file):
+        with open(modrinth_file, "r") as f:
+            body_content = f.read()
+        patch_resp = requests.patch(
+            f"{base_url}/project/{MODRINTH_PROJECT_ID}",
+            headers={"Authorization": MODRINTH_TOKEN, "User-Agent": f"1unarea/copper-age-backport-patch/{version}", "Content-Type": "application/json"},
+            json={"body": body_content}
+        )
+        if patch_resp.status_code in (200, 204):
+            print("Successfully updated Modrinth project description.")
+        else:
+            print(f"Warning: Failed to update Modrinth project description: {patch_resp.status_code} - {patch_resp.text}")
+
     neoforge_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-neoforge-1.21.1-{version}.jar")
     fabric_jar = os.path.join(ROOT_DIR, f"build/libs/copper_age_patch-fabric-1.21.1-{version}.jar")
 
@@ -111,6 +126,8 @@ def publish_modrinth(version, changelog):
                 {"project_id": "nvQzSEkH", "dependency_type": "optional"},  # Jade
                 {"project_id": "LNytGWDc", "dependency_type": "optional"},  # Create
                 {"project_id": "5sy6g3kz", "dependency_type": "optional"},  # Better Combat
+                {"project_id": "R2OftAxM", "dependency_type": "optional"},  # Farmer's Delight
+                {"project_id": "sjxWxSao", "dependency_type": "optional"},  # Shield Expansion
             ]
         },
         {
@@ -126,6 +143,8 @@ def publish_modrinth(version, changelog):
                 {"project_id": "nvQzSEkH", "dependency_type": "optional"},  # Jade
                 {"project_id": "LNytGWDc", "dependency_type": "optional"},  # Create
                 {"project_id": "5sy6g3kz", "dependency_type": "optional"},  # Better Combat
+                {"project_id": "7vxePowz", "dependency_type": "optional"},  # Farmer's Delight Refabricated
+                {"project_id": "sjxWxSao", "dependency_type": "optional"},  # Shield Expansion
             ]
         }
     ]

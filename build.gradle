@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.github.lunarea'
-version = '1.1.0'
+version = '1.2.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -159,6 +159,8 @@ modrinth {
     dependencies {
         required.project "a1llHwl4"  // Copper Age Backport
         optional.project "uXeEiQk1"  // Tool Trims
+        optional.project "R2OftAxM"  // Farmer's Delight
+        optional.project "sjxWxSao"  // Shield Expansion
     }
 }
 

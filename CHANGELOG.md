@@ -4,6 +4,31 @@ All notable changes to Copper Age Backport Patch are documented here.
 
 ---
 
+## 1.2.0
+
+### Added
+- **Farmer's Delight Integration (Copper Knife)**:
+  - Registered Copper Knife under the `farmersdelight` namespace (`farmersdelight:copper_knife`) so it seamlessly integrates into the modpack as a native Farmer's Delight tool in tooltips, recipe viewers, and identifiers.
+  - Authentic knife balance: utilizes authentic Farmer's Delight knife attributes (`+0.5f` damage over Copper Tier, `-2.0f` attack speed modifier yielding 2.5 Attack Damage and 2.0 Attack Speed) matching all standard FD knives.
+  - Instantiates native `vectorwing.farmersdelight.common.item.KnifeItem` when Farmer's Delight is present, preserving all straw/grass harvesting and cutting board slicing interactions.
+  - Canonical durability of 190 (CAB copper tool tier, naturally positioned between Flint [131] and Iron [250]).
+  - Shaped crafting recipe with 1 copper ingot over 1 stick (`data/farmersdelight/recipe/copper_knife.json`).
+  - Full conventional tag integration: `#c:knives`, `#c:tools/knife`, `#c:tools/knives`, `#farmersdelight:knives`, and `#farmersdelight:enchantable/knife`.
+  - Exclusively added to the Farmer's Delight creative tab, placed immediately after the Flint Knife and before the Iron Knife. Excluded from vanilla Combat and Tools & Utilities tabs.
+- **Shield Expansion Integration (Copper Shield)**:
+  - Registered Copper Shield under the `shieldexp` namespace (`shieldexp:copper_shield`) so it appears natively as a Shield Expansion item.
+  - Canonical durability of 120 (balanced between Wooden Shield [55] and Iron Shield [165]).
+  - Custom 3D block model created following Shield Expansion's Iron Shield structure and UV mapping, eliminating `builtin/entity` to resolve invisible model rendering across both NeoForge and Fabric.
+  - Shield Expansion crafting recipe with 1 stick surrounded by 8 copper ingots (`data/shieldexp/recipe/copper_shield.json`).
+  - Shield Expansion data definition (`data/shieldexp/shields/copper_shield.json`) with custom parry, cooldown (25 ticks), speed factor (0.70), and parry damage (0.10) attributes.
+  - Client-side blocking predicate registration (`minecraft:blocking`) for dynamic blocking animations.
+  - Tag integration: `#c:shields`, `#c:tools/shield`, `#forge:shields`, and `#shieldexp:shields`.
+  - Automatically placed into Creative Combat tab directly after Wooden Shield and before Iron Shield using prioritized event listeners (EventPriority.LOW on NeoForge and phased event ordering on Fabric).
+- **Localization**:
+  - Added item names for Copper Knife and Copper Shield in English (`en_us.json`, `en_gb.json`) and Turkish (`tr_tr.json`) across `farmersdelight`, `shieldexp`, and `copper_age_patch` namespaces.
+
+---
+
 ## 1.1.0
 
 ### Added

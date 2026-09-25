@@ -15,6 +15,7 @@ public class CopperAgePatchFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOGGER.info("[CopperAgeBackportPatch] Initializing Copper Age Backport Patch client on Fabric.");
-        CopperSpawnEggPatcher.initFabricClient();
+        com.github.lunarea.copperagepatch.spawnegg.CopperSpawnEggPatcher.initFabricClient();
+        com.github.lunarea.copperagepatch.item.CopperItemClient.initClient();
     }
 }

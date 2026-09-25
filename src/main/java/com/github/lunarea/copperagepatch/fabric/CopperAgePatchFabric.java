@@ -15,6 +15,7 @@ public class CopperAgePatchFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("[CopperAgeBackportPatch] Initializing Copper Age Backport Patch on Fabric.");
+        com.github.lunarea.copperagepatch.item.CopperItems.init();
         CopperArmorDurabilityPatcher.applyPatch();
         CopperCombatTabPatcher.registerFabricCombatTab();
         com.github.lunarea.copperagepatch.creative.CopperSpawnEggTabPatcher.registerFabricSpawnEggTab();

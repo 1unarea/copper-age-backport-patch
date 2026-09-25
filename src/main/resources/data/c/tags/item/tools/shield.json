@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "shieldexp:copper_shield",
+      "required": false
+    }
+  ]
+}

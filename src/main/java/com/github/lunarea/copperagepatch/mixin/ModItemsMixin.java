@@ -18,8 +18,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = ModItems.class, remap = false)
 public abstract class ModItemsMixin {
 
+    @Inject(method = "register", at = @At("HEAD"), remap = false)
+    private static void copper_age_patch$onRegisterItemsHead(CallbackInfo ci) {
+        try {
+            com.github.lunarea.copperagepatch.item.CopperItems.init();
+        } catch (Throwable ignored) {}
+    }
+
     @Inject(method = "register", at = @At("RETURN"), remap = false)
     private static void copper_age_patch$onRegisterItems(CallbackInfo ci) {
+        try {
+            com.github.lunarea.copperagepatch.item.CopperItems.init();
+        } catch (Throwable ignored) {}
         // 1. Hook into RegistryHelper registration completion callbacks
         try {
             RegistryHelper.getInstance().onRegisterComplete(CopperArmorDurabilityPatcher::applyPatch);

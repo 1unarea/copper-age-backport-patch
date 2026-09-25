@@ -139,6 +139,27 @@ Full in-game translations for all supported language variants:
 * Turkish (`tr_tr`)
 * Vietnamese (`vi_vn`)
 
+### 14. Farmer's Delight Integration (Copper Knife)
+* Registered under the `farmersdelight` namespace (`farmersdelight:copper_knife`) so it seamlessly integrates into the modpack as a native Farmer's Delight tool in tooltips, recipe viewers, and identifiers.
+* Gated conditionally: only active when Farmer's Delight (`farmersdelight`) is installed.
+* Balanced Durability: 190 max durability (CAB copper tool tier, naturally positioned between Flint [131] and Iron [250]).
+* Authentic Knife Attributes: Utilizes authentic Farmer's Delight knife attributes (`+0.5f` damage bonus over Copper Tier, `-2.0f` attack speed modifier yielding 2.5 Attack Damage and 2.0 Attack Speed), matching all standard FD knives.
+* Preserves straw/grass harvesting and cutting board slicing interactions by reflectively instantiating the native `KnifeItem` class when Farmer's Delight is present.
+* Shaped Crafting Recipe: 1 copper ingot placed vertically over 1 stick (`data/farmersdelight/recipe/copper_knife.json`).
+* Full conventional tag integration: `#c:knives`, `#c:tools/knife`, `#c:tools/knives`, `#farmersdelight:knives`, and `#farmersdelight:enchantable/knife`.
+* Creative Tab Ordering: Exclusively added to the Farmer's Delight creative tab, placed immediately after the Flint Knife and before the Iron Knife. Excluded from vanilla Combat and Tools & Utilities tabs.
+
+### 15. Shield Expansion Integration (Copper Shield)
+* Registered under the `shieldexp` namespace (`shieldexp:copper_shield`) so it appears natively as a Shield Expansion item.
+* Gated conditionally: only active when Shield Expansion (`shieldexp`) is installed.
+* Balanced Durability: 120 max durability (balanced between Wooden Shield [55] and Iron Shield [165]).
+* Custom 3D Block Model: Modeled using Shield Expansion's Iron Shield geometry and UV mapping (`elements`), eliminating `builtin/entity` to guarantee full 3D rendering in GUI, hands, and blocking across both NeoForge and Fabric.
+* Shield Expansion Data: Defines custom attributes (`data/shieldexp/shields/copper_shield.json`) with 25 cooldown ticks, 0.70 speed factor, 0.10 parry damage, 5 parry ticks, 2 stamina, 0.10 blast resistance, and 1 flat damage.
+* Client-Side Blocking Animation: Registers the `"minecraft:blocking"` item property predicate on Fabric and NeoForge client entrypoints for smooth blocking animations.
+* Shaped Crafting Recipe: 1 stick surrounded by 8 copper ingots (`data/shieldexp/recipe/copper_shield.json`).
+* Full tag integration: `#c:shields`, `#c:tools/shield`, `#forge:shields`, and `#shieldexp:shields`.
+* Creative Tab Ordering: Positioned in the Creative Combat tab directly after the Wooden Shield and before the Iron Shield using prioritized event listeners (`EventPriority.LOW` on NeoForge and phased event ordering on Fabric).
+
 ---
 
 ## Configuration
@@ -165,6 +186,8 @@ A client-side configuration file is located at `config/copper_age_patch.json`:
 | :--- | :--- | :--- | :--- |
 | [Copper Age Backport](https://modrinth.com/mod/backport-copper-age) | NeoForge & Fabric | Required | The base mod being patched |
 | [Fabric API](https://modrinth.com/mod/fabric-api) | Fabric | Required | Core framework on Fabric |
+| [Farmer's Delight](https://modrinth.com/mod/farmers-delight) | NeoForge & Fabric | Optional | Adds Copper Knife with cutting board support and straw harvesting |
+| [Shield Expansion](https://modrinth.com/mod/shield-expansion) | NeoForge & Fabric | Optional | Adds Copper Shield with 3D model, parry, and blocking mechanics |
 | [Tool Trims](https://modrinth.com/mod/tool-trims) | NeoForge & Fabric | Optional | Enables smithing trims on copper tools (optional integration) |
 | [Vanilla Backport](https://modrinth.com/mod/vanilla-backport) | NeoForge & Fabric | Optional | Modern spawn egg texture trigger |
 | [JEI](https://modrinth.com/mod/jei) / [EMI](https://modrinth.com/mod/emi) / [REI](https://modrinth.com/mod/rei) | NeoForge & Fabric | Optional | In-game information and mechanic guide pages |
@@ -190,8 +213,8 @@ cd copper-age-backport-patch
 ./gradlew assemble
 
 # Generated artifacts:
-# - build/libs/copper_age_patch-neoforge-1.21.1-1.1.0.jar
-# - build/libs/copper_age_patch-fabric-1.21.1-1.1.0.jar
+# - build/libs/copper_age_patch-neoforge-1.21.1-1.2.0.jar
+# - build/libs/copper_age_patch-fabric-1.21.1-1.2.0.jar
 ```
 
 ---

@@ -21,5 +21,9 @@
   "gui.copper_age_patch.jei.info.copper_tools": "Bakır Aletler:\nKazma hızı ve dayanıklılığı Taş ve Demir seviyeleri arasında dengelenmiştir.\n\nÖrs üzerinde Bakır Külçe kullanılarak tamir edilebilir.\n\nTool Trims modu yüklüyse, bakır aletler Demirci Masasında 4 farklı desen ve 10 mineral malzeme ile süslenebilir.",
   "gui.copper_age_patch.jei.info.copper_chest": "Bakır Sandık:\nDiğer bakır bloklar gibi zamanla paslanan bir depolama sandığıdır.\n\nPaslanma aşamasını dondurmak için Petek ile mumlanabilir veya pası kazımak için Balta kullanılabilir.",
   "gui.copper_age_patch.jei.info.copper_recycling": "Bakır Geri Dönüşümü ve Parçacıklar:\n9 Bakır Parçacığı 1 Bakır Külçeye, 1 Bakır Külçe ise tekrar 9 Bakır Parçacığına dönüştürülebilir.\n\nCreate modu yüklüyse, bakır alet ve zırhlar Kırma Çarklarında parçalanarak bakır külçe ve parçacıklar geri kazanılabilir.",
-  "gui.copper_age_patch.jei.info.copper_horse_armor": "Bakır At Zırhı:\nAtlar için Deri ve Demir seviyeleri arasında koruma sağlar.\n\nZindanlarda, çöl piramitlerinde, orman tapınaklarında ve köy sandıklarında bulunabilir."
+  "gui.copper_age_patch.jei.info.copper_horse_armor": "Bakır At Zırhı:\nAtlar için Deri ve Demir seviyeleri arasında koruma sağlar.\n\nZindanlarda, çöl piramitlerinde, orman tapınaklarında ve köy sandıklarında bulunabilir.",
+  "item.copper_age_patch.copper_knife": "Bakır Bıçak",
+  "item.copper_age_patch.copper_shield": "Bakır Kalkan",
+  "item.farmersdelight.copper_knife": "Bakır Bıçak",
+  "item.shieldexp.copper_shield": "Bakır Kalkan"
 }
