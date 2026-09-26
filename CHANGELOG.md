@@ -8,11 +8,13 @@ All notable changes to Copper Age Backport Patch are documented here.
 
 ### Fixed
 - **CAB Lightning Rod Redirection & Channeling Parity**:
-  - Registered all 7 Copper Age Backport lightning rod blocks (Exposed, Weathered, Oxidized, and Waxed variants) into `PoiTypes.TYPE_BY_STATE` mapped to `LIGHTNING_ROD`, enabling natural thunderstorm lightning redirection within a 128-block radius via `PoiManager`.
-  - Added enchantment data override (`data/minecraft/enchantment/channeling.json`) expanding Channeling Trident target block predicate from hardcoded `minecraft:lightning_rod` to `#minecraft:lightning_rods`, enabling Channeling Tridents to summon lightning bolts on all 8 rod variants during thunderstorms.
-  - Injected `LightningBoltMixin` targeting `powerLightningRod()` to power CAB lightning rods upon lightning strikes, emitting an 8-tick redstone pulse and electric spark particles.
-  - Injected `LightningBoltMixin` targeting `clearCopperOnLightningStrike()` to de-oxidize unwaxed weathered lightning rods by one stage upon strike while keeping waxed rods protected, and redirecting cleaning to attached copper blocks with random-walk copper cleaning spread.
+  - Full multi-loader parity across both Fabric and NeoForge for all 7 Copper Age Backport lightning rod blocks (Exposed, Weathered, Oxidized, and all Waxed variants).
+  - Registered all 168 blockstates of CAB lightning rod variants into `PoiTypes.TYPE_BY_STATE` mapped to `LIGHTNING_ROD`, enabling natural thunderstorm lightning redirection within a 128-block radius via `PoiManager`.
+  - Added enchantment data override (`data/minecraft/enchantment/channeling.json`) with `minecraft:any_of` block state predicates across all 8 lightning rod blocks, enabling Channeling Tridents to summon lightning bolts on all rod variants during thunderstorms without coordinate offset errors.
+  - Injected loader-specific mixins (`LightningBoltFabricMixin` on Fabric and `LightningBoltMixin` on NeoForge) targeting `powerLightningRod()` to power CAB lightning rods upon lightning strikes, emitting an 8-tick redstone pulse and electric spark particles.
+  - Injected `clearCopperOnLightningStrike()` to de-oxidize unwaxed weathered lightning rods by one stage upon strike while keeping waxed rods protected, and redirecting cleaning to attached copper blocks with random-walk copper cleaning spread.
   - Integrated all 8 lightning rod blocks into `WeatheringCopper.PREVIOUS_BY_BLOCK`/`NEXT_BY_BLOCK` and `HoneycombItem.WAXABLES`/`WAX_OFF_BY_BLOCK` BiMap suppliers.
+  - Fixed Fabric registry block resolution bug in `CopperLightningRodPatcher` where method lookup matched `Object.equals(Object)` instead of registry getters.
 
 ### Added
 - **Comprehensive 25-Language Localizations for Copper Knife & Copper Shield**:

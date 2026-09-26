@@ -67,3 +67,6 @@ side = "BOTH"
 
 [[mixins]]
 config = "copper_age_patch.mixins.json"
+
+[[mixins]]
+config = "copper_age_patch-neoforge.mixins.json"

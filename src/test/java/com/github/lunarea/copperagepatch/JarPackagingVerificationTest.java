@@ -104,6 +104,7 @@ public class JarPackagingVerificationTest {
                 assertTrue(toml.contains("modId = \"copper_age_patch\""), "toml must specify modId = 'copper_age_patch'");
                 assertTrue(toml.contains("version = \"1.2.1\""), "toml must specify version = '1.2.1'");
                 assertTrue(toml.contains("config = \"copper_age_patch.mixins.json\""), "toml must reference copper_age_patch.mixins.json");
+                assertTrue(toml.contains("config = \"copper_age_patch-neoforge.mixins.json\""), "toml must reference copper_age_patch-neoforge.mixins.json");
                 assertTrue(toml.contains("modId = \"copperagebackport\""), "toml must declare dependency on copperagebackport");
                 assertTrue(toml.contains("modId = \"neoforge\""), "toml must declare dependency on neoforge");
                 assertTrue(toml.contains("modId = \"minecraft\""), "toml must declare dependency on minecraft");
@@ -112,14 +113,21 @@ public class JarPackagingVerificationTest {
                 assertTrue(toml.contains("modId = \"create\""), "toml must declare optional dependency on create");
             }
 
-            // Verify copper_age_patch.mixins.json contents
+            // Verify copper_age_patch.mixins.json (shared mixins, no LightningBolt)
             ZipEntry mixinEntry = zip.getEntry("copper_age_patch.mixins.json");
             try (InputStream is = zip.getInputStream(mixinEntry)) {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"package\": \"com.github.lunarea.copperagepatch.mixin\""), "mixin package must match");
                 assertTrue(json.contains("\"CopperArmorMaterialMixin\""), "CopperArmorMaterialMixin must be registered");
-                assertTrue(json.contains("\"LightningBoltMixin\""), "LightningBoltMixin must be registered");
                 assertTrue(json.contains("\"ModItemsMixin\""), "ModItemsMixin must be registered");
+            }
+
+            // Verify copper_age_patch-neoforge.mixins.json contains LightningBoltMixin
+            ZipEntry neoMixinEntry = zip.getEntry("copper_age_patch-neoforge.mixins.json");
+            assertNotNull(neoMixinEntry, "copper_age_patch-neoforge.mixins.json must exist in NeoForge jar");
+            try (InputStream is = zip.getInputStream(neoMixinEntry)) {
+                String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                assertTrue(json.contains("\"LightningBoltMixin\""), "LightningBoltMixin must be in NeoForge mixin config");
             }
 
             // Verify copper_age_patch.refmap.json contents
@@ -303,6 +311,7 @@ public class JarPackagingVerificationTest {
                 "com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class",
                 "com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class",
                 "com/github/lunarea/copperagepatch/mixin/LightningBoltMixin.class",
+                "com/github/lunarea/copperagepatch/mixin/CopperAgePatchMixinPlugin.class",
                 "com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"
         };
 
@@ -487,6 +496,23 @@ public class JarPackagingVerificationTest {
             assertNotNull(rlObj, "createResourceLocation must create Identifier in Intermediary");
             assertEquals("net.minecraft.class_2960", rlObj.getClass().getName());
             assertEquals("copper_age_patch:modern_copper_golem_spawn_egg", rlObj.toString());
+
+            // 12. Verify CopperLightningRodPatcher methods operate against Intermediary classes
+            Class<?> lrPatcherClass = Class.forName("com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher", true, intermediaryLoader);
+            Method lrCreateId = lrPatcherClass.getMethod("createIdentifier", String.class, String.class);
+            Object lrId = lrCreateId.invoke(null, "minecraft", "lightning_rod");
+            assertNotNull(lrId);
+            assertEquals("net.minecraft.class_2960", lrId.getClass().getName());
+
+            Method getDirDown = lrPatcherClass.getMethod("getDirectionDown");
+            Object dirDown = getDirDown.invoke(null);
+            assertNotNull(dirDown, "Must resolve Direction.DOWN in Intermediary");
+            assertEquals("net.minecraft.class_2350", dirDown.getClass().getName());
+
+            Method createBp = lrPatcherClass.getMethod("createBlockPos", int.class, int.class, int.class);
+            Object bp = createBp.invoke(null, 10, 64, 20);
+            assertNotNull(bp, "Must resolve BlockPos in Intermediary");
+            assertEquals("net.minecraft.class_2338", bp.getClass().getName());
         }
     }
 }

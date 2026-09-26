@@ -29,7 +29,8 @@
     ]
   },
   "mixins": [
-    "copper_age_patch.mixins.json"
+    "copper_age_patch.mixins.json",
+    "copper_age_patch-fabric.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.15.0",

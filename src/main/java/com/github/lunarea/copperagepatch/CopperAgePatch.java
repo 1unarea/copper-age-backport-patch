@@ -28,6 +28,7 @@ public class CopperAgePatch {
         CopperArmorDurabilityPatcher.applyPatch();
         com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.init();
         registerNeoForgeEvents();
+        com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.registerNeoForgeLifecycleEvents();
     }
 
     private void registerNeoForgeEvents() {

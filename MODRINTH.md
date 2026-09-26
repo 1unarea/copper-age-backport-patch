@@ -14,10 +14,12 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://mo
 ## Features
 
 * **Lightning Rod Parity (Weathering, Channeling & Redstone)**
-  * Restores natural thunderstorm lightning redirection for all 7 Copper Age Backport lightning rod variants (Exposed, Weathered, Oxidized, and Waxed) within 128 blocks via `PoiTypes.TYPE_BY_STATE`.
-  * Enables Channeling Tridents to summon lightning on all 8 rod blocks during thunderstorms via tag-driven enchantment data (`#minecraft:lightning_rods`).
+  * Full multi-loader parity across both Fabric and NeoForge for all 7 Copper Age Backport lightning rod variants (Exposed, Weathered, Oxidized, Waxed, Waxed Exposed, Waxed Weathered, Waxed Oxidized).
+  * Restores natural thunderstorm lightning redirection within 128 blocks by dynamically registering all 168 blockstates of CAB lightning rods into `PoiTypes.TYPE_BY_STATE`.
+  * Enables Channeling Tridents to reliably summon lightning strikes on all 8 rod variants during thunderstorms via robust `minecraft:any_of` block state matching (`data/minecraft/enchantment/channeling.json`).
   * Emits an 8-tick redstone pulse and electric spark particles when struck by lightning.
   * Struck unwaxed weathered lightning rods de-oxidize by one stage while waxed variants remain protected. Struck rods redirect de-oxidation to attached copper blocks with realistic random-walk copper cleaning.
+  * Integrates with `WeatheringCopper` and `HoneycombItem` BiMaps for full axe scraping and honeycomb waxing support.
 
 * **Farmer's Delight Integration (Copper Knife)**
   * Seamlessly integrates a Copper Knife under the `farmersdelight` namespace (`farmersdelight:copper_knife`) so it appears natively in tooltips, recipe viewers, and tags.

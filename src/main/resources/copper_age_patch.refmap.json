@@ -2,14 +2,18 @@
   "mappings": {
     "com/github/lunarea/copperagepatch/mixin/LightningBoltMixin": {
       "powerLightningRod": "Lnet/minecraft/world/entity/LightningBolt;powerLightningRod()V",
-      "clearCopperOnLightningStrike": "Lnet/minecraft/world/entity/LightningBolt;clearCopperOnLightningStrike(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"
+      "clearCopperOnLightningStrike": "Lnet/minecraft/world/entity/LightningBolt;clearCopperOnLightningStrike(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V",
+      "method_31499": "Lnet/minecraft/world/entity/LightningBolt;powerLightningRod()V",
+      "method_34707": "Lnet/minecraft/world/entity/LightningBolt;clearCopperOnLightningStrike(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)V"
     }
   },
   "data": {
     "named:intermediary": {
       "com/github/lunarea/copperagepatch/mixin/LightningBoltMixin": {
         "powerLightningRod": "Lnet/minecraft/class_1538;method_31499()V",
-        "clearCopperOnLightningStrike": "Lnet/minecraft/class_1538;method_34707(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;)V"
+        "clearCopperOnLightningStrike": "Lnet/minecraft/class_1538;method_34707(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;)V",
+        "method_31499": "Lnet/minecraft/class_1538;method_31499()V",
+        "method_34707": "Lnet/minecraft/class_1538;method_34707(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;)V"
       }
     }
   }

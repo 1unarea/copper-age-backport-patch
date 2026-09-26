@@ -5,8 +5,7 @@
   "refmap": "copper_age_patch.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CopperArmorMaterialMixin",
-    "ModItemsMixin"
+    "LightningBoltFabricMixin"
   ],
   "injectors": {
     "defaultRequire": 1

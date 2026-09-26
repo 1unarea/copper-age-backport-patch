@@ -19,7 +19,7 @@ Important loader distinction:
 * On **Fabric**, Copper Age Backport runs completely fine standalone and suffers from no startup or registry crashes. On Fabric, this patch serves purely as a gameplay, balance, visual, and mod compatibility enhancement.
 * On **NeoForge** (versions 21.1.237 and newer), Copper Age Backport has a critical registry collision bug that crashes the game on startup or aborts world loading with a safe mode warning. This patch intercepts and fixes that crash on NeoForge.
 
-Across both loaders, this patch restores canonical armor durability, enables copper anvil repairs, corrects creative inventory ordering, implements proper vanilla armor trim rendering, adds optional compatibility for the Tool Trims mod, enhances the Copper Golem spawn egg texture, provides in-game JEI / EMI / REI information pages, and integrates with popular mods such as Jade, Better Combat, and Create.
+Across both loaders, this patch restores canonical armor durability, enables copper anvil repairs, corrects creative inventory ordering, implements proper vanilla armor trim rendering, adds optional compatibility for the Tool Trims mod, enhances the Copper Golem spawn egg texture, provides in-game JEI / EMI / REI information pages, brings 100% full parity to all 7 CAB copper lightning rod variants (Channeling tridents, natural lightning redirection, redstone power pulses, and stage de-oxidation), and integrates with popular mods such as Farmer's Delight, Shield Expansion, Jade, Better Combat, and Create.
 
 ---
 
@@ -161,9 +161,10 @@ Full in-game translations for all supported language variants:
 * Creative Tab Ordering: Positioned in the Creative Combat tab directly after the Wooden Shield and before the Iron Shield using prioritized event listeners (`EventPriority.LOW` on NeoForge and phased event ordering on Fabric).
 
 ### 16. CAB Lightning Rod Parity (Weathering, Channeling & Redstone)
-* **Natural Lightning Redirection**: Registers all 7 CAB lightning rod blocks (`exposed_lightning_rod`, `weathered_lightning_rod`, `oxidized_lightning_rod`, and their 4 waxed variants) into `PoiTypes.TYPE_BY_STATE` mapped to `LIGHTNING_ROD`, allowing `PoiManager` to track them and enabling natural thunderstorm lightning redirection within a 128-block radius.
-* **Channeling Trident Activation**: Overrides Channeling enchantment hit-block predicate (`data/minecraft/enchantment/channeling.json`) to target `#minecraft:lightning_rods`, enabling Channeling Tridents to summon lightning strikes on all 8 rod variants during thunderstorms.
-* **Redstone Signal & Sparks**: Struck CAB lightning rods emit an 8-tick redstone power pulse to neighboring blocks and spawn electric spark particles matching vanilla lightning rod behavior.
+* **Full Multi-Loader Parity**: Delivers complete, tested feature parity for all 7 CAB copper lightning rod blocks (`exposed_lightning_rod`, `weathered_lightning_rod`, `oxidized_lightning_rod`, and their 4 waxed counterparts) across both Fabric (Intermediary) and NeoForge (Mojang).
+* **Natural Lightning Redirection**: Dynamically registers all 168 blockstates of the 7 CAB lightning rod variants into `PoiTypes.TYPE_BY_STATE` mapped to `LIGHTNING_ROD`, allowing `PoiManager` to track them and enabling natural thunderstorm lightning redirection within a 128-block radius.
+* **Channeling Trident Activation**: Overrides the Channeling enchantment hit-block predicate (`data/minecraft/enchantment/channeling.json`) using explicit `minecraft:any_of` block state matching across all 8 lightning rod blocks (vanilla plus all 7 CAB variants), allowing Channeling Tridents to reliably summon lightning strikes on any rod variant during thunderstorms without namespace collisions or thin bounding-box offset failures.
+* **Redstone Pulse & Electric Sparks**: Struck CAB lightning rods emit an 8-tick redstone power pulse to neighboring blocks and spawn electric spark particles matching vanilla lightning rod behavior.
 * **Stage De-oxidation & Cleaning**: Striking an unwaxed weathered lightning rod de-oxidizes it by one stage, while waxed rods remain protected. Struck rods redirect de-oxidation to attached copper blocks behind them, spreading copper cleaning to nearby blocks via random-walk spread.
 * **Weathering & Waxing Chains**: Connects all 8 rod variants to `WeatheringCopper` and `HoneycombItem` BiMap lookup tables for standard axe scraping and honeycomb waxing.
 

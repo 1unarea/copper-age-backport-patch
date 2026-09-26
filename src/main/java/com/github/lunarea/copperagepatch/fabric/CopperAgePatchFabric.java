@@ -18,6 +18,7 @@ public class CopperAgePatchFabric implements ModInitializer {
         com.github.lunarea.copperagepatch.item.CopperItems.init();
         CopperArmorDurabilityPatcher.applyPatch();
         com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.init();
+        com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.registerFabricLifecycleEvents();
         CopperCombatTabPatcher.registerFabricCombatTab();
         com.github.lunarea.copperagepatch.creative.CopperSpawnEggTabPatcher.registerFabricSpawnEggTab();
         com.github.lunarea.copperagepatch.spawnegg.CopperSpawnEggPatcher.initFabric();
