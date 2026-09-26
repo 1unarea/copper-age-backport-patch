@@ -160,6 +160,13 @@ Full in-game translations for all supported language variants:
 * Full tag integration: `#c:shields`, `#c:tools/shield`, `#forge:shields`, and `#shieldexp:shields`.
 * Creative Tab Ordering: Positioned in the Creative Combat tab directly after the Wooden Shield and before the Iron Shield using prioritized event listeners (`EventPriority.LOW` on NeoForge and phased event ordering on Fabric).
 
+### 16. CAB Lightning Rod Parity (Weathering, Channeling & Redstone)
+* **Natural Lightning Redirection**: Registers all 7 CAB lightning rod blocks (`exposed_lightning_rod`, `weathered_lightning_rod`, `oxidized_lightning_rod`, and their 4 waxed variants) into `PoiTypes.TYPE_BY_STATE` mapped to `LIGHTNING_ROD`, allowing `PoiManager` to track them and enabling natural thunderstorm lightning redirection within a 128-block radius.
+* **Channeling Trident Activation**: Overrides Channeling enchantment hit-block predicate (`data/minecraft/enchantment/channeling.json`) to target `#minecraft:lightning_rods`, enabling Channeling Tridents to summon lightning strikes on all 8 rod variants during thunderstorms.
+* **Redstone Signal & Sparks**: Struck CAB lightning rods emit an 8-tick redstone power pulse to neighboring blocks and spawn electric spark particles matching vanilla lightning rod behavior.
+* **Stage De-oxidation & Cleaning**: Striking an unwaxed weathered lightning rod de-oxidizes it by one stage, while waxed rods remain protected. Struck rods redirect de-oxidation to attached copper blocks behind them, spreading copper cleaning to nearby blocks via random-walk spread.
+* **Weathering & Waxing Chains**: Connects all 8 rod variants to `WeatheringCopper` and `HoneycombItem` BiMap lookup tables for standard axe scraping and honeycomb waxing.
+
 ---
 
 ## Configuration
@@ -213,8 +220,8 @@ cd copper-age-backport-patch
 ./gradlew assemble
 
 # Generated artifacts:
-# - build/libs/copper_age_patch-neoforge-1.21.1-1.2.0.jar
-# - build/libs/copper_age_patch-fabric-1.21.1-1.2.0.jar
+# - build/libs/copper_age_patch-neoforge-1.21.1-1.2.1.jar
+# - build/libs/copper_age_patch-fabric-1.21.1-1.2.1.jar
 ```
 
 ---

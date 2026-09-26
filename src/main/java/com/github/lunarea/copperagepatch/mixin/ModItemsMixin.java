@@ -44,5 +44,10 @@ public abstract class ModItemsMixin {
         try {
             CopperArmorDurabilityPatcher.applyPatch();
         } catch (Throwable ignored) {}
+
+        // 4. Initialize lightning rod patcher once CAB items and blocks are registered
+        try {
+            com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.init();
+        } catch (Throwable ignored) {}
     }
 }

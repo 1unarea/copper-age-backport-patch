@@ -17,7 +17,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify output NeoForge jar contains all required files, valid toml and valid mixin config")
     void testJarContents() throws Exception {
-        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-1.2.0.jar");
+        File jarFile = new File("build/libs/copper_age_patch-neoforge-1.21.1-1.2.1.jar");
         assertTrue(jarFile.exists(), "Built jar file must exist at " + jarFile.getAbsolutePath());
 
         try (ZipFile zip = new ZipFile(jarFile)) {
@@ -28,6 +28,7 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/CopperAgePatch.class"), "CopperAgePatch.class missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/durability/CopperArmorDurabilityPatcher.class"), "CopperArmorDurabilityPatcher.class missing in NeoForge jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/lightning/CopperLightningRodPatcher.class"), "CopperLightningRodPatcher.class missing in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/creative/CopperCombatTabPatcher.class"), "CopperCombatTabPatcher.class missing in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/creative/CopperSpawnEggTabPatcher.class"), "CopperSpawnEggTabPatcher.class missing in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/item/CopperItems.class"), "CopperItems.class missing in NeoForge jar");
@@ -35,6 +36,7 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/config/CopperAgeConfig.class"), "CopperAgeConfig.class missing in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/spawnegg/CopperSpawnEggPatcher.class"), "CopperSpawnEggPatcher.class missing in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class"), "ModItemsMixin.class missing in NeoForge jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/LightningBoltMixin.class"), "LightningBoltMixin.class missing in NeoForge jar");
             assertNull(zip.getEntry("com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabric.class"), "CopperAgePatchFabric.class should not be in NeoForge jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"), "MemoizedSupplier.class missing in jar");
@@ -93,12 +95,14 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("assets/minecraft/lang/tr_tr.json"), "tr_tr.json missing in jar");
             assertNotNull(zip.getEntry("assets/minecraft/lang/de_de.json"), "de_de.json missing in jar");
 
+            assertNotNull(zip.getEntry("data/minecraft/enchantment/channeling.json"), "channeling.json missing in jar");
+
             // Verify neoforge.mods.toml contents
             ZipEntry tomlEntry = zip.getEntry("META-INF/neoforge.mods.toml");
             try (InputStream is = zip.getInputStream(tomlEntry)) {
                 String toml = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(toml.contains("modId = \"copper_age_patch\""), "toml must specify modId = 'copper_age_patch'");
-                assertTrue(toml.contains("version = \"1.2.0\""), "toml must specify version = '1.2.0'");
+                assertTrue(toml.contains("version = \"1.2.1\""), "toml must specify version = '1.2.1'");
                 assertTrue(toml.contains("config = \"copper_age_patch.mixins.json\""), "toml must reference copper_age_patch.mixins.json");
                 assertTrue(toml.contains("modId = \"copperagebackport\""), "toml must declare dependency on copperagebackport");
                 assertTrue(toml.contains("modId = \"neoforge\""), "toml must declare dependency on neoforge");
@@ -114,6 +118,7 @@ public class JarPackagingVerificationTest {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"package\": \"com.github.lunarea.copperagepatch.mixin\""), "mixin package must match");
                 assertTrue(json.contains("\"CopperArmorMaterialMixin\""), "CopperArmorMaterialMixin must be registered");
+                assertTrue(json.contains("\"LightningBoltMixin\""), "LightningBoltMixin must be registered");
                 assertTrue(json.contains("\"ModItemsMixin\""), "ModItemsMixin must be registered");
             }
 
@@ -140,7 +145,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify built NeoForge jar file exists on filesystem and has valid size")
     void testBuiltJarExists() {
-        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-1.2.0.jar");
+        File builtJar = new File("build/libs/copper_age_patch-neoforge-1.21.1-1.2.1.jar");
         assertTrue(builtJar.exists(), "Built NeoForge mod jar must exist at " + builtJar.getAbsolutePath());
         assertTrue(builtJar.length() > 0, "Built NeoForge mod jar size must be greater than 0");
     }
@@ -148,7 +153,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar exists and has valid structure and metadata")
     void testFabricJarContents() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.0.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.1.jar");
         assertTrue(fabricJar.exists(), "Built Fabric jar must exist at " + fabricJar.getAbsolutePath());
         assertTrue(fabricJar.length() > 0, "Built Fabric jar size must be greater than 0");
 
@@ -159,6 +164,7 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabric.class"), "CopperAgePatchFabric.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabricClient.class"), "CopperAgePatchFabricClient.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/durability/CopperArmorDurabilityPatcher.class"), "CopperArmorDurabilityPatcher.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/lightning/CopperLightningRodPatcher.class"), "CopperLightningRodPatcher.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/creative/CopperCombatTabPatcher.class"), "CopperCombatTabPatcher.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/creative/CopperSpawnEggTabPatcher.class"), "CopperSpawnEggTabPatcher.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/item/CopperItems.class"), "CopperItems.class missing in Fabric jar");
@@ -166,6 +172,7 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/config/CopperAgeConfig.class"), "CopperAgeConfig.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/spawnegg/CopperSpawnEggPatcher.class"), "CopperSpawnEggPatcher.class missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class"), "ModItemsMixin.class missing in Fabric jar");
+            assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/LightningBoltMixin.class"), "LightningBoltMixin.class missing in Fabric jar");
             assertNotNull(zip.getEntry("copper_age_patch.mixins.json"), "copper_age_patch.mixins.json missing in Fabric jar");
             assertNotNull(zip.getEntry("copper_age_patch.refmap.json"), "copper_age_patch.refmap.json missing in Fabric jar");
             assertNotNull(zip.getEntry("com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class"), "CopperArmorMaterialMixin.class missing in Fabric jar");
@@ -224,11 +231,13 @@ public class JarPackagingVerificationTest {
             assertNotNull(zip.getEntry("assets/minecraft/lang/tr_tr.json"), "tr_tr.json missing in Fabric jar");
             assertNotNull(zip.getEntry("assets/minecraft/lang/de_de.json"), "de_de.json missing in Fabric jar");
 
+            assertNotNull(zip.getEntry("data/minecraft/enchantment/channeling.json"), "channeling.json missing in Fabric jar");
+
             ZipEntry fabricEntry = zip.getEntry("fabric.mod.json");
             try (InputStream is = zip.getInputStream(fabricEntry)) {
                 String json = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 assertTrue(json.contains("\"id\": \"copper_age_patch\""), "fabric.mod.json must specify id = 'copper_age_patch'");
-                assertTrue(json.contains("\"version\": \"1.2.0\""), "fabric.mod.json must specify version = '1.2.0'");
+                assertTrue(json.contains("\"version\": \"1.2.1\""), "fabric.mod.json must specify version = '1.2.1'");
                 assertTrue(json.contains("\"copper_age_patch.mixins.json\""), "fabric.mod.json must declare mixin config");
                 assertTrue(json.contains("\"copperagebackport\""), "fabric.mod.json must declare dependency on copperagebackport");
                 assertTrue(json.contains("\"waila\""), "fabric.mod.json must declare waila entrypoint");
@@ -254,6 +263,8 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify generic unnamed jar does not exist")
     void testGenericJarDoesNotExist() {
+        File genericJar121 = new File("build/libs/copper_age_patch-1.2.1.jar");
+        assertFalse(genericJar121.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar121.getAbsolutePath());
         File genericJar120 = new File("build/libs/copper_age_patch-1.2.0.jar");
         assertFalse(genericJar120.exists(), "Generic jar without loader/MC in name must not exist: " + genericJar120.getAbsolutePath());
         File genericJar110 = new File("build/libs/copper_age_patch-1.1.0.jar");
@@ -275,13 +286,14 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify core Fabric jar classes have zero net/minecraft references in bytecode descriptors")
     void testFabricJarCoreClassesHaveZeroMinecraftBytecodeReferences() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.0.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.1.jar");
         assertTrue(fabricJar.exists());
 
         String[] coreClasses = new String[]{
                 "com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabric.class",
                 "com/github/lunarea/copperagepatch/fabric/CopperAgePatchFabricClient.class",
                 "com/github/lunarea/copperagepatch/durability/CopperArmorDurabilityPatcher.class",
+                "com/github/lunarea/copperagepatch/lightning/CopperLightningRodPatcher.class",
                 "com/github/lunarea/copperagepatch/creative/CopperCombatTabPatcher.class",
                 "com/github/lunarea/copperagepatch/creative/CopperSpawnEggTabPatcher.class",
                 "com/github/lunarea/copperagepatch/item/CopperItems.class",
@@ -290,6 +302,7 @@ public class JarPackagingVerificationTest {
                 "com/github/lunarea/copperagepatch/spawnegg/CopperSpawnEggPatcher.class",
                 "com/github/lunarea/copperagepatch/mixin/CopperArmorMaterialMixin.class",
                 "com/github/lunarea/copperagepatch/mixin/ModItemsMixin.class",
+                "com/github/lunarea/copperagepatch/mixin/LightningBoltMixin.class",
                 "com/github/lunarea/copperagepatch/util/MemoizedSupplier.class"
         };
 
@@ -332,7 +345,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar classes initialize in isolated classloader with zero net/minecraft classes")
     void testFabricJarLoadsWithoutMinecraftOnClasspath() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.0.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.1.jar");
         assertTrue(fabricJar.exists());
 
         ClassLoader systemParent = ClassLoader.getPlatformClassLoader();
@@ -358,6 +371,10 @@ public class JarPackagingVerificationTest {
             assertNotNull(patcherClass);
             assertSame(isolatedLoader, patcherClass.getClassLoader(), "Class must be loaded by isolatedLoader from fabricJar");
 
+            Class<?> lightningPatcherClass = Class.forName("com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher", true, isolatedLoader);
+            assertNotNull(lightningPatcherClass);
+            assertSame(isolatedLoader, lightningPatcherClass.getClassLoader(), "Class must be loaded by isolatedLoader from fabricJar");
+
             Class<?> creativeClass = Class.forName("com.github.lunarea.copperagepatch.creative.CopperCombatTabPatcher", true, isolatedLoader);
             assertNotNull(creativeClass);
             assertSame(isolatedLoader, creativeClass.getClassLoader(), "Class must be loaded by isolatedLoader from fabricJar");
@@ -374,7 +391,7 @@ public class JarPackagingVerificationTest {
     @Test
     @DisplayName("Verify Fabric jar operates seamlessly against real Minecraft 1.21.1 Intermediary jar")
     void testFabricJarAgainstRealIntermediaryMinecraftJar() throws Exception {
-        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.0.jar");
+        File fabricJar = new File("build/libs/copper_age_patch-fabric-1.21.1-1.2.1.jar");
         assertTrue(fabricJar.exists());
 
         File intermediaryJar = new File("/home/lunarea/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/cabp fabric/.fabric/remappedJars/minecraft-1.21.1-0.19.5/client-intermediary.jar");

@@ -4,6 +4,23 @@ All notable changes to Copper Age Backport Patch are documented here.
 
 ---
 
+## 1.2.1
+
+### Fixed
+- **CAB Lightning Rod Redirection & Channeling Parity**:
+  - Registered all 7 Copper Age Backport lightning rod blocks (Exposed, Weathered, Oxidized, and Waxed variants) into `PoiTypes.TYPE_BY_STATE` mapped to `LIGHTNING_ROD`, enabling natural thunderstorm lightning redirection within a 128-block radius via `PoiManager`.
+  - Added enchantment data override (`data/minecraft/enchantment/channeling.json`) expanding Channeling Trident target block predicate from hardcoded `minecraft:lightning_rod` to `#minecraft:lightning_rods`, enabling Channeling Tridents to summon lightning bolts on all 8 rod variants during thunderstorms.
+  - Injected `LightningBoltMixin` targeting `powerLightningRod()` to power CAB lightning rods upon lightning strikes, emitting an 8-tick redstone pulse and electric spark particles.
+  - Injected `LightningBoltMixin` targeting `clearCopperOnLightningStrike()` to de-oxidize unwaxed weathered lightning rods by one stage upon strike while keeping waxed rods protected, and redirecting cleaning to attached copper blocks with random-walk copper cleaning spread.
+  - Integrated all 8 lightning rod blocks into `WeatheringCopper.PREVIOUS_BY_BLOCK`/`NEXT_BY_BLOCK` and `HoneycombItem.WAXABLES`/`WAX_OFF_BY_BLOCK` BiMap suppliers.
+
+### Added
+- **Comprehensive 25-Language Localizations for Copper Knife & Copper Shield**:
+  - Fully translated Copper Knife and Copper Shield across all 25 supported non-English languages (Arabic, Azerbaijani, Czech, German, British English, Spanish [Spain, Mexico, Argentina, Chile, Ecuador, Uruguay, Venezuela], French [France, Canada], Hungarian, Italian, Japanese, Korean, Polish, Portuguese [Brazil, Portugal], Russian, Thai, Turkish, Vietnamese, and Chinese [Simplified, Traditional HK, Traditional TW]).
+  - Provided complete translation files across `copper_age_patch`, `farmersdelight`, and `shieldexp` resource bundles.
+
+---
+
 ## 1.2.0
 
 ### Added

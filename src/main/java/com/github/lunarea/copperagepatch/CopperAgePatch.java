@@ -26,6 +26,7 @@ public class CopperAgePatch {
         LOGGER.info("[CopperAgeBackportPatch] Initializing Copper Age Backport Patch on NeoForge.");
         com.github.lunarea.copperagepatch.item.CopperItems.init();
         CopperArmorDurabilityPatcher.applyPatch();
+        com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.init();
         registerNeoForgeEvents();
     }
 
@@ -107,9 +108,10 @@ public class CopperAgePatch {
                     try {
                         Method getRegistryKeyMethod = event.getClass().getMethod("getRegistryKey");
                         Object key = getRegistryKeyMethod.invoke(event);
-                        if (Registries.ITEM.equals(key)) {
+                        if (Registries.ITEM.equals(key) || Registries.BLOCK.equals(key)) {
                             com.github.lunarea.copperagepatch.item.CopperItems.init();
                             CopperArmorDurabilityPatcher.applyPatch();
+                            com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.init();
                         }
                     } catch (Throwable ignored) {}
                 };
@@ -119,13 +121,16 @@ public class CopperAgePatch {
                 LOGGER.warn("[CopperAgeBackportPatch] Could not register RegisterEvent listener: {}", t.getMessage());
             }
 
-            // 3. FMLCommonSetupEvent -> Enqueue durability patch
+            // 3. FMLCommonSetupEvent -> Enqueue durability and lightning patches
             try {
                 Class<?> commonSetupClass = Class.forName("net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent");
                 Consumer<Object> setupConsumer = event -> {
                     try {
                         Method enqueueWorkMethod = event.getClass().getMethod("enqueueWork", Runnable.class);
-                        enqueueWorkMethod.invoke(event, (Runnable) CopperArmorDurabilityPatcher::applyPatch);
+                        enqueueWorkMethod.invoke(event, (Runnable) () -> {
+                            CopperArmorDurabilityPatcher.applyPatch();
+                            com.github.lunarea.copperagepatch.lightning.CopperLightningRodPatcher.init();
+                        });
                     } catch (Throwable ignored) {}
                 };
                 addListenerMethod.invoke(eventBus, commonSetupClass, setupConsumer);

@@ -21,5 +21,9 @@
   "gui.copper_age_patch.jei.info.copper_tools": "Copper Tools:\nMining speed and durability balanced between Stone and Iron tiers.\n\nRepairs on an Anvil using Copper Ingots.\n\nWhen the Tool Trims mod is installed, copper tools can also be trimmed at a Smithing Table with Linear, Tracks, Charge, and Frost patterns across 10 mineral materials.",
   "gui.copper_age_patch.jei.info.copper_chest": "Copper Chest:\nA storage container that weathers over time just like other copper blocks.\n\nCan be waxed with Honeycomb to freeze its oxidation stage, or scraped with an Axe to remove wax or oxidation.",
   "gui.copper_age_patch.jei.info.copper_recycling": "Copper Recycling & Nuggets:\n9 Copper Nuggets can be crafted into 1 Copper Ingot, and 1 Copper Ingot can be crafted back into 9 Copper Nuggets.\n\nWhen the Create mod is installed, copper armor and tools can be recycled in a Crushing Wheel to recover copper ingots and nuggets.",
-  "gui.copper_age_patch.jei.info.copper_horse_armor": "Copper Horse Armor:\nProvides protection for horses between Leather and Iron horse armor tiers.\n\nFound in dungeon, desert pyramid, jungle temple, and village chests."
+  "gui.copper_age_patch.jei.info.copper_horse_armor": "Copper Horse Armor:\nProvides protection for horses between Leather and Iron horse armor tiers.\n\nFound in dungeon, desert pyramid, jungle temple, and village chests.",
+  "item.copper_age_patch.copper_knife": "Coltello di rame",
+  "item.copper_age_patch.copper_shield": "Scudo di rame",
+  "item.farmersdelight.copper_knife": "Coltello di rame",
+  "item.shieldexp.copper_shield": "Scudo di rame"
 }

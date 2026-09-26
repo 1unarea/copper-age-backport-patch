@@ -13,6 +13,12 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://mo
 
 ## Features
 
+* **Lightning Rod Parity (Weathering, Channeling & Redstone)**
+  * Restores natural thunderstorm lightning redirection for all 7 Copper Age Backport lightning rod variants (Exposed, Weathered, Oxidized, and Waxed) within 128 blocks via `PoiTypes.TYPE_BY_STATE`.
+  * Enables Channeling Tridents to summon lightning on all 8 rod blocks during thunderstorms via tag-driven enchantment data (`#minecraft:lightning_rods`).
+  * Emits an 8-tick redstone pulse and electric spark particles when struck by lightning.
+  * Struck unwaxed weathered lightning rods de-oxidize by one stage while waxed variants remain protected. Struck rods redirect de-oxidation to attached copper blocks with realistic random-walk copper cleaning.
+
 * **Farmer's Delight Integration (Copper Knife)**
   * Seamlessly integrates a Copper Knife under the `farmersdelight` namespace (`farmersdelight:copper_knife`) so it appears natively in tooltips, recipe viewers, and tags.
   * Balanced durability of 190 (CAB copper tool tier, naturally positioned between Flint [131] and Iron [250]).
@@ -71,8 +77,8 @@ An unofficial patch and compatibility addon for [Copper Age Backport](https://mo
 * **NeoForge Registry Crash Fix**
   * Fixes the duplicate ResourceKey / armor material registration crash on NeoForge 21.1.237+.
 
-* **20+ Supported Languages**
-  * Built-in translations for over 20 languages including English, Turkish, German, French, Spanish, Russian, Chinese, Japanese, and Korean.
+* **25+ Supported Languages**
+  * Complete, authentic translations across all 25 supported languages for mod items (including Copper Knife and Copper Shield across `farmersdelight` and `shieldexp`), blocks, and subtitles.
 
 ---
 
